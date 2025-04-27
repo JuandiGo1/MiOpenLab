@@ -5,12 +5,7 @@ import { getStorage } from "firebase/storage";
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAmSmV9yOy308XsxHJGymV_J6rJLKpV_sk",
-  authDomain: "miopenlab.firebaseapp.com",
-  projectId: "miopenlab",
-  storageBucket: "miopenlab.firebasestorage.app",
-  messagingSenderId: "1033230670770",
-  appId: "1:1033230670770:web:f415b92bdf1636ad4ba2ab",
+
 };
 
 // Inicializa Firebase
