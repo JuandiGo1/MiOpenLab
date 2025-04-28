@@ -1,18 +1,29 @@
 import { useAuth } from "../../auth/hooks/useAuth";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
 import { BiHomeAlt2 } from "react-icons/bi";
-import { RiUser5Line } from "react-icons/ri";
+import { RiUser5Line,RiLogoutCircleLine  } from "react-icons/ri";
 import { TiBookmark } from "react-icons/ti";
 
 const Navbar = ({ children }) => {
-  const { user } = useAuth();
+  const { logout, user } = useAuth();
   const profileImage = user ? user.photoURL : defaultAvatar;
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      console.log("Cierre de sesión exitoso.");
+      navigate("/");
+    } catch (error) {
+      console.error("Error cerrando sesión:", error.message);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-[#EAE0D5]">
-      <nav className="flex flex-1 flex-col items-center justify-start bg-[#1c2930] text-white p-6 shadow-md">
-        <div className="flex flex-col items-start justify-start w-full gap-10">
+      <nav className="flex flex-1 flex-col items-center justify-between bg-[#1c2930] text-white p-6 shadow-md">
+        <div className="flex flex-col items-start justify-between w-full gap-10">
           <div className="flex items-center justify-start gap-2 mb-3">
             <img
               src={profileImage}
@@ -28,7 +39,9 @@ const Navbar = ({ children }) => {
               <NavLink
                 to="/home"
                 className={({ isActive }) =>
-                  isActive ? "text-[#FFD700] flex items-center gap-2" : "flex items-center gap-2"
+                  isActive
+                    ? "text-[#FFD700] flex items-center gap-2"
+                    : "flex items-center gap-2"
                 }
               >
                 <BiHomeAlt2 className="text-xl" /> Home
@@ -38,7 +51,9 @@ const Navbar = ({ children }) => {
               <NavLink
                 to="/profile"
                 className={({ isActive }) =>
-                  isActive ? "text-[#FFD700] flex items-center gap-2" : "flex items-center gap-2"
+                  isActive
+                    ? "text-[#FFD700] flex items-center gap-2"
+                    : "flex items-center gap-2"
                 }
               >
                 <RiUser5Line className="text-xl" />
@@ -49,7 +64,9 @@ const Navbar = ({ children }) => {
               <NavLink
                 to="/favorites"
                 className={({ isActive }) =>
-                  isActive ? "text-[#FFD700] flex items-center gap-2" : "flex items-center gap-2"
+                  isActive
+                    ? "text-[#FFD700] flex items-center gap-2"
+                    : "flex items-center gap-2"
                 }
               >
                 <TiBookmark className="text-xl" />
@@ -57,6 +74,15 @@ const Navbar = ({ children }) => {
               </NavLink>
             </li>
           </ul>
+        </div>
+        <div className="flex items-start w-full ">
+          <button
+            onClick={handleLogout}
+            className="flex items-center justify-start gap-2 bg-red-500 text-white px-4 py-2 rounded"
+          >
+            <RiLogoutCircleLine className="text-xl" />
+            Logout
+          </button>
         </div>
       </nav>
       <main className="flex-5">{children}</main>
