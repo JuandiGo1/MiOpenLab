@@ -1,14 +1,45 @@
 import React, { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
+import {
+  registerUser,
+  signInWithGoogle,
+} from "../services/authService";
+import { useNavigate } from "react-router-dom";
 
-const SignupForm = ({setIsLogin}) => {
+const SignupForm = ({ setIsLogin }) => {
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [msgInfo, setMsgInfo] = useState("");
+  const navigate = useNavigate();
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    console.log("Signing up with:", email, password, confirmPassword);
+    if (password !== confirmPassword) {
+      setMsgInfo("Passwords do not match!");
+      return;
+    }
+
+    const res = await registerUser(email, password, username);
+    if (res.success) {
+      setMsgInfo("User registered successfully!");
+      setIsLogin(true); // Cambia a LoginForm
+    } else {
+      setMsgInfo(res.message);
+    }
+  };
+
+  
+
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithGoogle();
+      navigate("/home");
+    } catch (error) {
+      console.error(error.message);
+      setMsgInfo("Error signing in with Google. Please try again.");
+    }
   };
 
   return (
@@ -25,6 +56,19 @@ const SignupForm = ({setIsLogin}) => {
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none"
             placeholder="Enter your email"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Username
+          </label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none"
+            placeholder="Enter an username"
             required
           />
         </div>
@@ -55,11 +99,15 @@ const SignupForm = ({setIsLogin}) => {
           />
         </div>
         <button
-          type="submit"
+          type="button"
+          onClick={handleSignup}
           className="w-full bg-[#22333B] text-white py-2 px-4 rounded-md hover:bg-[#3c5a68] transition cursor-pointer"
         >
           Sign Up
         </button>
+        {msgInfo && (
+          <p className="mt-4 text-center text-sm text-red-950">{msgInfo}</p>
+        )}
         <p className="mt-4 text-sm text-gray-600">
           Already have an account?{" "}
           <button
@@ -73,7 +121,10 @@ const SignupForm = ({setIsLogin}) => {
           <hr className="border-t border-gray-400 my-4" />
           <p className="text-center text-gray-500">or</p>
           <div className="mt-4 space-y-2">
-            <button className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition flex items-center justify-center gap-2 cursor-pointer">
+            <button
+              onClick={handleGoogleLogin}
+              className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition flex items-center justify-center gap-2 cursor-pointer"
+            >
               <FaGoogle className="text-2xl" /> Sing Up with Google
             </button>
           </div>

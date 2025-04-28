@@ -1,14 +1,35 @@
 import React, { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { loginUser, signInWithGoogle } from "../services/authService";
 
 const LoginForm = ({ setIsLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [msgInfo, setMsgInfo] = useState("");
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    console.log("Logging in with:", email, password);
-  };
+  const handleLogin = async (e) => {
+      e.preventDefault();
+  
+      const res = await loginUser(email, password);
+      if (res.success) {
+        setMsgInfo("Login successful!");
+        navigate("/home"); // Redirige al usuario a la página principal
+      } else {
+        setMsgInfo(res.message); // Muestra el mensaje de error
+      }
+    };
+
+    const handleGoogleLogin = async () => {
+        try {
+          await signInWithGoogle();
+          navigate("/home");
+        } catch (error) {
+          console.error(error.message);
+          setMsgInfo("Error signing in with Google. Please try again.");
+        }
+      };
 
   return (
     <div className="w-full max-w-full sm:max-w-md bg-[#EAEOD5] p-8 rounded-lg ">
@@ -41,7 +62,8 @@ const LoginForm = ({ setIsLogin }) => {
           />
         </div>
         <button
-          type="submit"
+          type="button"
+          onClick={handleLogin}
           className="w-full bg-[#22333B] text-white py-2 px-4 rounded-md hover:bg-[#3c5a68] transition cursor-pointer"
         >
           Log In
@@ -55,6 +77,9 @@ const LoginForm = ({ setIsLogin }) => {
           Forgot Password?
         </a>
       </div>
+      {msgInfo && (
+          <p className="mt-4 text-center text-sm text-red-950">{msgInfo}</p>
+        )}
       <p className="mt-4 text-sm text-gray-600">
         Don’t have an account?{" "}
         <button
@@ -68,7 +93,7 @@ const LoginForm = ({ setIsLogin }) => {
         <hr className="border-t border-gray-400 my-4" />
         <p className="text-center text-gray-500">or</p>
         <div className="mt-4 space-y-2">
-          <button className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition flex items-center justify-center gap-2 cursor-pointer">
+          <button onClick={handleGoogleLogin} className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition flex items-center justify-center gap-2 cursor-pointer">
             <FaGoogle className="text-2xl" /> Log In with Google
           </button>
         </div>
