@@ -6,7 +6,7 @@ const ExplorePage = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
-  const profileImage = user.photoURL || defaultAvatar;
+  const profileImage = user? user.photoURL : defaultAvatar;
 
   const handleLogout = async () => {
     try {
@@ -20,7 +20,7 @@ const ExplorePage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-[#EAE0D5]">
-      <h1>¡Hola, {user.displayName || "Usuario"}!</h1>
+      <h1>¡Hola, {user? user.displayName : "Usuario"}!</h1>
       <img
         src={profileImage}
         alt="Foto de perfil"
