@@ -1,5 +1,6 @@
 import { useAuth } from "../../auth/hooks/useAuth";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
+import { FaHome } from "react-icons/fa";
 
 const Navbar = ({ children }) => {
   const { user } = useAuth();
@@ -7,18 +8,20 @@ const Navbar = ({ children }) => {
 
   return (
     <div className="flex min-h-screen bg-[#EAEOD5]">
-      <nav className="flex flex-1 flex-col items-center justify-center bg-[#22333B] text-white p-4 shadow-md">
-        <div className="flex items-center justify-start gap-2">
-          <h1>¡Hola, {user.displayName || "Usuario"}!</h1>
+      <nav className="flex flex-1 flex-col items-start justify-start bg-[#22333B] text-white p-5 shadow-md">
+        <div className="flex items-center justify-start gap-2 mb-3">
           <img
             src={profileImage}
             alt="Foto de perfil"
             className="w-10 h-10 rounded-full object-cover"
           />
+          <h1>{user.displayName || "Usuario"}</h1>
         </div>
-        <ul className="navbar__links">
+        <ul className="flex flex-col gap-3">
           <li>
-            <a href="#home">Home</a>
+            <a href="#home" className="flex items-center gap-2">
+              <FaHome /> Home
+            </a>
           </li>
           <li>
             <a href="#about">About</a>
@@ -31,7 +34,7 @@ const Navbar = ({ children }) => {
           </li>
         </ul>
       </nav>
-      <main className="flex-2">{children}</main>
+      <main className="flex-5">{children}</main>
     </div>
   );
 };
