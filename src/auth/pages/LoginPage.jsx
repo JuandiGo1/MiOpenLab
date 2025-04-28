@@ -6,7 +6,7 @@ const LoginPage = () => {
     <div className="flex flex-col sm:flex-row w-screen h-screen overflow-hidden bg-[#EAE0D5]">
       {/* Left Section */}
       <div
-        className="flex-1 bg-[#C6AC8F] dark:bg-black dark:text-red-600 text-white flex flex-col justify-center items-center p-4"
+        className="flex-1 bg-[#1c2930] dark:bg-black dark:text-red-600 text-white flex flex-col justify-center items-center p-4"
       >
         <h1 className="text-4xl sm:text-5xl font-bold mb-2 sm:mb-4">
           MiOpenLab

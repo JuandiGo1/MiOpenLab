@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FaGoogle } from "react-icons/fa";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -12,7 +13,7 @@ const LoginForm = () => {
 
   return (
     <div className="w-full max-w-full sm:max-w-md bg-[#EAEOD5] p-8 rounded-lg ">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Log In</h2>
+      <h2 className="text-2xl font-bold text-[#1c2930] mb-6">Log In</h2>
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700">Email</label>
@@ -43,22 +44,22 @@ const LoginForm = () => {
           Log In
         </button>
       </form>
-      <div className="mt-4 text-right">
-        <a href="/forgot-password" className="text-sm text-blue-500 hover:underline">
+      <div className="mt-4 text-center">
+        <a href="/forgot-password" className="text-sm text-gray-500 hover:underline">
           Forgot Password?
         </a>
       </div>
       <p className="mt-4 text-sm text-gray-600">
         Don’t have an account?{" "}
-        <a href="/signup" className="text-blue-500 hover:underline">
+        <a href="/signup" className="text-blue-900 font-bold hover:underline">
           Sign Up
         </a>
       </p>
       <div className="mt-6">
         <p className="text-center text-gray-500">or</p>
         <div className="mt-4 space-y-2">
-          <button className="w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition">
-            Log In with Google
+          <button className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition flex items-center justify-center gap-2 cursor-pointer">
+            <FaGoogle className="text-2xl"/> Log In with Google
           </button>
 
         </div>
