@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
-import {
-  registerUser,
-  signInWithGoogle,
-} from "../services/authService";
+import { useAuth } from "../hooks/useAuth"; 
 import { useNavigate } from "react-router-dom";
 
 const SignupForm = ({ setIsLogin }) => {
+  const { register, loginGoogle } = useAuth();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +19,7 @@ const SignupForm = ({ setIsLogin }) => {
       return;
     }
 
-    const res = await registerUser(email, password, username);
+    const res = await register(email, password, username);
     if (res.success) {
       setMsgInfo("User registered successfully!");
       setIsLogin(true); // Cambia a LoginForm
@@ -34,7 +32,7 @@ const SignupForm = ({ setIsLogin }) => {
 
   const handleGoogleLogin = async () => {
     try {
-      await signInWithGoogle();
+      await loginGoogle();
       navigate("/home");
     } catch (error) {
       console.error(error.message);

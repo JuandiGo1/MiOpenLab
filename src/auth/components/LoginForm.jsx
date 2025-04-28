@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { loginUser, signInWithGoogle } from "../services/authService";
+import { useAuth } from "../hooks/useAuth"; 
+
 
 const LoginForm = ({ setIsLogin }) => {
+  const { login, loginGoogle } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msgInfo, setMsgInfo] = useState("");
@@ -12,7 +14,7 @@ const LoginForm = ({ setIsLogin }) => {
   const handleLogin = async (e) => {
       e.preventDefault();
   
-      const res = await loginUser(email, password);
+      const res = await login(email, password);
       if (res.success) {
         setMsgInfo("Login successful!");
         navigate("/home"); // Redirige al usuario a la página principal
@@ -23,7 +25,7 @@ const LoginForm = ({ setIsLogin }) => {
 
     const handleGoogleLogin = async () => {
         try {
-          await signInWithGoogle();
+          await loginGoogle();
           navigate("/home");
         } catch (error) {
           console.error(error.message);
