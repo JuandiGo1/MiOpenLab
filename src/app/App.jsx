@@ -1,21 +1,20 @@
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LoginPage from '../auth/pages/LoginPage'
+import { AuthProvider } from "../auth/context/AuthContext.jsx";
+import LoginPage from "../auth/pages/LoginPage";
 import ExplorePage from "../explore/pages/ExplorePage";
-import '../App.css'
-
+import "../App.css";
 
 function App() {
-  
-
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/home" element={<ExplorePage />} /> 
-        <Route path="/" element={<LoginPage />} />
-      </Routes>
-    </BrowserRouter>
-  )
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/home" element={<ExplorePage />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;
