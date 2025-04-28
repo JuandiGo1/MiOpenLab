@@ -17,7 +17,7 @@ const LoginPage = () => {
       </div>
 
       {/* Right Section */}
-      <div className="flex-1 flex flex-col justify-center items-center bg- w-full">
+      <div className="flex-1 flex flex-col justify-center items-center bg-[#EAE0D5] w-full">
         {isLogin ? <LoginForm setIsLogin={setIsLogin} /> : <SignupForm setIsLogin={setIsLogin} />}
       </div>
     </div>

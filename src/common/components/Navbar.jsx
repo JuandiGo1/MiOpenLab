@@ -2,12 +2,12 @@ import { useAuth } from "../../auth/hooks/useAuth";
 import { NavLink, useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
 import { BiHomeAlt2 } from "react-icons/bi";
-import { RiUser5Line,RiLogoutCircleLine  } from "react-icons/ri";
+import { RiUser5Line, RiLogoutCircleLine } from "react-icons/ri";
 import { TiBookmark } from "react-icons/ti";
 
 const Navbar = ({ children }) => {
   const { logout, user } = useAuth();
-  const profileImage = user.photoURL ? user.photoURL : defaultAvatar;
+  const profileImage = user && user.photoURL ? user.photoURL : defaultAvatar;
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -76,13 +76,27 @@ const Navbar = ({ children }) => {
           </ul>
         </div>
         <div className="flex items-start w-full ">
-          <button
-            onClick={handleLogout}
-            className="flex items-center justify-start gap-2 bg-red-500 text-white px-4 py-2 rounded"
-          >
-            <RiLogoutCircleLine className="text-xl" />
-            Logout
-          </button>
+          {user? 
+            <button
+              onClick={handleLogout}
+              className="flex items-center justify-start gap-2 bg-red-500 text-white px-4 py-2 rounded"
+            >
+              <RiLogoutCircleLine className="text-xl" />
+              Logout
+            </button>
+          :
+            <NavLink
+              to="/login"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-[#FFD700] flex items-center gap-2"
+                  : "flex items-center gap-2"
+              }
+            >
+              <RiLogoutCircleLine className="text-xl" />
+              Login
+            </NavLink>
+          }
         </div>
       </nav>
       <main className="flex-6">{children}</main>
