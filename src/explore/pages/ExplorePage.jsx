@@ -6,7 +6,7 @@ const ExplorePage = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
-  const profileImage = user? user.photoURL : defaultAvatar;
+  const profileImage = user.photoURL? user.photoURL : defaultAvatar;
 
   const handleLogout = async () => {
     try {

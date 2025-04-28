@@ -7,7 +7,7 @@ import { TiBookmark } from "react-icons/ti";
 
 const Navbar = ({ children }) => {
   const { logout, user } = useAuth();
-  const profileImage = user ? user.photoURL : defaultAvatar;
+  const profileImage = user.photoURL ? user.photoURL : defaultAvatar;
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -85,7 +85,7 @@ const Navbar = ({ children }) => {
           </button>
         </div>
       </nav>
-      <main className="flex-5">{children}</main>
+      <main className="flex-6">{children}</main>
     </div>
   );
 };
