@@ -1,11 +1,12 @@
-import { auth } from "../../firebase/Config";
+import { auth, storage} from "../../firebase/Config";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
 } from "firebase/auth";
 
 const googleProvider = new GoogleAuthProvider();
@@ -66,4 +67,20 @@ export async function loginUser(email, password) {
 
 export async function logoutUser() {
   await signOut(auth);
+}
+
+
+export async function uploadProfilePicture(file) {
+  if (!auth.currentUser) throw new Error("No hay usuario autenticado.");
+
+  const storageRef = ref(storage, `profilePictures/${auth.currentUser.uid}`);
+
+  // Sube la imagen al Storage
+  await uploadBytes(storageRef, file);
+
+  // Obtiene la URL pública
+  const photoURL = await getDownloadURL(storageRef);
+  await updateProfile(auth.currentUser, { photoURL });
+
+  return photoURL;
 }
