@@ -14,6 +14,12 @@ const SignupForm = ({ setIsLogin }) => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+
+    if (!username.trim()) {
+      setMsgInfo("Username cannot be empty or only spaces!");
+      return;
+    }
+    
     if (password !== confirmPassword) {
       setMsgInfo("Passwords do not match!");
       return;

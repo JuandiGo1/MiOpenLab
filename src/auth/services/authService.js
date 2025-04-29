@@ -71,7 +71,7 @@ export async function logoutUser() {
 
 
 export async function uploadProfilePicture(file) {
-  if (!auth.currentUser) throw new Error("No hay usuario autenticado.");
+  if (!auth.currentUser) throw new Error("There is no authenticated user.");
 
   const storageRef = ref(storage, `profilePictures/${auth.currentUser.uid}`);
 
@@ -83,4 +83,12 @@ export async function uploadProfilePicture(file) {
   await updateProfile(auth.currentUser, { photoURL });
 
   return photoURL;
+}
+
+export async function updateDisplayName(newName) {
+  if (!auth.currentUser) throw new Error("There is no authenticated user.");
+  if (!newName) throw new Error("Username cannot be empty or only spaces!");
+  await updateProfile(auth.currentUser, { displayName: newName });
+
+  return newName;
 }

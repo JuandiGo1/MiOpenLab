@@ -8,6 +8,7 @@ import { TiBookmark } from "react-icons/ti";
 const Navbar = ({ children }) => {
   const { logout, user } = useAuth();
   const profileImage = user?.photoURL || defaultAvatar;
+   console.log(user.photoURL)
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -27,6 +28,10 @@ const Navbar = ({ children }) => {
           <div className="flex items-center justify-start gap-2 mb-3">
             <img
               src={profileImage}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = defaultAvatar;
+              }}
               alt="Foto de perfil"
               className="w-10 h-10 rounded-full object-cover"
             />

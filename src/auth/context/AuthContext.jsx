@@ -1,7 +1,7 @@
 import {  useEffect, useState } from "react";
 import { auth } from "../../firebase/Config";
 import { onAuthStateChanged} from "firebase/auth";
-import { registerUser, loginUser, logoutUser, signInWithGoogle } from "../services/authService";
+import { registerUser, loginUser, logoutUser, signInWithGoogle, uploadProfilePicture, updateDisplayName } from "../services/authService";
 import { AuthContext } from "./AuthContext";
 
 
@@ -24,6 +24,8 @@ export function AuthProvider({ children }) {
   const login = (email, password) => loginUser(email, password);
   const register = (email, password, displayName) => registerUser(email, password, displayName);
   const logout = () => logoutUser();
+  const updateName = (newName) => updateDisplayName(newName);
+  const updateProfilePic = (img) => uploadProfilePicture(img);
 
 
   const value = {
@@ -33,6 +35,8 @@ export function AuthProvider({ children }) {
     register,
     logout,
     loading,
+    updateName,
+    updateProfilePic
   };
 
   return (
