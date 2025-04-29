@@ -21,8 +21,8 @@ const Navbar = ({ children }) => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[# ]">
-      <nav className="flex flex-1 flex-col items-center justify-between bg-[#1c2930] text-white p-6 shadow-md">
+    <div className="flex min-h-screen ">
+      <nav className="flex  flex-col items-center justify-between bg-[#1c2930] text-white p-6 shadow-md w-64 h-screen fixed">
         <div className="flex flex-col items-start justify-between w-full gap-10">
           <div className="flex items-center justify-start gap-2 mb-3">
             <img
@@ -103,7 +103,7 @@ const Navbar = ({ children }) => {
           )}
         </div>
       </nav>
-      <main className="flex-6">{children}</main>
+      <main className="flex-1 ml-64 overflow-y-auto ">{children}</main>
     </div>
   );
 };
