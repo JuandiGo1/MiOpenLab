@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { createProject } from "../../profile/services/projectService";
@@ -7,14 +7,17 @@ import { useAuth } from "../../auth/hooks/useAuth";
 const CreatePostField = () => {
   const { user } = useAuth();
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const [linkRepo, setLinkRepo] = useState("");
   const [linkDemo, setLinkDemo] = useState("");
   const [msgInfo, setMsgInfo] = useState("");
 
-  
+  //para capturar el valor del editor md sin que pierda el foco
+  const descriptionRef = useRef("");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const description = descriptionRef.current;
 
     if (!title.trim() || !description.trim()) {
       setMsgInfo("Title and description are required!");
@@ -32,7 +35,7 @@ const CreatePostField = () => {
       await createProject(projectData, user);
       setMsgInfo("Project created successfully!");
       setTitle("");
-      setDescription("");
+      descriptionRef.current = ""; 
       setLinkRepo("");
       setLinkDemo("");
     } catch (error) {
@@ -106,8 +109,8 @@ const CreatePostField = () => {
           </label>
           <SimpleMDE
             id="description"
-            value={description}
-            //onChange={(value) => setDescription(value)}
+            value={descriptionRef.current}
+            onChange={(value) => descriptionRef.current= value}
             options={{
               spellChecker: false,
               placeholder: "Write your project description in Markdown...",
