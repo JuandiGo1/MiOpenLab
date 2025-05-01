@@ -6,6 +6,7 @@ import Navbar from "../common/components/Navbar.jsx";
 import { ProtectedRoute } from "../common/components/PrivateRoute.jsx";
 import ProfilePage from "../profile/pages/ProfilePage.jsx";
 import EditProfile from "../profile/pages/EditProfile.jsx";
+import CreateProject from "../profile/pages/CreateProject.jsx";
 import "../App.css";
 
 function App() {
@@ -38,6 +39,16 @@ function App() {
               <ProtectedRoute>
                 <Navbar>
                   <EditProfile />
+                </Navbar>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/newproject"
+            element={
+              <ProtectedRoute>
+                <Navbar>
+                  <CreateProject />
                 </Navbar>
               </ProtectedRoute>
             }

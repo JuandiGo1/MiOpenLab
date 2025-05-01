@@ -67,7 +67,7 @@ const Navbar = ({ children }) => {
             </li>
             <li>
               <NavLink
-                to="/favorites"
+                to="/profile/newproject"
                 className={({ isActive }) =>
                   isActive
                     ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center gap-2"
