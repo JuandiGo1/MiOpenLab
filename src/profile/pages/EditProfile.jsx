@@ -56,7 +56,7 @@ const EditProfile = () => {
             />
             <label
               htmlFor="photo"
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg cursor-pointer"
+              className="bg-[#c9965b] text-white px-4 py-2 rounded-lg cursor-pointer"
             >
               Change Photo
             </label>
@@ -82,7 +82,7 @@ const EditProfile = () => {
               type="text"
               value={name}
               onChange={handleNameChange}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none "
             />
           </div>
 
@@ -90,7 +90,7 @@ const EditProfile = () => {
           <button
             type="submit"
             onClick={handleSubmit}
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            className="w-full bg-[#c9965b] text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
             Save Changes
           </button>
