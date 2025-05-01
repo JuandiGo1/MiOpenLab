@@ -24,7 +24,7 @@ const ProfilePage = () => {
   }, [user]);
 
   return (
-    <div className="flex bg-gray-100 min-h-screen">
+    <div className="flex bg-gray-100 dark:bg-[#10151a] min-h-screen">
       {/* Main Content */}
       <main className="flex-1 p-6">
         {/* Profile Header */}
@@ -37,7 +37,6 @@ const ProfilePage = () => {
           <button className="pb-2 text-gray-600">Likes</button>
         </div>
 
-        {/* Posts Section */}
         {/* Posts Section */}
         {loading ? (
           <p>Loading projects...</p>
