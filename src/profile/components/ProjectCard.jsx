@@ -1,12 +1,21 @@
 import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { AiOutlineLike, AiFillLike } from "react-icons/ai";
+import defaultAvatar from "../../assets/defaultAvatar.jpg";
 //import { toggleLike } from "../services/projectService";
 
-const ProjectCard = ({ title, description, likes, authorName, authorPhoto, createdAt }) => {
+const ProjectCard = ({
+  title,
+  description,
+  likes,
+  authorName,
+  authorPhoto,
+  createdAt,
+}) => {
   const [isLiked, setIsLiked] = useState(false); // Estado para rastrear si se ha dado "like"
   const [likeCount, setLikeCount] = useState(likes);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const authorAvatar = authorPhoto ? authorPhoto : defaultAvatar;
 
   // Formatear fecha
   const formattedDate = createdAt?.toDate
@@ -35,17 +44,23 @@ const ProjectCard = ({ title, description, likes, authorName, authorPhoto, creat
       <div>
         <div className="flex items-start justify-between">
           <div>
-            <div>
+            <div className="flex items-center justify-start gap-1 m-4 ">
               <img
-                src={authorPhoto}
+                src={authorAvatar}
                 alt="Project Thumbnail"
-                className="w-12 h-12 rounded-lg m-4"
+                className="w-10 h-10 rounded-full "
               />
+              <h3 className="text-md font-semibold text-gray-800 ">
+                {authorName}
+              </h3>
             </div>
-            <h2 className="text-lg font-semibold text-gray-800 p-4">{title}</h2>
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-gray-800 p-4">{authorName}</h2>
+            
+            <div>
+              <h2 className="text-lg font-semibold text-gray-800 p-4">{title}</h2>
+              <h2 className="text-lg font-semibold text-gray-800 p-4">
+                {authorName}
+              </h2>
+            </div>
           </div>
         </div>
 
