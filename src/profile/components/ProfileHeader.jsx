@@ -28,7 +28,7 @@ const ProfileHeader = () => {
       <div className="mt-4 flex space-x-4">
         <button
           onClick={() => navigate("/profile/edit")}
-          className="bg-[#c7a277] hover:bg-[#855c2d] text-white px-4 py-2 rounded-lg cursor-pointer"
+          className="bg-[#bd9260] hover:bg-[#ce9456]/80 transition duration-300 ease-in-out text-white px-4 py-2 rounded-lg cursor-pointer"
         >
           Edit Profile
         </button>

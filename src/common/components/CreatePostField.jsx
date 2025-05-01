@@ -132,7 +132,7 @@ const CreatePostField = () => {
           >
             Post
           </button>
-          <span className="text-sm text-gray-500">{msgInfo}</span>
+          <span className="text-sm text-green-900">{msgInfo}</span>
         </div>
       </form>
     </div>
