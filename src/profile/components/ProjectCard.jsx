@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { AiOutlineLike, AiFillLike } from "react-icons/ai";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
+import { FaGithub } from "react-icons/fa";
+import { MdDatasetLinked } from "react-icons/md";
+
 //import { toggleLike } from "../services/projectService";
 
 const ProjectCard = ({
@@ -11,6 +14,8 @@ const ProjectCard = ({
   authorName,
   authorPhoto,
   createdAt,
+  linkRepo,
+  linkDemo,
 }) => {
   const [isLiked, setIsLiked] = useState(false); // Estado para rastrear si se ha dado "like"
   const [likeCount, setLikeCount] = useState(likes);
@@ -42,25 +47,45 @@ const ProjectCard = ({
   return (
     <article className="flex flex-col justify-between bg-white rounded-lg shadow-md  mb-4">
       <div>
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="flex items-center justify-start gap-1 m-4 ">
-              <img
-                src={authorAvatar}
-                alt="Project Thumbnail"
-                className="w-10 h-10 rounded-full "
-              />
-              <h3 className="text-md font-semibold text-gray-800 ">
-                {authorName}
-              </h3>
-            </div>
-            
-            <div>
-              <h2 className="text-lg font-semibold text-gray-800 p-4">{title}</h2>
-              <h2 className="text-lg font-semibold text-gray-800 p-4">
-                {authorName}
+        <div className="flex flex-col items-start justify-between">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex justify-between">
+              <h2 className="text-2xl font-semibold text-gray-800 px-4">
+                {title}
               </h2>
             </div>
+            <div className="flex flex-col gap-1 mt-4">
+              <a
+                className="flex items-center text-lg font-semibold text-gray-800 px-5"
+                href={linkDemo}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaGithub className="text-lg" />
+                Repositorie
+              </a>
+              {linkDemo && (
+                <a
+                  className="flex items-center text-lg font-semibold text-gray-800 px-5"
+                  href={linkRepo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MdDatasetLinked className="text-lg" />
+                  Link Demo
+                </a>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center justify-start gap-1 m-4 ">
+            <img
+              src={authorAvatar}
+              alt="Project Thumbnail"
+              className="w-10 h-10 rounded-full "
+            />
+            <h3 className="text-md font-semibold text-gray-800 ">
+              {authorName}
+            </h3>
           </div>
         </div>
 
