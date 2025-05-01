@@ -3,6 +3,8 @@ import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { createProject } from "../../profile/services/projectService";
 import { useAuth } from "../../auth/hooks/useAuth";
+import { FaGithub } from "react-icons/fa";
+
 
 const CreatePostField = () => {
   const { user } = useAuth();
@@ -35,7 +37,7 @@ const CreatePostField = () => {
       await createProject(projectData, user);
       setMsgInfo("Project created successfully!");
       setTitle("");
-      descriptionRef.current = ""; 
+      descriptionRef.current = "";
       setLinkRepo("");
       setLinkDemo("");
     } catch (error) {
@@ -45,8 +47,10 @@ const CreatePostField = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-2xl mt-4">
-      <h2 className="text-xl font-bold mb-4">Create New Project</h2>
+    <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-2xl my-5">
+      <h2 className="text-xl text-[#1c2930] font-bold mb-4">
+        Create New Project
+      </h2>
       <form onSubmit={handleSubmit}>
         {/* Title */}
         <div className="mb-4">
@@ -58,45 +62,47 @@ const CreatePostField = () => {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none "
             placeholder="Enter project title"
           />
         </div>
 
-        {/* Link to Repository */}
-        <div className="mb-4">
-          <label
-            htmlFor="linkRepo"
-            className="block text-gray-700 font-bold mb-2"
-          >
-            Repository Link
-          </label>
-          <input
-            id="linkRepo"
-            type="url"
-            value={linkRepo}
-            onChange={(e) => setLinkRepo(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-            placeholder="Enter repository link"
-          />
-        </div>
+        <div className="flex justify-between gap-3 w-full">
+          {/* Link to Repository */}
+          <div className="flex-1 mb-4">
+            <label
+              htmlFor="linkRepo"
+              className="flex gap-1 items-center text-gray-700 font-bold mb-2"
+            >
+              Repository Link <FaGithub className="text-xl" />
+            </label>
+            <input
+              id="linkRepo"
+              type="url"
+              value={linkRepo}
+              onChange={(e) => setLinkRepo(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300  rounded-lg focus:outline-none "
+              placeholder="Enter repository link"
+            />
+          </div>
 
-        {/* Link to Demo */}
-        <div className="mb-4">
-          <label
-            htmlFor="linkDemo"
-            className="block text-gray-700 font-bold mb-2"
-          >
-            Demo Link (Optional)
-          </label>
-          <input
-            id="linkDemo"
-            type="url"
-            value={linkDemo}
-            onChange={(e) => setLinkDemo(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-            placeholder="Enter demo link"
-          />
+          {/* Link to Demo */}
+          <div className="flex-1 mb-4">
+            <label
+              htmlFor="linkDemo"
+              className="block text-gray-700 font-bold mb-2"
+            >
+              Demo Link (Optional)
+            </label>
+            <input
+              id="linkDemo"
+              type="url"
+              value={linkDemo}
+              onChange={(e) => setLinkDemo(e.target.value)}
+              className=" w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none "
+              placeholder="Enter demo link"
+            />
+          </div>
         </div>
 
         {/* Description (Markdown Editor) */}
@@ -110,7 +116,7 @@ const CreatePostField = () => {
           <SimpleMDE
             id="description"
             value={descriptionRef.current}
-            onChange={(value) => descriptionRef.current= value}
+            onChange={(value) => (descriptionRef.current = value)}
             options={{
               spellChecker: false,
               placeholder: "Write your project description in Markdown...",
@@ -118,13 +124,11 @@ const CreatePostField = () => {
           />
         </div>
 
-        
-
         {/* Submit Button */}
         <div className="flex justify-between items-center">
           <button
             type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            className="bg-[#bd9260] text-white font-bold px-4 py-2 w-20 rounded-lg hover:bg-[#ce9456]/80  cursor-pointer transition duration-300 ease-in-out"
           >
             Post
           </button>

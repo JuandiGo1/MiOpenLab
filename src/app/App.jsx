@@ -44,7 +44,7 @@ function App() {
             }
           />
           <Route
-            path="/profile/newproject"
+            path="/newproject"
             element={
               <ProtectedRoute>
                 <Navbar>

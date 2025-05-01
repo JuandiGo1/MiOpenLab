@@ -17,7 +17,7 @@ const ExplorePage = () => {
           alt="Foto de perfil"
           className="w-10 h-10 rounded-full object-cover"
         />
-        <CreatePostField></CreatePostField>
+        
         <p>Welcome to the Explore Page!</p>
       </div>
       <SearchBar></SearchBar>

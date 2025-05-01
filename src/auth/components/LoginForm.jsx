@@ -66,7 +66,7 @@ const LoginForm = ({ setIsLogin }) => {
         <button
           type="button"
           onClick={handleLogin}
-          className="w-full bg-[#22333B] text-white py-2 px-4 rounded-md hover:bg-[#3c5a68] transition cursor-pointer"
+          className="w-full bg-[#22333B] text-white py-2 px-4 rounded-md hover:bg-[#3c5a68] transition duration-300 ease-in-out cursor-pointer"
         >
           Log In
         </button>
@@ -95,7 +95,7 @@ const LoginForm = ({ setIsLogin }) => {
         <hr className="border-t border-gray-400 my-4" />
         <p className="text-center text-gray-500">or</p>
         <div className="mt-4 space-y-2">
-          <button onClick={handleGoogleLogin} className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition flex items-center justify-center gap-2 cursor-pointer">
+          <button onClick={handleGoogleLogin} className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition duration-300 ease-in-out flex items-center justify-center gap-2 cursor-pointer">
             <FaGoogle className="text-2xl" /> Log In with Google
           </button>
         </div>
