@@ -10,7 +10,6 @@ import { MdAddCircleOutline } from "react-icons/md";
 const Navbar = ({ children }) => {
   const { logout, user } = useAuth();
   const profileImage = user?.photoURL || defaultAvatar;
-   console.log(user.photoURL)
   const navigate = useNavigate();
 
   const handleLogout = async () => {
