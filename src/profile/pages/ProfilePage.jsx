@@ -24,7 +24,7 @@ const ProfilePage = () => {
   }, [user]);
 
   return (
-    <div className="flex bg-gray-100 dark:bg-[#10151a] min-h-screen">
+    <div className="flex bg-gray-100  min-h-screen">
       {/* Main Content */}
       <main className="flex-1 p-6">
         {/* Profile Header */}
