@@ -25,7 +25,7 @@ const ProjectCard = ({
   linkRepo,
   linkDemo,
 }) => {
-  const { user } = useAuth(); 
+  const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false); // Estado para rastrear si se ha dado "like"
   const [likeCount, setLikeCount] = useState(likes);
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -53,7 +53,11 @@ const ProjectCard = ({
 
   const handleEdit = () => {
     // Redirigir a la página de edición con el id del proyecto
-    navigate(`/edit-project/${id}`, { state: { projectToEdit: { id, title, description, linkRepo, linkDemo , authorId} } });
+    navigate(`/edit-project/${id}`, {
+      state: {
+        projectToEdit: { id, title, description, linkRepo, linkDemo, authorId },
+      },
+    });
   };
 
   const handleDelete = async (id) => {
@@ -66,21 +70,42 @@ const ProjectCard = ({
     }
   };
 
+  const handleViewDetails = () => {
+    navigate(`/project/${id}`, {
+      state: {
+        project: {
+          id,
+          title,
+          description,
+          linkRepo,
+          linkDemo,
+          authorName,
+          authorPhoto,
+          createdAt,
+        },
+      },
+    });
+  };
+
   const toggleDescription = () => {
     setShowFullDescription(!showFullDescription); // Alternar entre mostrar la descripción completa o truncada
   };
-
 
   return (
     <article className="flex flex-col justify-between bg-white rounded-lg shadow-md  mb-4">
       <div>
         {/* Header */}
         <div className="flex flex-col items-start justify-between my-4">
+
           <div className="flex items-center justify-between w-full">
             <div className="flex flex-col justify-start gap-1">
-              <h2 className="text-3xl font-semibold text-gray-800 px-4">
+              <h2
+                className="text-3xl font-semibold text-gray-800 px-4 hover:underline cursor-pointer"
+                onClick={handleViewDetails}
+              >
                 {title}
               </h2>
+
               <div className="flex items-center justify-start gap-1 px-4 ">
                 <img
                   src={authorAvatar}
@@ -91,8 +116,11 @@ const ProjectCard = ({
                   {authorName}
                 </h3>
               </div>
+
             </div>
+
             <div className="flex flex-col gap-1 items-start justify-center ">
+
               <a
                 className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456]"
                 href={linkRepo}
@@ -102,6 +130,7 @@ const ProjectCard = ({
                 <FaGithub className="text-lg" />
                 Repositorie
               </a>
+
               {linkDemo && (
                 <a
                   className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456]"
@@ -112,14 +141,19 @@ const ProjectCard = ({
                   <MdDatasetLinked className="text-lg" />
                   Link Demo
                 </a>
+
               )}
             </div>
+            
           </div>
         </div>
 
         <hr className="border-t w-full border-gray-200 my-2" />
         {/* Renderizar la descripción en formato Markdown */}
-        <div className="prose prose-sm text-gray-600 p-4 mb-4">
+        <div
+          className="prose prose-sm text-gray-600 p-4 mb-4 cursor-pointer"
+          onClick={handleViewDetails}
+        >
           <ReactMarkdown>
             {showFullDescription
               ? description
@@ -154,13 +188,18 @@ const ProjectCard = ({
           <div className="flex items-center justify-between gap-2">
             {user && user.uid === authorId && (
               <div className="flex items-center gap-2">
-                <RiEditLine onClick={handleEdit} className="text-xl text-gray-500 cursor-pointer hover:text-blue-700" />
-                <LuEraser onClick={() => setShowDeleteModal(true)} className="text-xl text-gray-500 cursor-pointer hover:text-red-700" />
+                <RiEditLine
+                  onClick={handleEdit}
+                  className="text-xl text-gray-500 cursor-pointer hover:text-blue-700"
+                />
+                <LuEraser
+                  onClick={() => setShowDeleteModal(true)}
+                  className="text-xl text-gray-500 cursor-pointer hover:text-red-700"
+                />
               </div>
             )}
             <span className="text-gray-500">{formattedDate}</span>
           </div>
-          
         </div>
       </div>
       {showDeleteModal && (

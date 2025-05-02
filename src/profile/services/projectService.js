@@ -9,9 +9,49 @@ import {
   arrayUnion,
   arrayRemove,
   getDocs,
+  getDoc,
   query,
   where,
 } from "firebase/firestore";
+
+export async function createProject(projectData, currentUser) {
+  try {
+    const docRef = await addDoc(collection(db, "projects"), {
+      title: projectData.title,
+      description: projectData.description,
+      linkRepo: projectData.linkRepo,
+      linkDemo: projectData.linkDemo,
+      authorId: currentUser.uid,
+      authorName: currentUser.displayName,
+      authorPhoto: currentUser.photoURL,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      likes: 0,
+      likedBy: [],
+    });
+
+    console.log("Proyecto creado con ID:", docRef.id);
+  } catch (e) {
+    console.error("Error al crear el proyecto:", e);
+  }
+}
+
+export const getProjectById = async (projectId) => {
+  try {
+    const projectRef = doc(db, "projects", projectId); // Referencia al documento por ID
+    const projectSnap = await getDoc(projectRef);
+
+    if (projectSnap.exists()) {
+      return { id: projectSnap.id, ...projectSnap.data() }; // Retornar el proyecto con su ID
+    } else {
+      console.error("No se encontró el proyecto con el ID proporcionado.");
+      return null;
+    }
+  } catch (e) {
+    console.error("Error al obtener proyecto:", e);
+    return null;
+  }
+};
 
 export const getUserProjects = async (userId) => {
   try {
@@ -54,28 +94,6 @@ export const getAllProjects = async () => {
     return [];
   }
 };
-
-export async function createProject(projectData, currentUser) {
-  try {
-    const docRef = await addDoc(collection(db, "projects"), {
-      title: projectData.title,
-      description: projectData.description,
-      linkRepo: projectData.linkRepo,
-      linkDemo: projectData.linkDemo,
-      authorId: currentUser.uid,
-      authorName: currentUser.displayName,
-      authorPhoto: currentUser.photoURL,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-      likes: 0,
-      likedBy: [],
-    });
-
-    console.log("Proyecto creado con ID:", docRef.id);
-  } catch (e) {
-    console.error("Error al crear el proyecto:", e);
-  }
-}
 
 export const editProject = async (projectId, newData) => {
   const projectRef = doc(db, "projects", projectId);
