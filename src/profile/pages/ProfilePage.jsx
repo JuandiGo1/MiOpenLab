@@ -4,6 +4,7 @@ import ProfileHeader from "../components/ProfileHeader";
 import SearchBar from "../../common/components/SearchBar";
 import { getUserProjects } from "../services/projectService";
 import { useAuth } from "../../auth/hooks/useAuth";
+import ProjectSkeleton from "../../common/components/ProjectSkeleton";
 
 const ProfilePage = () => {
   const { user } = useAuth();
@@ -39,9 +40,13 @@ const ProfilePage = () => {
 
         {/* Posts Section */}
         {loading ? (
-          <p>Loading projects...</p>
+          <div className="grid grid-cols-1 gap-6">
+          {[...Array(3)].map((_, index) => (
+            <ProjectSkeleton key={index} />
+          ))}
+        </div>
         ) : (
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {projects.map((project) => (
               <ProjectCard key={project.id} {...project} />
             ))}

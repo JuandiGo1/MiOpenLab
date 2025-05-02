@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { AiOutlineLike, AiFillLike } from "react-icons/ai";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
+import { useAuth } from "../../auth/hooks/useAuth";
 import { FaGithub } from "react-icons/fa";
 import { MdDatasetLinked } from "react-icons/md";
+import { RiEditLine } from "react-icons/ri";
+import { LuEraser } from "react-icons/lu";
+
 
 //import { toggleLike } from "../services/projectService";
 
@@ -11,12 +15,14 @@ const ProjectCard = ({
   title,
   description,
   likes,
+  authorId,
   authorName,
   authorPhoto,
   createdAt,
   linkRepo,
   linkDemo,
 }) => {
+  const { user } = useAuth(); 
   const [isLiked, setIsLiked] = useState(false); // Estado para rastrear si se ha dado "like"
   const [likeCount, setLikeCount] = useState(likes);
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -124,7 +130,16 @@ const ProjectCard = ({
             )}
             {likes}
           </button>
-          <span className="text-gray-500">{formattedDate}</span>
+          <div className="flex items-center justify-between gap-2">
+            {user && user.uid === authorId && (
+              <div className="flex items-center gap-2">
+                <RiEditLine className="text-xl text-gray-500 cursor-pointer hover:text-blue-700" />
+                <LuEraser className="text-xl text-gray-500 cursor-pointer hover:text-red-700" />
+              </div>
+            )}
+            <span className="text-gray-500">{formattedDate}</span>
+          </div>
+          
         </div>
       </div>
     </article>
