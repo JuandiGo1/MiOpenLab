@@ -86,14 +86,11 @@ const ProjectCard = ({
     });
   };
 
-
-
   return (
     <article className="flex flex-col justify-between bg-white rounded-lg shadow-md  mb-4">
       <div>
         {/* Header */}
         <div className="flex flex-col items-start justify-between my-4">
-
           <div className="flex items-center justify-between w-full">
             <div className="flex flex-col justify-start gap-1">
               <h2
@@ -113,11 +110,9 @@ const ProjectCard = ({
                   {authorName}
                 </h3>
               </div>
-
             </div>
 
             <div className="flex flex-col gap-1 items-start justify-center ">
-
               <a
                 className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456]"
                 href={linkRepo}
@@ -138,27 +133,20 @@ const ProjectCard = ({
                   <MdDatasetLinked className="text-lg" />
                   Link Demo
                 </a>
-
               )}
             </div>
-
           </div>
         </div>
 
         <hr className="border-t w-full border-gray-200 my-2" />
         {/* Renderizar la descripción en formato Markdown */}
         <div
-          className="prose prose-sm text-gray-600 p-4 mb-4 cursor-pointer"
+          className="prose prose-sm w-full max-w-none text-gray-600 p-4 mb-4 cursor-pointer"
           onClick={handleViewDetails}
         >
-          <ReactMarkdown>
-              {`${description.slice(0, 150)}...`}
-          </ReactMarkdown>
+          <ReactMarkdown>{`${description.slice(0, 150)}...`}</ReactMarkdown>
           {description.length > 100 && (
-            <button
-              
-              className="text-blue-500 hover:underline mt-2 cursor-pointer"
-            >
+            <button className="text-blue-500 hover:underline mt-2 cursor-pointer">
               Ver más
             </button>
           )}

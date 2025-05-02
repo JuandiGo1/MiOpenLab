@@ -75,7 +75,7 @@ const ProjectDetails = () => {
         </div>
       </div>
 
-      <div className="prose prose-lg text-gray-600 mb-6">
+      <div className="w-full prose prose-lg max-w-none text-gray-600 mb-6">
         <ReactMarkdown>{description}</ReactMarkdown>
       </div>
 
