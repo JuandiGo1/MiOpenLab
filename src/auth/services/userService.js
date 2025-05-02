@@ -93,14 +93,14 @@ export async function getUserProfile(uid) {
 export async function likePost(uid, postId) {
   const userRef = doc(db, "users", uid);
   await updateDoc(userRef, {
-    likes: arrayUnion(postId),
+    likedProjects: arrayUnion(postId),
   });
 }
 
 export async function unlikePost(uid, postId) {
   const userRef = doc(db, "users", uid);
   await updateDoc(userRef, {
-    likes: arrayRemove(postId),
+    likedProjects: arrayRemove(postId),
   });
 }
 

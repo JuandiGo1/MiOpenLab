@@ -9,11 +9,13 @@ import { MdDatasetLinked } from "react-icons/md";
 import { RiEditLine } from "react-icons/ri";
 import { LuEraser } from "react-icons/lu";
 import DeleteModal from "../../common/components/DeleteModal";
-import { deleteProject } from "../../profile/services/projectService";
+import {
+  deleteProject,
+  addLike,
+  removeLike,
+} from "../../profile/services/projectService";
 import formatDate from "../../utils/dateFormatter";
-import { Timestamp } from "firebase/firestore";
-
-//import { toggleLike } from "../services/projectService";
+import { likePost, unlikePost } from "../../auth/services/userService";
 
 const ProjectCard = ({
   id,
@@ -28,24 +30,46 @@ const ProjectCard = ({
   linkDemo,
 }) => {
   const { user } = useAuth();
-  const [isLiked, setIsLiked] = useState(false); // Estado para rastrear si se ha dado "like"
+  const [isLiked, setIsLiked] = useState(
+    user?.likedProjects?.includes(id) || false
+  ); // Estado para rastrear si se ha dado "like"
   const [likeCount, setLikeCount] = useState(likes);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const authorAvatar = authorPhoto ? authorPhoto : defaultAvatar;
   const navigate = useNavigate();
 
-
   // Formatear fecha
-  const formattedDate = formatDate(createdAt)
+  const formattedDate = formatDate(createdAt);
 
+  const handleLike = async () => {
+    if (isLoading) return; // Evitar múltiples clics mientras se procesa
 
-  const handleLike = () => {
-    if (isLiked) {
-      setLikeCount(likeCount - 1);
-    } else {
-      setLikeCount(likeCount + 1);
+    setIsLoading(true);
+
+    try {
+      if (isLiked) {
+        // Quitar el like
+        setLikeCount((prev) => prev - 1);
+        setIsLiked(false);
+        await unlikePost(user.uid, id);
+        await removeLike(id, user.uid);
+      } else {
+        // Dar like
+        setLikeCount((prev) => prev + 1);
+        setIsLiked(true);
+        await likePost(user.uid, id);
+        await addLike(id, user.uid);
+      }
+
+    } catch (error) {
+      console.error("Error updating like status:", error);
+      // Revertir cambios si hay error
+      setLikeCount((prev) => (isLiked ? prev + 1 : prev - 1));
+      setIsLiked((prev) => !prev);
+    } finally {
+      setIsLoading(false); // Marcar como completado
     }
-    setIsLiked(!isLiked); // Alternar el estado de "like"
   };
 
   const handleEdit = () => {
@@ -78,7 +102,7 @@ const ProjectCard = ({
           linkDemo,
           authorName,
           authorPhoto,
-          createdAt
+          createdAt,
         },
       },
     });
@@ -157,6 +181,7 @@ const ProjectCard = ({
         <div className="flex items-center justify-between w-full p-4">
           <button
             onClick={handleLike}
+            disabled={isLoading}
             className="flex text-gray-500 hover:text-blue-700 transition duration-300 cursor-pointer"
           >
             {isLiked ? (

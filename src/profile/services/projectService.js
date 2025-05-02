@@ -12,6 +12,7 @@ import {
   getDoc,
   query,
   where,
+  increment
 } from "firebase/firestore";
 
 export async function createProject(projectData, currentUser) {
@@ -105,18 +106,32 @@ export const deleteProject = async (projectId) => {
   await deleteDoc(projectRef);
 };
 
-export const toggleLike = async (projectId, userId, isLiked) => {
+export const addLike = async (projectId, userId) => {
   const projectRef = doc(db, "projects", projectId);
 
-  if (isLiked) {
-    // Quitar like
+  try {
+    // Incrementar el contador de likes y agregar el usuario al array
     await updateDoc(projectRef, {
-      likes: arrayRemove(userId),
+      likes: increment(1), 
+      likedBy: arrayUnion(userId), 
     });
-  } else {
-    // Dar like
+    console.log(`Like agregado al proyecto ${projectId} por el usuario ${userId}`);
+  } catch (error) {
+    console.error("Error al agregar like:", error);
+  }
+};
+
+export const removeLike = async (projectId, userId) => {
+  const projectRef = doc(db, "projects", projectId);
+
+  try {
+    // Decrementar el contador de likes y eliminar el usuario del array likedBy
     await updateDoc(projectRef, {
-      likes: arrayUnion(userId),
+      likes: increment(-1),
+      likedBy: arrayRemove(userId),
     });
+    console.log(`Like eliminado del proyecto ${projectId} por el usuario ${userId}`);
+  } catch (error) {
+    console.error("Error al eliminar like:", error);
   }
 };
