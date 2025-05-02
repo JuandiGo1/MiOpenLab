@@ -59,7 +59,7 @@ const ProjectDetails = () => {
   const formattedDate = formatDate(reconstructedTimestamp);
 
   return (
-    <div className="w-full  mx-auto p-6 bg-white shadow-md">
+    <div className="w-full  mx-auto p-6 bg-white">
       <div className="flex items-center mb-6">
         <img
           src={authorPhoto || DefaultAvatar}

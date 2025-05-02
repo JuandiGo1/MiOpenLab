@@ -21,7 +21,7 @@ const ProfileHeader = () => {
         />
         <div className="ml-4">
           <h1 className="text-2xl font-bold">{user.displayName}</h1>
-          <p className="text-gray-600">{user.email}</p>
+          <p className="text-gray-600">@{user.username}</p>
           <p className="text-gray-600">33 posts</p>
         </div>
       </div>

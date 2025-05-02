@@ -8,13 +8,28 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
+import { createUserProfile, createUserProfileIfNotExists } from "./userService";
 
 const googleProvider = new GoogleAuthProvider();
 
 
-export const signInWithGoogle = () => {
-  return signInWithPopup(auth, googleProvider);
-};
+export async function signInWithGoogle() {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+
+    // Crear perfil personalizado si no existe
+    await createUserProfileIfNotExists({
+      uid: user.uid,
+      displayName: user.displayName,
+      photoURL: user.photoURL || "",
+    });
+
+    return { success: true, user };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
 
 export async function registerUser(email, password, displayName) {
   try {
@@ -24,11 +39,20 @@ export async function registerUser(email, password, displayName) {
       password
     );
 
+    const user = userCredential.user
+
     if (displayName) {
-      await updateProfile(userCredential.user, { displayName });
+      await updateProfile(user, { displayName });
     }
 
-    return { success: true, user: userCredential.user };
+    // Crear perfil adicional en Firestore
+    await createUserProfile({
+      uid: user.uid,
+      displayName,
+      photoURL: user.photoURL || "", // opcionalmente una por defecto
+    });
+
+    return { success: true, user: user };
   } catch (error) {
     if (error.code === "auth/email-already-in-use") {
       return { success: false, message: "The email is already in use. Please use another one." };
@@ -37,7 +61,7 @@ export async function registerUser(email, password, displayName) {
     } else if (error.code === "auth/weak-password") {
       return { success: false, message: "The password is too weak. Use at least 6 characters." };
     } else {
-      return { success: false, message: "An unknown error occurred. Please try again." };
+      return { success: false, message: "An unknown error occurred. Please try again."+ error.message };
     }
   }
 }
@@ -49,7 +73,16 @@ export async function loginUser(email, password) {
       email,
       password
     );
-    return { success: true, user: userCredential.user };
+
+    const user = userCredential.user
+    // Crear perfil personalizado si no existe
+    await createUserProfileIfNotExists({
+      uid: user.uid,
+      displayName: user.displayName,
+      username: user.displayName.replace(/\s+/g, "").toLowerCase(),
+      photoURL: user.photoURL || "",
+    });
+    return { success: true, user: user };
   } catch (error) {
     if (error.code === "auth/user-not-found") {
       return { success: false, message: "User not found. Please check your email" };
@@ -60,7 +93,7 @@ export async function loginUser(email, password) {
     } else if (error.code === "auth/too-many-requests") {
       return { success: false, message: "Too many failed attempts. Please try again." };
     } else {
-      return { success: false, message: "An unknown error occurred. Please try again." };
+      return { success: false, message: "An unknown error occurred. Please try again." + error.message};
     }
   }
 }

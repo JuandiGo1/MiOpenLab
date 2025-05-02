@@ -34,9 +34,9 @@ const ProjectCard = ({
   const authorAvatar = authorPhoto ? authorPhoto : defaultAvatar;
   const navigate = useNavigate();
 
-  const dateToFormat = createdAt instanceof Timestamp ? createdAt.toDate() : null;
+
   // Formatear fecha
-  const formattedDate = formatDate(dateToFormat)
+  const formattedDate = formatDate(createdAt)
 
 
   const handleLike = () => {
