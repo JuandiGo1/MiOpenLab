@@ -41,7 +41,6 @@ export const getAllProjects = async () => {
       id: doc.id,
       ...doc.data(),
     }));
-
     return allProjects;
   } catch (e) {
     console.error("Error al obtener todos los proyectos:", e);

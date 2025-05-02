@@ -50,6 +50,7 @@ const ProjectCard = ({
     setShowFullDescription(!showFullDescription); // Alternar entre mostrar la descripción completa o truncada
   };
 
+
   return (
     <article className="flex flex-col justify-between bg-white rounded-lg shadow-md  mb-4">
       <div>
