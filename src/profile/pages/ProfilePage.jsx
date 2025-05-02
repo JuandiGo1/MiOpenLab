@@ -36,12 +36,19 @@ const ProfilePage = () => {
       {/* Main Content */}
       <main className="flex-1 p-6">
         {/* Profile Header */}
-        <ProfileHeader countPosts={countPosts} currentUserUsername={user.username} {...profileUser} />
+        <ProfileHeader
+          countPosts={countPosts}
+          currentUserUsername={user.username}
+          currentUserUserUid={user.uid}
+          currentUserFollows={user.following}
+          {...profileUser}
+        />
 
         {/* Tabs */}
         <div className="flex space-x-4 border-b mb-6">
           <button className="pb-2 border-b-2 border-blue-600">Posts</button>
           <button className="pb-2 text-gray-600">Followers</button>
+          <button className="pb-2 text-gray-600">Following</button>
           <button className="pb-2 text-gray-600">Likes</button>
         </div>
 
