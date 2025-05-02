@@ -90,6 +90,17 @@ export async function getUserProfile(uid) {
   }
 }
 
+export async function getUserLikes(uid) {
+  const docRef = doc(db, "users", uid);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    return docSnap.data().likedProjects;
+  } else {
+    return null;
+  }
+}
+
 export async function likePost(uid, postId) {
   const userRef = doc(db, "users", uid);
   await updateDoc(userRef, {
@@ -128,4 +139,26 @@ export async function unfollowUser(currentUid, targetUid) {
   await updateDoc(targetRef, {
     followers: arrayRemove(currentUid),
   });
+}
+
+export async function getUserFollowers(uid) {
+  const docRef = doc(db, "users", uid);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    return docSnap.data().followers || []; // Retornar un array vacío si no hay seguidores
+  } else {
+    return []; 
+  }
+}
+
+export async function getUserFollowing(uid) {
+  const docRef = doc(db, "users", uid);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    return docSnap.data().following || []; // Retornar un array vacío si no sigue a nadie
+  } else {
+    return []; 
+  }
 }
