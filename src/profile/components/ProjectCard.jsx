@@ -47,16 +47,26 @@ const ProjectCard = ({
   return (
     <article className="flex flex-col justify-between bg-white rounded-lg shadow-md  mb-4">
       <div>
-        <div className="flex flex-col items-start justify-between">
+        <div className="flex flex-col items-start justify-between my-4">
           <div className="flex items-center justify-between w-full">
-            <div className="flex justify-between">
-              <h2 className="text-2xl font-semibold text-gray-800 px-4">
+            <div className="flex flex-col justify-start gap-1">
+              <h2 className="text-3xl font-semibold text-gray-800 px-4">
                 {title}
               </h2>
+              <div className="flex items-center justify-start gap-1 px-4 ">
+                <img
+                  src={authorAvatar}
+                  alt={`${authorName}'s avatar`}
+                  className="size-6 rounded-full "
+                />
+                <h3 className="text-md font-mono text-gray-500 ">
+                  {authorName}
+                </h3>
+              </div>
             </div>
-            <div className="flex flex-col gap-1 mt-4">
+            <div className="flex flex-col gap-1 items-start justify-center ">
               <a
-                className="flex items-center text-lg font-semibold text-gray-800 px-5"
+                className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456]"
                 href={linkDemo}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -66,7 +76,7 @@ const ProjectCard = ({
               </a>
               {linkDemo && (
                 <a
-                  className="flex items-center text-lg font-semibold text-gray-800 px-5"
+                  className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456]"
                   href={linkRepo}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -76,16 +86,6 @@ const ProjectCard = ({
                 </a>
               )}
             </div>
-          </div>
-          <div className="flex items-center justify-start gap-1 m-4 ">
-            <img
-              src={authorAvatar}
-              alt="Project Thumbnail"
-              className="w-10 h-10 rounded-full "
-            />
-            <h3 className="text-md font-semibold text-gray-800 ">
-              {authorName}
-            </h3>
           </div>
         </div>
 
