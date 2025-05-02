@@ -8,7 +8,8 @@ import { FaGithub } from "react-icons/fa";
 import { MdDatasetLinked } from "react-icons/md";
 import { RiEditLine } from "react-icons/ri";
 import { LuEraser } from "react-icons/lu";
-
+import DeleteModal from "../../common/components/DeleteModal";
+import { deleteProject } from "../../profile/services/projectService";
 
 //import { toggleLike } from "../services/projectService";
 
@@ -28,6 +29,7 @@ const ProjectCard = ({
   const [isLiked, setIsLiked] = useState(false); // Estado para rastrear si se ha dado "like"
   const [likeCount, setLikeCount] = useState(likes);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const authorAvatar = authorPhoto ? authorPhoto : defaultAvatar;
   const navigate = useNavigate();
 
@@ -52,6 +54,16 @@ const ProjectCard = ({
   const handleEdit = () => {
     // Redirigir a la página de edición con el id del proyecto
     navigate(`/edit-project/${id}`, { state: { projectToEdit: { id, title, description, linkRepo, linkDemo , authorId} } });
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteProject(id);
+      console.log("Project successfully deleted");
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to delete project:", error);
+    }
   };
 
   const toggleDescription = () => {
@@ -143,7 +155,7 @@ const ProjectCard = ({
             {user && user.uid === authorId && (
               <div className="flex items-center gap-2">
                 <RiEditLine onClick={handleEdit} className="text-xl text-gray-500 cursor-pointer hover:text-blue-700" />
-                <LuEraser className="text-xl text-gray-500 cursor-pointer hover:text-red-700" />
+                <LuEraser onClick={() => setShowDeleteModal(true)} className="text-xl text-gray-500 cursor-pointer hover:text-red-700" />
               </div>
             )}
             <span className="text-gray-500">{formattedDate}</span>
@@ -151,6 +163,13 @@ const ProjectCard = ({
           
         </div>
       </div>
+      {showDeleteModal && (
+        <DeleteModal
+          project={{ id, title }}
+          onDelete={handleDelete}
+          onClose={() => setShowDeleteModal(false)}
+        />
+      )}
     </article>
   );
 };

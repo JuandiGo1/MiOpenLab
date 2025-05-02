@@ -31,7 +31,7 @@ const CreatePostField = () => {
   }, [projectToEdit]);
 
   //Evitar que el usuario acceda a editar un proyecto si no es el autor del proyecto
-  if (user.uid !== projectToEdit?.authorId) {
+  if (projectToEdit && user.uid !== projectToEdit?.authorId) {
     return <Navigate to="/home" replace />;
   }
 
