@@ -47,6 +47,7 @@ const ProjectCard = ({
   return (
     <article className="flex flex-col justify-between bg-white rounded-lg shadow-md  mb-4">
       <div>
+        {/* Header */}
         <div className="flex flex-col items-start justify-between my-4">
           <div className="flex items-center justify-between w-full">
             <div className="flex flex-col justify-start gap-1">
@@ -108,21 +109,23 @@ const ProjectCard = ({
         </div>
       </div>
 
-      {/* Botón de "like" y fecha de creación del proyecto */}
+      {/* Footer */}
       <div className="flex flex-col justify-between items-start text-sm text-gray-500">
         <hr className="border-t w-full border-gray-200 " />
-        <button
-          onClick={handleLike}
-          className="flex text-blue-500 hover:text-blue-700 transition duration-300 cursor-pointer p-4"
-        >
-          {isLiked ? (
-            <AiFillLike className="text-xl" />
-          ) : (
-            <AiOutlineLike className="text-xl" />
-          )}
-          {likes}
-        </button>
-        <span className="text-red-700">{formattedDate}</span>
+        <div className="flex items-center justify-between w-full p-4">
+          <button
+            onClick={handleLike}
+            className="flex text-gray-500 hover:text-blue-700 transition duration-300 cursor-pointer"
+          >
+            {isLiked ? (
+              <AiFillLike className="text-xl text-blue-700" />
+            ) : (
+              <AiOutlineLike className="text-xl" />
+            )}
+            {likes}
+          </button>
+          <span className="text-gray-500">{formattedDate}</span>
+        </div>
       </div>
     </article>
   );
