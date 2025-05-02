@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { createProject } from "../../profile/services/projectService";
@@ -16,6 +16,7 @@ const CreatePostField = () => {
   const [linkRepo, setLinkRepo] = useState("");
   const [linkDemo, setLinkDemo] = useState("");
   const [msgInfo, setMsgInfo] = useState("");
+  const navigate = useNavigate();
 
   //para capturar el valor del editor md sin que pierda el foco
   const descriptionRef = useRef("");
@@ -66,7 +67,9 @@ const CreatePostField = () => {
       descriptionRef.current = "";
       setLinkRepo("");
       setLinkDemo("");
-      return <Navigate to="/profile" replace />;
+      setTimeout(() => {
+        navigate("/profile");
+      }, 2000); 
     } catch (error) {
       setMsgInfo("Error saving project. Please try again.");
       console.error(error);
