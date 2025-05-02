@@ -1,37 +1,42 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import ProjectCard from "../components/ProjectCard";
 import ProfileHeader from "../components/ProfileHeader";
 import SearchBar from "../../common/components/SearchBar";
 import { getUserProjects } from "../services/projectService";
+import { getUserProfileByUsername } from "../../auth/services/userService";
 import { useAuth } from "../../auth/hooks/useAuth";
 import ProjectSkeleton from "../../common/components/ProjectSkeleton";
 
 const ProfilePage = () => {
+  const { username } = useParams();
   const { user } = useAuth();
+  const [profileUser, setProfileUser] = useState(null);
   const [projects, setProjects] = useState([]); // Estado para almacenar los proyectos
   const [loading, setLoading] = useState(true);
   const [countPosts, setCountPosts] = useState(0);
 
-  // Cargar los proyectos del usuario
   useEffect(() => {
-    const fetchProjects = async () => {
-      if (user) {
-        const userProjects = await getUserProjects(user.uid);
+    const fetchProfileUser = async () => {
+      const userProfile = await getUserProfileByUsername(username);
+      setProfileUser(userProfile);
+      if (userProfile) {
+        const userProjects = await getUserProjects(userProfile.uid); // Obtener proyectos del usuario
         setProjects(userProjects);
-        setCountPosts(userProjects.length)
-        setLoading(false);
+        setCountPosts(userProjects.length);
       }
+      setLoading(false);
     };
 
-    fetchProjects();
-  }, [user]);
+    fetchProfileUser();
+  }, [username]);
 
   return (
     <div className="flex bg-gray-100  min-h-screen">
       {/* Main Content */}
       <main className="flex-1 p-6">
         {/* Profile Header */}
-        <ProfileHeader countPosts={countPosts}/>
+        <ProfileHeader countPosts={countPosts} currentUserUsername={user.username} {...profileUser} />
 
         {/* Tabs */}
         <div className="flex space-x-4 border-b mb-6">
@@ -43,10 +48,10 @@ const ProfilePage = () => {
         {/* Posts Section */}
         {loading ? (
           <div className="grid grid-cols-1 gap-6">
-          {[...Array(3)].map((_, index) => (
-            <ProjectSkeleton key={index} />
-          ))}
-        </div>
+            {[...Array(3)].map((_, index) => (
+              <ProjectSkeleton key={index} />
+            ))}
+          </div>
         ) : (
           <div className="grid grid-cols-1 gap-6">
             {projects.map((project) => (

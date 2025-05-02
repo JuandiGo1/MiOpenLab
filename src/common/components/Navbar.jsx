@@ -6,7 +6,6 @@ import { RiUser5Line, RiLogoutCircleLine } from "react-icons/ri";
 import { TiBookmark } from "react-icons/ti";
 import { MdAddCircleOutline } from "react-icons/md";
 
-
 const Navbar = ({ children }) => {
   const { logout, user } = useAuth();
   const profileImage = user?.photoURL || defaultAvatar;
@@ -55,7 +54,7 @@ const Navbar = ({ children }) => {
             </li>
             <li>
               <NavLink
-                to="/profile"
+                to={`/profile/${user.username}`}
                 className={({ isActive }) =>
                   isActive
                     ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center gap-2"
@@ -84,7 +83,7 @@ const Navbar = ({ children }) => {
                 to="/newproject"
                 className="flex items-center bg-[#bd9260] rounded-lg w-35 gap-1 p-2 hover:bg-[#ce9456]/80 transition duration-300 ease-in-out"
               >
-                <MdAddCircleOutline  className="text-xl" />
+                <MdAddCircleOutline className="text-xl" />
                 New Project
               </NavLink>
             </li>

@@ -90,6 +90,19 @@ export async function getUserProfile(uid) {
   }
 }
 
+export async function getUserProfileByUsername(username) {
+  const usersRef = collection(db, "users");
+  const q = query(usersRef, where("username", "==", username));
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty) {
+    const userDoc = querySnapshot.docs[0];
+    return { uid: userDoc.id, ...userDoc.data() };
+  } else {
+    return null; 
+  }
+}
+
 export async function getUserLikes(uid) {
   const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);
@@ -148,7 +161,7 @@ export async function getUserFollowers(uid) {
   if (docSnap.exists()) {
     return docSnap.data().followers || []; // Retornar un array vacío si no hay seguidores
   } else {
-    return []; 
+    return [];
   }
 }
 
@@ -159,6 +172,6 @@ export async function getUserFollowing(uid) {
   if (docSnap.exists()) {
     return docSnap.data().following || []; // Retornar un array vacío si no sigue a nadie
   } else {
-    return []; 
+    return [];
   }
 }

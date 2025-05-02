@@ -1,11 +1,9 @@
-import { useAuth } from "../../auth/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
 
-const ProfileHeader = ({countPosts}) => {
+const ProfileHeader = ({ countPosts, currentUserUsername, photoURL, username, displayName }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const profileImage = user?.photoURL || defaultAvatar;
+  const profileImage = photoURL || defaultAvatar;
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -20,18 +18,28 @@ const ProfileHeader = ({countPosts}) => {
           className="w-24 h-24 rounded-full object-cover"
         />
         <div className="ml-4">
-          <h1 className="text-2xl font-bold">{user.displayName}</h1>
-          <p className="text-gray-600">@{user.username}</p>
+          <h1 className="text-2xl font-bold">{displayName}</h1>
+          <p className="text-gray-600">@{username}</p>
           <p className="text-gray-600">{countPosts} posts</p>
         </div>
       </div>
       <div className="mt-4 flex space-x-4">
-        <button
-          onClick={() => navigate("/profile/edit")}
-          className="bg-[#bd9260] hover:bg-[#ce9456]/80 transition duration-300 ease-in-out text-white px-4 py-2 rounded-lg cursor-pointer"
-        >
-          Edit Profile
-        </button>
+        {currentUserUsername === username ? (
+          <button
+            onClick={() => navigate("/profile/edit")}
+            className="bg-[#bd9260] hover:bg-[#ce9456]/80 transition duration-300 ease-in-out text-white px-4 py-2 rounded-lg cursor-pointer"
+          >
+            Edit Profile
+          </button>
+        ) : (
+          <button
+            onClick={() => navigate("/profile/edit")}
+            className="bg-[#bd9260] hover:bg-[#ce9456]/80 transition duration-300 ease-in-out text-white px-4 py-2 rounded-lg cursor-pointer"
+          >
+            Follow
+          </button>
+        )}
+
         <button className="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg">
           Share
         </button>
