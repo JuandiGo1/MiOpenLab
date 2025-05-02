@@ -28,7 +28,6 @@ const ProjectCard = ({
   const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false); // Estado para rastrear si se ha dado "like"
   const [likeCount, setLikeCount] = useState(likes);
-  const [showFullDescription, setShowFullDescription] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const authorAvatar = authorPhoto ? authorPhoto : defaultAvatar;
   const navigate = useNavigate();
@@ -87,9 +86,7 @@ const ProjectCard = ({
     });
   };
 
-  const toggleDescription = () => {
-    setShowFullDescription(!showFullDescription); // Alternar entre mostrar la descripción completa o truncada
-  };
+
 
   return (
     <article className="flex flex-col justify-between bg-white rounded-lg shadow-md  mb-4">
@@ -144,7 +141,7 @@ const ProjectCard = ({
 
               )}
             </div>
-            
+
           </div>
         </div>
 
@@ -155,16 +152,14 @@ const ProjectCard = ({
           onClick={handleViewDetails}
         >
           <ReactMarkdown>
-            {showFullDescription
-              ? description
-              : `${description.slice(0, 150)}...`}
+              {`${description.slice(0, 150)}...`}
           </ReactMarkdown>
           {description.length > 100 && (
             <button
-              onClick={toggleDescription}
+              
               className="text-blue-500 hover:underline mt-2 cursor-pointer"
             >
-              {showFullDescription ? "Ver menos" : "Ver más"}
+              Ver más
             </button>
           )}
         </div>

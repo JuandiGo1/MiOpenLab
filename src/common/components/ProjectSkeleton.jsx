@@ -2,20 +2,30 @@ import ContentLoader from "react-content-loader";
 
 const ProjectSkeleton = (props) => {
   return (
-    <ContentLoader viewBox="0 0 800 400" height={285} width={700} {...props}>
-      <path d="M484.52,64.61H15.65C7.1,64.61.17,71.2.17,79.31V299.82c0,8.12,6.93,14.7,15.48,14.7H484.52c8.55,0,15.48-6.58,15.48-14.7V79.31C500,71.2,493.07,64.61,484.52,64.61Zm-9,204.34c0,11.84-7.14,21.44-15.94,21.44H436.39L359.16,171.52c-7.1-10.92-19.67-11.16-27-.51L258.64,277.94C253.78,285,245.73,286,240,280.2l-79.75-80.62c-6-6.06-14.33-5.7-20,.88L62.34,290.39H40.63c-8.8,0-15.94-9.6-15.94-21.44V110.19c0-11.84,7.14-21.44,15.94-21.44H459.54c8.8,0,15.94,9.6,15.94,21.44Z" />
-      <ellipse cx="27.53" cy="26.15" rx="27.53" ry="26.15" />
-      <rect x="69.36" y="0.5" width="87.36" height="16.48" rx="4.5" />
-      <rect x="0.53" y="328.35" width="87.36" height="16.48" rx="4.5" />
-      <rect x="95.84" y="328.35" width="87.36" height="16.48" rx="4.5" />
-      <rect x="195.38" y="328.35" width="304.45" height="16.48" rx="4.5" />
-      <rect x="412.47" y="358.52" width="87.36" height="16.48" rx="4.5" />
-      <rect x="291.22" y="358.52" width="113.31" height="16.48" rx="4.5" />
-      <rect x="0.53" y="358.52" width="282.21" height="16.48" rx="4.5" />
-      <rect x="69.36" y="25.22" width="164.67" height="27.07" rx="3.83" />
-    </ContentLoader>
+    <div className="bg-white rounded-lg shadow-md mb-4 p-5">
+      <ContentLoader
+        speed={2}
+        width="100%"
+        height={300}
+        viewBox="0 0 900 300"
+        backgroundColor="#d6d6d6"
+        foregroundColor="#bd9260"
+        {...props}
+      >
+        <rect x="48" y="8" rx="3" ry="3" width="88" height="10" />
+        <rect x="48" y="26" rx="3" ry="3" width="52" height="10" />
+        <rect x="0" y="56" rx="3" ry="3" width="410" height="6" />
+        <rect x="0" y="72" rx="3" ry="3" width="380" height="6" />
+        <rect x="0" y="88" rx="3" ry="3" width="178" height="6" />
+        <circle cx="20" cy="22" r="20" />
+        <rect x="-2" y="114" rx="0" ry="0" width="323" height="92" />
+        <rect x="474" y="5" rx="3" ry="3" width="88" height="10" />
+        <rect x="473" y="21" rx="3" ry="3" width="88" height="10" />
+        <circle cx="10" cy="238" r="7" />
+        <rect x="443" y="236" rx="3" ry="3" width="134" height="5" />
+      </ContentLoader>
+    </div>
   );
 };
-
 
 export default ProjectSkeleton;
