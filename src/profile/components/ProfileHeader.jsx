@@ -2,7 +2,7 @@ import { useAuth } from "../../auth/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
 
-const ProfileHeader = () => {
+const ProfileHeader = ({countPosts}) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const profileImage = user?.photoURL || defaultAvatar;
@@ -22,7 +22,7 @@ const ProfileHeader = () => {
         <div className="ml-4">
           <h1 className="text-2xl font-bold">{user.displayName}</h1>
           <p className="text-gray-600">@{user.username}</p>
-          <p className="text-gray-600">33 posts</p>
+          <p className="text-gray-600">{countPosts} posts</p>
         </div>
       </div>
       <div className="mt-4 flex space-x-4">

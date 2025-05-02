@@ -10,6 +10,7 @@ const ProfilePage = () => {
   const { user } = useAuth();
   const [projects, setProjects] = useState([]); // Estado para almacenar los proyectos
   const [loading, setLoading] = useState(true);
+  const [countPosts, setCountPosts] = useState(0);
 
   // Cargar los proyectos del usuario
   useEffect(() => {
@@ -17,6 +18,7 @@ const ProfilePage = () => {
       if (user) {
         const userProjects = await getUserProjects(user.uid);
         setProjects(userProjects);
+        setCountPosts(userProjects.length)
         setLoading(false);
       }
     };
@@ -29,7 +31,7 @@ const ProfilePage = () => {
       {/* Main Content */}
       <main className="flex-1 p-6">
         {/* Profile Header */}
-        <ProfileHeader></ProfileHeader>
+        <ProfileHeader countPosts={countPosts}/>
 
         {/* Tabs */}
         <div className="flex space-x-4 border-b mb-6">
