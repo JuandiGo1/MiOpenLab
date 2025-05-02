@@ -41,7 +41,14 @@ export const getAllProjects = async () => {
       id: doc.id,
       ...doc.data(),
     }));
-    return allProjects;
+    const sortedProjects = [...allProjects].sort((a, b) => {
+      const dateA = a.createdAt.seconds;
+      const dateB = b.createdAt.seconds;
+
+      return dateB - dateA ;
+    });
+    
+    return sortedProjects;
   } catch (e) {
     console.error("Error al obtener todos los proyectos:", e);
     return [];

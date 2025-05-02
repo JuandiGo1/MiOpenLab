@@ -10,6 +10,7 @@ const ExplorePage = () => {
   const { user } = useAuth();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState("newest");
 
   const profileImage = user?.photoURL || defaultAvatar;
 
@@ -24,21 +25,59 @@ const ExplorePage = () => {
     fetchProjects();
   }, []);
 
+  const sortProjects = (order) => {
+    const sortedProjects = [...projects].sort((a, b) => {
+      const dateA = a.createdAt.seconds;
+      const dateB = b.createdAt.seconds;
+
+      return order === "newest" ? dateB - dateA : dateA - dateB;
+    });
+
+    setProjects(sortedProjects);
+    setSortOrder(order);
+  };
+
   return (
     <div className="flex bg-gray-100 min-h-screen">
       <main className="flex-1 p-6">
-        <div className="flex items-center mb-6">
-          <img
-            src={profileImage}
-            alt="Foto de perfil"
-            className="w-10 h-10 rounded-full object-cover mr-4"
-          />
-          <h1 className="text-xl font-bold">
-            ¡Hola, {user ? user.displayName : "Usuario"}!
-          </h1>
-        </div>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-start gap-1">
+            <img
+              src={profileImage}
+              alt="Foto de perfil"
+              className="w-10 h-10 rounded-full object-cover "
+            />
+            <h1 className="text-xl font-bold">
+              ¡Hola, {user ? user.displayName : "Usuario"}!
+            </h1>
+          </div>
 
-        
+          <div className="flex items-center">
+            {/* Botones para ordenar */}
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={() => sortProjects("newest")}
+                className={`px-4 py-2 mr-2 rounded cursor-pointer ${
+                  sortOrder === "newest"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 text-gray-800"
+                }`}
+              >
+                Más nuevos
+              </button>
+              <button
+                onClick={() => sortProjects("oldest")}
+                className={`px-4 py-2 rounded cursor-pointer ${
+                  sortOrder === "oldest"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 text-gray-800"
+                }`}
+              >
+                Más antiguos
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* Mostrar skeletons mientras cargan los proyectos */}
         {loading ? (
