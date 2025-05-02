@@ -1,6 +1,6 @@
-const formatDate = (createdAt) => {
-  return createdAt?.toDate
-    ? createdAt.toDate().toLocaleDateString("en-US", {
+const formatDate = (dateToFormat) => {
+  return dateToFormat?.toDate
+    ? dateToFormat.toDate().toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",

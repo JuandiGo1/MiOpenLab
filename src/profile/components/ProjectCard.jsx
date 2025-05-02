@@ -11,6 +11,7 @@ import { LuEraser } from "react-icons/lu";
 import DeleteModal from "../../common/components/DeleteModal";
 import { deleteProject } from "../../profile/services/projectService";
 import formatDate from "../../utils/dateFormatter";
+import { Timestamp } from "firebase/firestore";
 
 //import { toggleLike } from "../services/projectService";
 
@@ -33,9 +34,10 @@ const ProjectCard = ({
   const authorAvatar = authorPhoto ? authorPhoto : defaultAvatar;
   const navigate = useNavigate();
 
+  const dateToFormat = createdAt instanceof Timestamp ? createdAt.toDate() : null;
   // Formatear fecha
-  console.log("card "+typeof createdAt)
-  const formattedDate = formatDate(createdAt)
+  const formattedDate = formatDate(dateToFormat)
+
 
   const handleLike = () => {
     if (isLiked) {
@@ -76,7 +78,7 @@ const ProjectCard = ({
           linkDemo,
           authorName,
           authorPhoto,
-          createdAt,
+          createdAt
         },
       },
     });

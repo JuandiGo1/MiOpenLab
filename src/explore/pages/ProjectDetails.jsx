@@ -7,6 +7,7 @@ import { MdDatasetLinked } from "react-icons/md";
 import DefaultAvatar from "../../assets/defaultAvatar.jpg";
 import DetailsSkeleton from "../components/ProjectDetailsSkeleton";
 import formatDate from "../../utils/dateFormatter";
+import { Timestamp } from "firebase/firestore";
 
 const ProjectDetails = () => {
   const { id } = useParams(); // Obtener el ID del proyecto desde la URL
@@ -34,9 +35,7 @@ const ProjectDetails = () => {
   }, [id, project, navigate]);
 
   if (loading) {
-    return (
-      <DetailsSkeleton></DetailsSkeleton>
-    );
+    return <DetailsSkeleton></DetailsSkeleton>;
   }
 
   if (!project) {
@@ -53,8 +52,11 @@ const ProjectDetails = () => {
     createdAt,
   } = project;
 
-  console.log(typeof createdAt)
-  const formattedDate = formatDate(createdAt)
+  const reconstructedTimestamp = createdAt
+    ? new Timestamp(createdAt.seconds, createdAt.nanoseconds)
+    : null;
+
+  const formattedDate = formatDate(reconstructedTimestamp);
 
   return (
     <div className="w-full  mx-auto p-6 bg-white shadow-md">
