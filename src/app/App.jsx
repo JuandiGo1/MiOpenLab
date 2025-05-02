@@ -53,6 +53,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/edit-project/:id"
+            element={
+              <ProtectedRoute>
+                <Navbar>
+                  <CreateProject />
+                </Navbar>
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

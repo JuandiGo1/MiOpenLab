@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { AiOutlineLike, AiFillLike } from "react-icons/ai";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
@@ -12,6 +13,7 @@ import { LuEraser } from "react-icons/lu";
 //import { toggleLike } from "../services/projectService";
 
 const ProjectCard = ({
+  id,
   title,
   description,
   likes,
@@ -27,6 +29,7 @@ const ProjectCard = ({
   const [likeCount, setLikeCount] = useState(likes);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const authorAvatar = authorPhoto ? authorPhoto : defaultAvatar;
+  const navigate = useNavigate();
 
   // Formatear fecha
   const formattedDate = createdAt?.toDate
@@ -44,6 +47,11 @@ const ProjectCard = ({
       setLikeCount(likeCount + 1);
     }
     setIsLiked(!isLiked); // Alternar el estado de "like"
+  };
+
+  const handleEdit = () => {
+    // Redirigir a la página de edición con el id del proyecto
+    navigate(`/edit-project/${id}`, { state: { projectToEdit: { id, title, description, linkRepo, linkDemo , authorId} } });
   };
 
   const toggleDescription = () => {
@@ -75,7 +83,7 @@ const ProjectCard = ({
             <div className="flex flex-col gap-1 items-start justify-center ">
               <a
                 className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456]"
-                href={linkDemo}
+                href={linkRepo}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -85,7 +93,7 @@ const ProjectCard = ({
               {linkDemo && (
                 <a
                   className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456]"
-                  href={linkRepo}
+                  href={linkDemo}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -129,12 +137,12 @@ const ProjectCard = ({
             ) : (
               <AiOutlineLike className="text-xl" />
             )}
-            {likes}
+            {likeCount}
           </button>
           <div className="flex items-center justify-between gap-2">
             {user && user.uid === authorId && (
               <div className="flex items-center gap-2">
-                <RiEditLine className="text-xl text-gray-500 cursor-pointer hover:text-blue-700" />
+                <RiEditLine onClick={handleEdit} className="text-xl text-gray-500 cursor-pointer hover:text-blue-700" />
                 <LuEraser className="text-xl text-gray-500 cursor-pointer hover:text-red-700" />
               </div>
             )}

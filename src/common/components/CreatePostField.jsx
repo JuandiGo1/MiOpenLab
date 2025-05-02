@@ -1,12 +1,16 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { Navigate, useLocation } from "react-router-dom";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { createProject } from "../../profile/services/projectService";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { FaGithub } from "react-icons/fa";
-
+import { editProject } from "../../profile/services/projectService";
 
 const CreatePostField = () => {
+  const location = useLocation();
+  const projectToEdit = location.state?.projectToEdit || null;
+
   const { user } = useAuth();
   const [title, setTitle] = useState("");
   const [linkRepo, setLinkRepo] = useState("");
@@ -15,6 +19,20 @@ const CreatePostField = () => {
 
   //para capturar el valor del editor md sin que pierda el foco
   const descriptionRef = useRef("");
+
+  useEffect(() => {
+    if (projectToEdit) {
+      setTitle(projectToEdit.title || "");
+      setLinkRepo(projectToEdit.linkRepo || "");
+      setLinkDemo(projectToEdit.linkDemo || "");
+      descriptionRef.current = projectToEdit.description || "";
+    }
+  }, [projectToEdit]);
+
+  //Evitar que el usuario acceda a editar un proyecto si no es el autor del proyecto
+  if (user.uid !== projectToEdit?.authorId) {
+    return <Navigate to="/home" replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,14 +52,23 @@ const CreatePostField = () => {
     };
 
     try {
-      await createProject(projectData, user);
-      setMsgInfo("Project created successfully!");
+      if (projectToEdit) {
+        // Editar proyecto existente
+        await editProject(projectToEdit.id, projectData);
+        setMsgInfo("Project updated successfully!");
+      } else {
+        // Crear nuevo proyecto
+        await createProject(projectData, user);
+        setMsgInfo("Project created successfully!");
+      }
+
       setTitle("");
       descriptionRef.current = "";
       setLinkRepo("");
       setLinkDemo("");
+      return <Navigate to="/profile" replace />;
     } catch (error) {
-      setMsgInfo("Error creating project. Please try again.");
+      setMsgInfo("Error saving project. Please try again.");
       console.error(error);
     }
   };
@@ -128,9 +155,9 @@ const CreatePostField = () => {
         <div className="flex justify-between items-center">
           <button
             type="submit"
-            className="bg-[#bd9260] text-white font-bold px-4 py-2 w-20 rounded-lg hover:bg-[#ce9456]/80  cursor-pointer transition duration-300 ease-in-out"
+            className="bg-[#bd9260] text-white text-center font-bold px-4 py-2 w-20 rounded-lg hover:bg-[#ce9456]/80  cursor-pointer transition duration-300 ease-in-out"
           >
-            Post
+            {projectToEdit ? "Save" : "Post"}
           </button>
           <span className="text-sm text-green-900">{msgInfo}</span>
         </div>
