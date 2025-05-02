@@ -6,6 +6,7 @@ import { FaGithub } from "react-icons/fa";
 import { MdDatasetLinked } from "react-icons/md";
 import DefaultAvatar from "../../assets/defaultAvatar.jpg";
 import DetailsSkeleton from "../components/ProjectDetailsSkeleton";
+import formatDate from "../../utils/dateFormatter";
 
 const ProjectDetails = () => {
   const { id } = useParams(); // Obtener el ID del proyecto desde la URL
@@ -52,13 +53,8 @@ const ProjectDetails = () => {
     createdAt,
   } = project;
 
-  const formattedDate = createdAt?.toDate
-    ? createdAt.toDate().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-    : "Unknown date";
+  console.log(typeof createdAt)
+  const formattedDate = formatDate(createdAt)
 
   return (
     <div className="w-full  mx-auto p-6 bg-white shadow-md">

@@ -10,6 +10,7 @@ import { RiEditLine } from "react-icons/ri";
 import { LuEraser } from "react-icons/lu";
 import DeleteModal from "../../common/components/DeleteModal";
 import { deleteProject } from "../../profile/services/projectService";
+import formatDate from "../../utils/dateFormatter";
 
 //import { toggleLike } from "../services/projectService";
 
@@ -33,13 +34,8 @@ const ProjectCard = ({
   const navigate = useNavigate();
 
   // Formatear fecha
-  const formattedDate = createdAt?.toDate
-    ? createdAt.toDate().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-    : "Unknown date";
+  console.log("card "+typeof createdAt)
+  const formattedDate = formatDate(createdAt)
 
   const handleLike = () => {
     if (isLiked) {
