@@ -19,11 +19,16 @@ export function AuthProvider({ children }) {
   // Escuchar cambios de sesión
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      const profile = await getUserProfile(currentUser.uid);
-      setUser({
-        ...currentUser,
-        ...profile,
-      });
+      if (currentUser) {
+        const profile = await getUserProfile(currentUser.uid);
+        setUser({
+          ...currentUser,
+          ...profile,
+        });
+      } else {
+        setUser(null);
+      }
+
       setLoading(false);
     });
 
