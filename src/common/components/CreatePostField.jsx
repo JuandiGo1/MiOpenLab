@@ -68,7 +68,7 @@ const CreatePostField = () => {
       setLinkRepo("");
       setLinkDemo("");
       setTimeout(() => {
-        navigate("/profile");
+        navigate(`/profile/${user.username}`);
       }, 2000); 
     } catch (error) {
       setMsgInfo("Error saving project. Please try again.");

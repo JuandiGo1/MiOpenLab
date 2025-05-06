@@ -17,7 +17,6 @@ const ProfileHeader = ({
   const [isFollowing, setFollow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const profileImage = photoURL || defaultAvatar;
-  console.log(currentUserFollows.includes(uid))
 
     // Sincronizar isFollowing con currentUserFollows y uid
     useEffect(() => {
