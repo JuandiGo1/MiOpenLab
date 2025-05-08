@@ -4,7 +4,7 @@ import {
   getUserProfile,
 } from "../../auth/services/userService";
 import { useNavigate } from "react-router-dom";
-import defaultAvatar from "../../assets/defaultAvatar.jpg";
+import FollowerCard from "./FollowerCard";
 
 const FollowersList = ({ userId }) => {
   const [followers, setFollowers] = useState([]);
@@ -37,22 +37,7 @@ const FollowersList = ({ userId }) => {
       <h2 className="text-xl font-bold mb-4">Followers ({followers.length})</h2>
       <ul className="flex flex-col gap-4">
         {followers.map((follower) => (
-          <li key={follower.uid}>
-            <div
-              onClick={() => navigate(`/profile/${follower.username}`)}
-              className="flex items-center bg-white rounded-3xl hover:-translate-y-1 transition-transform duration-200 gap-2 shadow-md cursor-pointer"
-            >
-              <img
-                src={follower.photoURL || defaultAvatar}
-                alt={`${follower.displayName}'s avatar`}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <div className="flex flex-col">
-                <span>{follower.displayName || "Unknown User"}</span>
-                <span>@{follower.username || "@"}</span>
-              </div>
-            </div>
-          </li>
+          <FollowerCard key={follower.uid} follower={follower} onClick={() => navigate(`/profile/${follower.username}`)} />
         ))}
       </ul>
     </>

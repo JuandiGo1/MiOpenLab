@@ -14,7 +14,7 @@ const TopProjectCard = ({
   // Limitar la descripción a 100 caracteres
   const truncatedDescription =
     description.length > 100
-      ? description.substring(0, 100) + "..."
+      ? description.substring(0, 100) + "...View more"
       : description;
 
   return (
@@ -32,7 +32,7 @@ const TopProjectCard = ({
       </div>
 
 
-      <div className="text-sm text-gray-600 mt-1 p-4">
+      <div className="text-sm text-gray-600 mt-1 px-4 py-2">
         <ReactMarkdown>{truncatedDescription}</ReactMarkdown>
       </div>
     </div>

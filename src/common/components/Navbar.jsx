@@ -82,9 +82,9 @@ const Navbar = ({ children }) => {
               <li>
                 <NavLink
                   to="/newproject"
-                  className="flex items-center bg-[#bd9260] rounded-lg w-35 gap-1 p-2 hover:bg-[#ce9456]/80 transition duration-300 ease-in-out"
+                  className="flex items-center text-center font-bold bg-[#bd9260] rounded-full w-35 gap-1 px-4 py-3 hover:bg-[#ce9456]/80 transition duration-300 ease-in-out"
                 >
-                  <MdAddCircleOutline className="text-xl" />
+                  
                   New Project
                 </NavLink>
               </li>

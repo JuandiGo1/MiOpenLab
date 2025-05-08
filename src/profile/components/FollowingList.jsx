@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getUserFollowing, getUserProfile } from "../../auth/services/userService";
 import { useNavigate } from "react-router-dom";
-import defaultAvatar from "../../assets/defaultAvatar.jpg";
+import FollowerCard from "./FollowerCard";
 
 const FollowingList = ({ userId }) => {
   const [following, setFollowing] = useState([]);
@@ -34,22 +34,7 @@ const FollowingList = ({ userId }) => {
       <h2 className="text-xl font-bold mb-4">Following ({following.length})</h2>
       <ul className="flex flex-col gap-4">
         {following.map((followed) => (
-          <li key={followed.uid}>
-            <div
-              onClick={() => navigate(`/profile/${followed.username}`)}
-              className="flex items-center bg-white rounded-3xl hover:-translate-y-1 transition-transform duration-200 gap-2 shadow-md cursor-pointer"
-            >
-              <img
-                src={followed.photoURL || defaultAvatar}
-                alt={`${followed.displayName}'s avatar`}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <div className="flex flex-col">
-                <span>{followed.displayName || "Unknown User"}</span>
-                <span>@{followed.username || "@"}</span>
-              </div>
-            </div>
-          </li>
+          <FollowerCard key={followed.uid} follower={followed} onClick={() => navigate(`/profile/${followed.username}`)} />
         ))}
       </ul>
     </>

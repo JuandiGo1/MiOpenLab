@@ -23,7 +23,7 @@ const TopProjectsBar = () => {
   }, []);
 
   return (
-    <aside className="w-1/5 bg-white p-6 shadow-md">
+    <aside className="w-1/5 bg-white p-6 shadow-md sticky top-0">
       <h2 className="text-lg font-bold mb-4">Top Projects</h2>
       {loading ? (
         <p className="text-gray-500">Loading top projects...</p>
