@@ -7,6 +7,9 @@ import { getUserProjects } from "../services/projectService";
 import { getUserProfileByUsername } from "../../auth/services/userService";
 import { useAuth } from "../../auth/hooks/useAuth";
 import ProjectSkeleton from "../../common/components/ProjectSkeleton";
+import FollowersList from "../components/FollowersList";
+import FollowingList from "../components/FollowingList";
+import LikesList from "../components/LikesList";
 
 const ProfilePage = () => {
   const { username } = useParams();
@@ -15,6 +18,7 @@ const ProfilePage = () => {
   const [projects, setProjects] = useState([]); // Estado para almacenar los proyectos
   const [loading, setLoading] = useState(true);
   const [countPosts, setCountPosts] = useState(0);
+  const [activeTab, setActiveTab] = useState("posts");
 
   useEffect(() => {
     const fetchProfileUser = async () => {
@@ -31,6 +35,38 @@ const ProfilePage = () => {
     fetchProfileUser();
   }, [username]);
 
+  // Renderizar el contenido según la pestaña activa
+  const renderTabContent = () => {
+    if (loading) {
+      return (
+        <div className="grid grid-cols-1 gap-6">
+          {[...Array(3)].map((_, index) => (
+            <ProjectSkeleton key={index} />
+          ))}
+        </div>
+      );
+    }
+
+    switch (activeTab) {
+      case "posts":
+        return (
+          <div className="grid grid-cols-1 gap-6">
+            {projects.map((project) => (
+              <ProjectCard key={project.id} {...project} />
+            ))}
+          </div>
+        );
+      case "followers":
+        return <FollowersList userId={profileUser?.uid} />;
+      case "following":
+        return <FollowingList userId={profileUser?.uid} />;
+      case "likes":
+        return <LikesList userId={profileUser?.uid} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="flex bg-gray-100  min-h-screen">
       {/* Main Content */}
@@ -46,26 +82,50 @@ const ProfilePage = () => {
 
         {/* Tabs */}
         <div className="flex space-x-4 border-b mb-6">
-          <button className="pb-2 border-b-2 border-blue-600">Posts</button>
-          <button className="pb-2 text-gray-600">Followers</button>
-          <button className="pb-2 text-gray-600">Following</button>
-          <button className="pb-2 text-gray-600">Likes</button>
+          <button
+            onClick={() => setActiveTab("posts")}
+            className={`pb-2 cursor-pointer ${
+              activeTab === "posts"
+                ? "border-b-2 border-blue-600"
+                : "text-gray-600"
+            }`}
+          >
+            Posts
+          </button>
+          <button
+            onClick={() => setActiveTab("followers")}
+            className={`pb-2 cursor-pointer ${
+              activeTab === "followers"
+                ? "border-b-2 border-blue-600"
+                : "text-gray-600"
+            }`}
+          >
+            Followers
+          </button>
+          <button
+            onClick={() => setActiveTab("following")}
+            className={`pb-2 cursor-pointer ${
+              activeTab === "following"
+                ? "border-b-2 border-blue-600"
+                : "text-gray-600"
+            }`}
+          >
+            Following
+          </button>
+          <button
+            onClick={() => setActiveTab("likes")}
+            className={`pb-2 cursor-pointer ${
+              activeTab === "likes"
+                ? "border-b-2 border-blue-600"
+                : "text-gray-600"
+            }`}
+          >
+            Likes
+          </button>
         </div>
 
-        {/* Posts Section */}
-        {loading ? (
-          <div className="grid grid-cols-1 gap-6">
-            {[...Array(3)].map((_, index) => (
-              <ProjectSkeleton key={index} />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-6">
-            {projects.map((project) => (
-              <ProjectCard key={project.id} {...project} />
-            ))}
-          </div>
-        )}
+        {/* Tab Content */}
+        {renderTabContent()}
       </main>
 
       <SearchBar></SearchBar>
