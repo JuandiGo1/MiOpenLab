@@ -54,7 +54,7 @@ const Navbar = ({ children }) => {
             </li>
             <li>
               <NavLink
-                to={`/profile/${user.username}`}
+                to={user ? `/profile/${user.username}` : `/`}
                 className={({ isActive }) =>
                   isActive
                     ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center gap-2"
@@ -67,7 +67,7 @@ const Navbar = ({ children }) => {
             </li>
             <li>
               <NavLink
-                to="/favorites"
+                to={user? `/favorites`: `/`}
                 className={({ isActive }) =>
                   isActive
                     ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center gap-2"
@@ -78,15 +78,17 @@ const Navbar = ({ children }) => {
                 Favorites
               </NavLink>
             </li>
-            <li>
-              <NavLink
-                to="/newproject"
-                className="flex items-center bg-[#bd9260] rounded-lg w-35 gap-1 p-2 hover:bg-[#ce9456]/80 transition duration-300 ease-in-out"
-              >
-                <MdAddCircleOutline className="text-xl" />
-                New Project
-              </NavLink>
-            </li>
+            {user && (
+              <li>
+                <NavLink
+                  to="/newproject"
+                  className="flex items-center bg-[#bd9260] rounded-lg w-35 gap-1 p-2 hover:bg-[#ce9456]/80 transition duration-300 ease-in-out"
+                >
+                  <MdAddCircleOutline className="text-xl" />
+                  New Project
+                </NavLink>
+              </li>
+            )}
           </ul>
         </div>
         <div className="flex items-start w-full ">
@@ -99,17 +101,17 @@ const Navbar = ({ children }) => {
               Logout
             </button>
           ) : (
-            <div className="flex flex-col justify-between gap-2">
+            <div className="flex flex-col justify-between gap-5 w-50">
               <NavLink
                 to="/"
-                className="flex items-center gap-2 bg-[#a86428] text-white text-bold text-xl px-3 py-2 rounded-xl"
+                className="flex items-center gap-2 bg-[#e7dbce] hover:bg-[#ce9456]/80 hover:text-white transition duration-300 ease-in-out text-gray-900 text-bold text-xl px-3 py-2 rounded-xl"
               >
                 Sing In
               </NavLink>
 
               <NavLink
                 to="/"
-                className="flex items-center gap-2 bg-[#806248] text-white text-bold text-xl px-3 py-2 rounded-xl"
+                className="flex items-center gap-2 bg-[#bd9260] hover:bg-[#ce9456] transition duration-300 ease-in-out text-white text-bold text-xl px-3 py-2 rounded-xl"
               >
                 Sing Up
               </NavLink>
