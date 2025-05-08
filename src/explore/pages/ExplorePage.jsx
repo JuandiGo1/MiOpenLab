@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../auth/hooks/useAuth";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
-import SearchBar from "../../common/components/SearchBar";
+import TopProjectsBar from "../../common/components/TopProjects";
 import ProjectCard from "../../profile/components/ProjectCard";
 import ProjectSkeleton from "../../common/components/ProjectSkeleton";
 import { getAllProjects } from "../../profile/services/projectService";
@@ -94,7 +94,7 @@ const ExplorePage = () => {
           </div>
         )}
       </main>
-      <SearchBar />
+      <TopProjectsBar />
     </div>
   );
 };

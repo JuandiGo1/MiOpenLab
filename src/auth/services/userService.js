@@ -10,7 +10,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
-import { db } from "../../firebase/Config";
+import { auth, db } from "../../firebase/Config";
 
 // Valida username único
 export async function isUsernameAvailable(username) {
@@ -186,4 +186,14 @@ export async function getUsernameById(uid) {
     return null;
   }
 
+}
+
+export async function updateName(newName) {
+  const user = auth.currentUser;
+  if (!user) throw new Error("There is no authenticated user.");
+  if (!newName) throw new Error("Username cannot be empty or only spaces!");
+  const userRef = doc(db, "users", user.uid);
+  await updateDoc(userRef, {
+    displayName: newName,
+  });
 }

@@ -32,7 +32,7 @@ const EditProfile = () => {
       await updateName(name);
       //await updateProfilePic(photo);
       setMsgInfo("Succesfully!");
-      navigate("/profile");
+      navigate(`/profile/${user.username}`);
     } catch (error) {
       setMsgInfo(error.message);
     }
@@ -90,7 +90,7 @@ const EditProfile = () => {
           <button
             type="submit"
             onClick={handleSubmit}
-            className="w-full bg-[#c9965b] text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            className="w-full bg-[#c9965b] text-white px-4 py-2 rounded-lg hover:bg-[#e29d4e] transition duration-300 ease-in-out cursor-pointer"
           >
             Save Changes
           </button>

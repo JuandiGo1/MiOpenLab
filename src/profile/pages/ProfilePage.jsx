@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import ProjectCard from "../components/ProjectCard";
 import ProfileHeader from "../components/ProfileHeader";
-import SearchBar from "../../common/components/SearchBar";
+import TopProjectsBar from "../../common/components/TopProjects";
 import { getUserProjects } from "../services/projectService";
 import { getUserProfileByUsername } from "../../auth/services/userService";
 import { useAuth } from "../../auth/hooks/useAuth";
@@ -128,7 +128,7 @@ const ProfilePage = () => {
         {renderTabContent()}
       </main>
 
-      <SearchBar></SearchBar>
+      <TopProjectsBar/>
     </div>
   );
 };

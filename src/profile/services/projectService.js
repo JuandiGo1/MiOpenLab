@@ -97,6 +97,18 @@ export const getAllProjects = async () => {
   }
 };
 
+export const getTopProjects = async (nTop) => {
+  try {
+    const projects = await getAllProjects();
+    const sortedProjects = projects.sort((a, b) => b.likes - a.likes); // Ordenar por likes de mayor a menor
+    const topProjects = sortedProjects.slice(0, nTop);
+    return topProjects;
+  } catch (error) {
+    console.error("Error al obtener todos los proyectos:", error);
+    return [];
+  }
+}
+
 export const editProject = async (projectId, newData) => {
   const projectRef = doc(db, "projects", projectId);
   await updateDoc(projectRef, newData); // newData: { title, description, ... }

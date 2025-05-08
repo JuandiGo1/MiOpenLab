@@ -8,7 +8,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { createUserProfile, createUserProfileIfNotExists } from "./userService";
+import { createUserProfile, createUserProfileIfNotExists, updateName} from "./userService";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -119,9 +119,7 @@ export async function uploadProfilePicture(file) {
 }
 
 export async function updateDisplayName(newName) {
-  if (!auth.currentUser) throw new Error("There is no authenticated user.");
-  if (!newName) throw new Error("Username cannot be empty or only spaces!");
-  await updateProfile(auth.currentUser, { displayName: newName });
+  await updateName(newName);
 
   return newName;
 }
