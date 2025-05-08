@@ -14,7 +14,7 @@ const LoginPage = () => {
       </div>
 
       {/* Left Section */}
-      <div className="flex-1 bg-[#1c2930] flex flex-col justify-center items-center text-white p-4">
+      <div className="flex-1 bg-[#1c2930] flex flex-col justify-center items-center text-white p-4 dark:bg-[#1c2930]">
         <h1 className="text-4xl sm:text-5xl font-bold mb-2 sm:mb-4">
           MiOpenLab
         </h1>
