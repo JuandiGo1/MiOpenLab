@@ -23,6 +23,7 @@ export async function createProject(projectData, currentUser) {
       linkRepo: projectData.linkRepo,
       linkDemo: projectData.linkDemo,
       authorId: currentUser.uid,
+      authorUsername: currentUser.username,
       authorName: currentUser.displayName,
       authorPhoto: currentUser.photoURL,
       createdAt: serverTimestamp(),

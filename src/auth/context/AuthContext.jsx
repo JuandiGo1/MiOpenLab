@@ -20,7 +20,12 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        const profile = await getUserProfile(currentUser.uid);
+        let profile = await getUserProfile(currentUser.uid);
+        if (!profile) {
+          console.warn("Perfil no encontrado, reintentando...");
+          await new Promise((resolve) => setTimeout(resolve, 1000)); // Esperar 1 segundo
+          profile = await getUserProfile(currentUser.uid);
+        }
         setUser({
           ...currentUser,
           ...profile,

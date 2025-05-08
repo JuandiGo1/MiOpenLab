@@ -28,7 +28,7 @@ const SignupForm = ({ setIsLogin }) => {
     const res = await register(email, password, username);
     if (res.success) {
       setMsgInfo("User registered successfully!");
-      setIsLogin(true); // Cambia a LoginForm
+      navigate("/home");
     } else {
       setMsgInfo(res.message);
     }
