@@ -13,7 +13,6 @@ const Navbar = ({ children }) => {
   const profileImage = user?.photoURL || defaultAvatar;
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const fetchUnreadCount = async () => {
       try {
@@ -86,14 +85,17 @@ const Navbar = ({ children }) => {
                 to={user ? `/notifications` : `/`}
                 className={({ isActive }) =>
                   isActive
-                    ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center gap-2 relative"
-                    : "flex items-center gap-2 pl-2 relative"
+                    ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center justify-between gap-2 relative"
+                    : "flex items-center gap-2 pl-2 justify-between relative"
                 }
               >
-                <MdOutlineNotifications  className="text-xl" />
-                Notifications
+                <div className="flex items-center gap-2">
+                  <MdOutlineNotifications className="text-xl" />
+                  Notifications
+                </div>
+
                 {unreadCount > 0 && (
-                  <span className="absolute top-0 right-0 bg-blue-400 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                  <span className=" bg-blue-400  text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
                     {unreadCount}
                   </span>
                 )}

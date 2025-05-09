@@ -45,6 +45,7 @@ const ProfileHeader = ({
     } catch (error) {
       console.error("Error al actualizar el estado de seguimiento:", error);
     }
+    setIsLoading(false);
   };
 
   const handleCopyLink = async () => {

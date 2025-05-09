@@ -129,11 +129,11 @@ export async function likePost(uid, postId) {
   await updateDoc(userRef, {
     likedProjects: arrayUnion(postId),
   });
-
-  // Mandar noti
-
-  console.log("Mandando noti desde " + userData.username);
   const postRef = await getProjectById(postId);
+  // Mandar noti
+  if(postRef.authorId == uid) return; // No notificar si se da like a si mismoo
+  console.log("Mandando noti desde " + userData.username);
+  
   await createNotification({
     to: postRef.authorId,
     from: uid,
