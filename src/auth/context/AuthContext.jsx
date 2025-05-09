@@ -11,6 +11,7 @@ import {
 } from "../services/authService";
 import { AuthContext } from "./AuthContext";
 import { getUserProfile } from "../services/userService";
+import LoadingScreen from "../../common/components/LoadingScreen";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -62,7 +63,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {loading ? <div>Cargando sesión...</div> : children}
+      {loading ? <LoadingScreen/> : children}
     </AuthContext.Provider>
   );
 }
