@@ -9,6 +9,7 @@ import EditProfile from "../profile/pages/EditProfile.jsx";
 import CreateProject from "../profile/pages/CreateProject.jsx";
 import ProjectDetails from "../explore/pages/ProjectDetails.jsx";
 import "../App.css";
+import NotificationsPage from "../notifications/pages/NotificationsPage.jsx";
 
 function App() {
   return (
@@ -70,6 +71,16 @@ function App() {
               <ProtectedRoute>
                 <Navbar>
                   <ProjectDetails />
+                </Navbar>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <Navbar>
+                  <NotificationsPage />
                 </Navbar>
               </ProtectedRoute>
             }

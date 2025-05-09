@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { getUserLikes } from "../../auth/services/userService";
 import { getProjectById } from "../services/projectService";
 import ProjectCard from "./ProjectCard";
+import ProjectSkeleton from "../../common/components/ProjectSkeleton";
 
 const LikesList = ({ userId }) => {
   const [likedProjects, setLikedProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchLikedProjects = async () => {
@@ -20,6 +22,7 @@ const LikesList = ({ userId }) => {
         );
 
         setLikedProjects(projectsData);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching liked projects:", error);
       }
@@ -30,11 +33,15 @@ const LikesList = ({ userId }) => {
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">Liked Projects ({likedProjects.length})</h2>
+      <h2 className="text-xl font-bold mb-4">
+        Liked Projects ({likedProjects.length})
+      </h2>
       <div className="grid grid-cols-1 gap-6">
-        {likedProjects.map((project) => (
-          <ProjectCard key={project.id} {...project} />
-        ))}
+        {loading
+          ? [...Array(3)].map((_, index) => <ProjectSkeleton key={index} />)
+          : likedProjects.map((project) => (
+              <ProjectCard key={project.id} {...project} />
+            ))}
       </div>
     </div>
   );

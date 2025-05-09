@@ -77,7 +77,7 @@ const CreatePostField = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-2xl my-5">
+    <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-5xl my-5">
       <h2 className="text-xl text-[#1c2930] font-bold mb-4">
         Create New Project
       </h2>

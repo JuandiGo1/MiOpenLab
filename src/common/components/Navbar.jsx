@@ -1,15 +1,30 @@
+import { useState, useEffect } from "react";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { NavLink, useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
 import { BiHomeAlt2 } from "react-icons/bi";
 import { RiUser5Line, RiLogoutCircleLine } from "react-icons/ri";
-import { TiBookmark } from "react-icons/ti";
-import { MdAddCircleOutline } from "react-icons/md";
+import { MdOutlineNotifications } from "react-icons/md";
+import { getUnreadNotificationsCount } from "../../notifications/services/notiservice";
 
 const Navbar = ({ children }) => {
   const { logout, user } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
   const profileImage = user?.photoURL || defaultAvatar;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const count = await getUnreadNotificationsCount(user.uid);
+        setUnreadCount(count);
+      } catch (error) {
+        console.error("Error fetching unread notifications count:", error);
+      }
+    };
+
+    fetchUnreadCount();
+  }, [user]);
 
   const handleLogout = async () => {
     try {
@@ -67,15 +82,20 @@ const Navbar = ({ children }) => {
             </li>
             <li>
               <NavLink
-                to={user? `/favorites`: `/`}
+                to={user ? `/notifications` : `/`}
                 className={({ isActive }) =>
                   isActive
-                    ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center gap-2"
-                    : "flex items-center gap-2 pl-2"
+                    ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center gap-2 relative"
+                    : "flex items-center gap-2 pl-2 relative"
                 }
               >
-                <TiBookmark className="text-xl" />
-                Favorites
+                <MdOutlineNotifications  className="text-xl" />
+                Notifications
+                {unreadCount > 0 && (
+                  <span className="absolute top-0 right-0 bg-blue-400 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                    {unreadCount}
+                  </span>
+                )}
               </NavLink>
             </li>
             {user && (
@@ -84,7 +104,6 @@ const Navbar = ({ children }) => {
                   to="/newproject"
                   className="flex items-center text-center font-bold bg-[#bd9260] rounded-full w-35 gap-1 px-4 py-3 hover:bg-[#ce9456]/80 transition duration-300 ease-in-out"
                 >
-                  
                   New Project
                 </NavLink>
               </li>

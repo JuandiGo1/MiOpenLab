@@ -45,7 +45,7 @@ export const getProjectById = async (projectId) => {
     const projectSnap = await getDoc(projectRef);
 
     if (projectSnap.exists()) {
-      return { id: projectSnap.id, ...projectSnap.data() }; // Retornar el proyecto con su ID
+      return { id: projectSnap.id, ...projectSnap.data() };
     } else {
       console.error("No se encontró el proyecto con el ID proporcionado.");
       return null;

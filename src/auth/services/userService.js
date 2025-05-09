@@ -11,6 +11,8 @@ import {
   arrayRemove,
 } from "firebase/firestore";
 import { auth, db } from "../../firebase/Config";
+import { createNotification } from "../../notifications/services/notiservice";
+import { getProjectById } from "../../profile/services/projectService";
 
 // Valida username único
 export async function isUsernameAvailable(username) {
@@ -99,7 +101,7 @@ export async function getUserProfileByUsername(username) {
     const userDoc = querySnapshot.docs[0];
     return { uid: userDoc.id, ...userDoc.data() };
   } else {
-    return null; 
+    return null;
   }
 }
 
@@ -116,8 +118,30 @@ export async function getUserLikes(uid) {
 
 export async function likePost(uid, postId) {
   const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    throw new Error("El usuario no existe.");
+  }
+
+  const userData = userSnap.data();
+
   await updateDoc(userRef, {
     likedProjects: arrayUnion(postId),
+  });
+
+  // Mandar noti
+
+  console.log("Mandando noti desde " + userData.username);
+  const postRef = await getProjectById(postId);
+  await createNotification({
+    to: postRef.authorId,
+    from: uid,
+    type: "like",
+    postId: postId,
+    postTitle: postRef.title,
+    fromUsername: userData.username,
+    fromPhoto: userData.photoURL,
   });
 }
 
@@ -131,6 +155,13 @@ export async function unlikePost(uid, postId) {
 export async function followUser(currentUid, targetUid) {
   const currentRef = doc(db, "users", currentUid);
   const targetRef = doc(db, "users", targetUid);
+  const userSnap = await getDoc(currentRef);
+
+  if (!userSnap.exists()) {
+    throw new Error("El usuario no existe.");
+  }
+
+  const userData = userSnap.data();
 
   await updateDoc(currentRef, {
     following: arrayUnion(targetUid),
@@ -138,6 +169,14 @@ export async function followUser(currentUid, targetUid) {
 
   await updateDoc(targetRef, {
     followers: arrayUnion(currentUid),
+  });
+
+  await createNotification({
+    to: targetUid,
+    from: currentUid,
+    type: "follow",
+    fromUsername: userData.username,
+    fromPhoto: userData.photoURL,
   });
 }
 
@@ -185,7 +224,6 @@ export async function getUsernameById(uid) {
   } else {
     return null;
   }
-
 }
 
 export async function updateName(newName) {
