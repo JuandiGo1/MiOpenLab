@@ -13,6 +13,7 @@ const Navbar = ({ children }) => {
   const profileImage = user?.photoURL || defaultAvatar;
   const navigate = useNavigate();
 
+
   useEffect(() => {
     const fetchUnreadCount = async () => {
       try {

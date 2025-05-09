@@ -26,7 +26,7 @@ const NotificationsPage = () => {
 
   const handleMarkAllAsRead = async () => {
     try {
-      await markAllAsRead();
+      await markAllAsRead(user.uid);
       setNotifications((prev) =>
         prev.map((noti) => ({ ...noti, isRead: true }))
       );
