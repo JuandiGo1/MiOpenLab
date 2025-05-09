@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, NavLink } from "react-router-dom";
 import ProjectCard from "../components/ProjectCard";
 import ProfileHeader from "../components/ProfileHeader";
 import TopProjectsBar from "../../common/components/TopProjects";
@@ -49,7 +49,20 @@ const ProfilePage = () => {
 
     switch (activeTab) {
       case "posts":
-        return (
+        return projects.length === 0 ? (
+          user.username == username ? (
+            <NavLink
+              to="/newproject"
+              className="flex items-center justify-center text-center text-white font-bold bg-[#bd9260] rounded-full w-35 gap-1 px-4 py-3 hover:bg-[#ce9456]/80 transition duration-300 ease-in-out"
+            >
+              New Project
+            </NavLink>
+          ) : (
+            <p className="flex justify-center items-center w-full h-64 text-gray-500">
+              No projects yet.
+            </p>
+          )
+        ) : (
           <div className="grid grid-cols-1 gap-6">
             {projects.map((project) => (
               <ProjectCard key={project.id} {...project} />
@@ -128,7 +141,7 @@ const ProfilePage = () => {
         {renderTabContent()}
       </main>
 
-      <TopProjectsBar/>
+      <TopProjectsBar />
     </div>
   );
 };
