@@ -51,12 +51,14 @@ const ProfilePage = () => {
       case "posts":
         return projects.length === 0 ? (
           user.username == username ? (
-            <NavLink
-              to="/newproject"
-              className="flex items-center justify-center text-center text-white font-bold bg-[#bd9260] rounded-full w-35 gap-1 px-4 py-3 hover:bg-[#ce9456]/80 transition duration-300 ease-in-out"
-            >
-              New Project
-            </NavLink>
+            <div className="flex items-center justify-center w-full h-64">
+              <NavLink
+                to="/newproject"
+                className="flex items-center justify-center text-center text-white font-bold bg-[#bd9260] rounded-full w-35 gap-1 px-4 py-3 hover:bg-[#ce9456]/80 transition duration-300 ease-in-out"
+              >
+                New Project
+              </NavLink>
+            </div>
           ) : (
             <p className="flex justify-center items-center w-full h-64 text-gray-500">
               No projects yet.
