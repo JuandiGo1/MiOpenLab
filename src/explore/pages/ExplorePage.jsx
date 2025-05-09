@@ -38,6 +38,7 @@ const ExplorePage = () => {
 
       return order === "newest" ? dateB - dateA : dateA - dateB;
     });
+    
 
     setProjects(sortedProjects);
     setSortOrder(order);

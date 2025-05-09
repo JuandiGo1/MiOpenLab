@@ -10,6 +10,7 @@ import ProjectSkeleton from "../../common/components/ProjectSkeleton";
 import FollowersList from "../components/FollowersList";
 import FollowingList from "../components/FollowingList";
 import LikesList from "../components/LikesList";
+import Loader from "../../common/components/Loader";
 
 const ProfilePage = () => {
   const { username } = useParams();
@@ -87,13 +88,20 @@ const ProfilePage = () => {
       {/* Main Content */}
       <main className="flex-1 p-6">
         {/* Profile Header */}
-        <ProfileHeader
-          countPosts={countPosts}
-          currentUserUsername={user.username}
-          currentUserUserUid={user.uid}
-          currentUserFollows={user.following}
-          {...profileUser}
-        />
+        {loading ? (
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <Loader h={"h-35"}/>
+          </div>
+          
+        ) : (
+          <ProfileHeader
+            countPosts={countPosts}
+            currentUserUsername={user.username}
+            currentUserUserUid={user.uid}
+            currentUserFollows={user.following}
+            {...profileUser}
+          />
+        )}
 
         {/* Tabs */}
         <div className="flex space-x-4 border-b mb-6">
