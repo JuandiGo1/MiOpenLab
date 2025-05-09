@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Fragment } from "react";
 import TopProjectsBar from "../../common/components/TopProjects";
 import ProjectCard from "../../profile/components/ProjectCard";
 import ProjectSkeleton from "../../common/components/ProjectSkeleton";
@@ -10,6 +10,7 @@ const ExplorePage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState("newest");
+  const [msgInfo, setMsgInfo] = useState("");
 
   // Cargar todos los proyectos
   useEffect(() => {
@@ -24,6 +25,10 @@ const ExplorePage = () => {
 
   const handleResults = useCallback((data) => {
     setSearchResults(data);
+  }, []);
+
+  const handleMsgInfo = useCallback((msg) => {
+    setMsgInfo(msg);
   }, []);
 
   const sortProjects = (order) => {
@@ -42,7 +47,11 @@ const ExplorePage = () => {
     <div className="flex bg-gray-100 min-h-screen">
       <main className="flex-1 p-6">
         <div className="flex items-center justify-between mb-6">
-          <SearchBar onResults={handleResults} />
+          <div className="flex flex-col w-full mb-2">
+            <SearchBar onResults={handleResults} setMsgInfo={handleMsgInfo} />
+
+            <span className="text-gray-800 text-sm mt-2">{msgInfo}</span>
+          </div>
 
           <div className="flex items-center">
             {/* Botones para ordenar */}

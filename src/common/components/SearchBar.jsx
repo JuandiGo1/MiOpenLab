@@ -2,22 +2,28 @@ import { GoSearch } from "react-icons/go";
 import { useState, useEffect } from "react";
 import { searchProjects } from "../../profile/services/projectService";
 
-const SearchBar = ({onResults}) => {
+const SearchBar = ({ onResults, setMsgInfo }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    const delayDebounce = setTimeout(() => {
+    const delayDebounce = setTimeout(async () => {
       if (searchTerm.trim().length > 0) {
-        searchProjects(searchTerm).then(onResults);
+        try {
+          const res = await searchProjects(searchTerm);
+          setMsgInfo(res.length === 0 ? "No results found, showing all projects." : "");
+          onResults(res);
+        } catch (error) {
+          console.error("Error fetching search results:", error);
+          setMsgInfo("Error searching projects");
+        }
       } else {
-        onResults([]); // limpia si no hay búsqueda
+        setMsgInfo("");
+        onResults([]); // limpia 
       }
-    }, 500); 
+    }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchTerm, onResults]);
-
-
+  }, [searchTerm, onResults, setMsgInfo]);
 
   return (
     <form className="w-full max-w-md ml-0" onSubmit={(e) => e.preventDefault()}>
@@ -39,7 +45,6 @@ const SearchBar = ({onResults}) => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-       
       </div>
     </form>
   );
