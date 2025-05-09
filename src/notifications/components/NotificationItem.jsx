@@ -3,7 +3,7 @@ import formatDate from "../../utils/dateFormatter";
 
 const NotificationItem = ({
   type,
-  isRead,
+  read,
   createdAt,
   postTitle,
   fromUsername,
@@ -13,8 +13,8 @@ const NotificationItem = ({
 
   return type === "like" ? (
     <div
-      className={`p-4 rounded-lg shadow-md ${
-        isRead ? "bg-gray-200" : "bg-white"
+      className={`p-4 rounded-xl shadow-md ${
+        read ? "bg-white" : "bg-[#e2f0f5]"
       }`}
     >
       <div className="flex items-center justify-start mb-2">
@@ -40,8 +40,8 @@ const NotificationItem = ({
     </div>
   ) : (
     <div
-      className={`p-4 rounded-lg shadow-md ${
-        isRead ? "bg-gray-200" : "bg-white"
+      className={`p-4 rounded-xl shadow-md ${
+         read ? "bg-white" : "bg-[#e2f0f5]"
       }`}
     >
       <div className="flex items-center justify-start mb-2">
