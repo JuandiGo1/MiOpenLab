@@ -1,31 +1,48 @@
-const SeachBar = () => {
+import { GoSearch } from "react-icons/go";
+import { useState, useEffect } from "react";
+import { searchProjects } from "../../profile/services/projectService";
+
+const SearchBar = ({onResults}) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (searchTerm.trim().length > 0) {
+        searchProjects(searchTerm).then(onResults);
+      } else {
+        onResults([]); // limpia si no hay búsqueda
+      }
+    }, 500); 
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchTerm, onResults]);
+
+
+
   return (
-    <aside className="w-1/5 bg-white p-6 shadow-md">
-      <h2 className="text-lg font-bold mb-4">Suggestions</h2>
-      <div className="flex items-center mb-4">
-        <img
-          src="https://via.placeholder.com/50"
-          alt="Suggestion"
-          className="w-12 h-12 rounded-full object-cover"
-        />
-        <div className="ml-4">
-          <p className="font-bold">Jessica Alba</p>
-          <p className="text-gray-600">@jessicaalba</p>
+    <form className="w-full max-w-md ml-0" onSubmit={(e) => e.preventDefault()}>
+      <label
+        htmlFor="default-search"
+        className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+      >
+        Search
+      </label>
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <GoSearch className="text-gray-400" />
         </div>
-      </div>
-      <div className="flex items-center">
-        <img
-          src="https://via.placeholder.com/50"
-          alt="Suggestion"
-          className="w-12 h-12 rounded-full object-cover"
+        <input
+          type="search"
+          id="default-search"
+          className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          placeholder="Search Projects..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <div className="ml-4">
-          <p className="font-bold">Jessica Alba</p>
-          <p className="text-gray-600">@jessicaalba</p>
-        </div>
+       
       </div>
-    </aside>
+    </form>
   );
 };
 
-export default SeachBar;
+export default SearchBar;

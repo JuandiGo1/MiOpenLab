@@ -1,18 +1,15 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "../../auth/hooks/useAuth";
-import defaultAvatar from "../../assets/defaultAvatar.jpg";
+import { useState, useEffect, useCallback } from "react";
 import TopProjectsBar from "../../common/components/TopProjects";
 import ProjectCard from "../../profile/components/ProjectCard";
 import ProjectSkeleton from "../../common/components/ProjectSkeleton";
 import { getAllProjects } from "../../profile/services/projectService";
+import SearchBar from "../../common/components/SearchBar";
 
 const ExplorePage = () => {
-  const { user } = useAuth();
   const [projects, setProjects] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState("newest");
-
-  const profileImage = user?.photoURL || defaultAvatar;
 
   // Cargar todos los proyectos
   useEffect(() => {
@@ -23,6 +20,10 @@ const ExplorePage = () => {
     };
 
     fetchProjects();
+  }, []);
+
+  const handleResults = useCallback((data) => {
+    setSearchResults(data);
   }, []);
 
   const sortProjects = (order) => {
@@ -41,16 +42,7 @@ const ExplorePage = () => {
     <div className="flex bg-gray-100 min-h-screen">
       <main className="flex-1 p-6">
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center justify-start gap-1">
-            <img
-              src={profileImage}
-              alt="Foto de perfil"
-              className="w-10 h-10 rounded-full object-cover "
-            />
-            <h1 className="text-xl font-bold">
-              ¡Hola, {user ? user.displayName : "Usuario"}!
-            </h1>
-          </div>
+          <SearchBar onResults={handleResults} />
 
           <div className="flex items-center">
             {/* Botones para ordenar */}
@@ -84,6 +76,12 @@ const ExplorePage = () => {
           <div className="grid grid-cols-1  gap-6">
             {[...Array(6)].map((_, index) => (
               <ProjectSkeleton key={index} />
+            ))}
+          </div>
+        ) : searchResults.length > 0 ? (
+          <div className="grid grid-cols-1  gap-6">
+            {searchResults.map((project) => (
+              <ProjectCard key={project.id} {...project} />
             ))}
           </div>
         ) : (

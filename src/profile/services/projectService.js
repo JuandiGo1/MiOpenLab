@@ -12,13 +12,14 @@ import {
   getDoc,
   query,
   where,
-  increment
+  increment,
 } from "firebase/firestore";
 
 export async function createProject(projectData, currentUser) {
   try {
     const docRef = await addDoc(collection(db, "projects"), {
       title: projectData.title,
+      titleLowerCase: projectData.title.toLowerCase(),
       description: projectData.description,
       linkRepo: projectData.linkRepo,
       linkDemo: projectData.linkDemo,
@@ -107,7 +108,29 @@ export const getTopProjects = async (nTop) => {
     console.error("Error al obtener todos los proyectos:", error);
     return [];
   }
-}
+};
+
+export const searchProjects = async (searchTerm) => {
+  try {
+    const projectsRef = collection(db, "projects");
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    const q = query(
+      projectsRef,
+      where("titleLowerCase", ">=", lowerCaseSearchTerm),
+      where("titleLowerCase", "<=", lowerCaseSearchTerm + "\uf8ff")
+    );
+    const querySnapshot = await getDocs(q);
+
+    const searchedProjects = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return searchedProjects;
+  } catch (e) {
+    throw new Error("Error searching projects:", e);
+  }
+};
 
 export const editProject = async (projectId, newData) => {
   const projectRef = doc(db, "projects", projectId);
@@ -125,10 +148,12 @@ export const addLike = async (projectId, userId) => {
   try {
     // Incrementar el contador de likes y agregar el usuario al array
     await updateDoc(projectRef, {
-      likes: increment(1), 
-      likedBy: arrayUnion(userId), 
+      likes: increment(1),
+      likedBy: arrayUnion(userId),
     });
-    console.log(`Like agregado al proyecto ${projectId} por el usuario ${userId}`);
+    console.log(
+      `Like agregado al proyecto ${projectId} por el usuario ${userId}`
+    );
   } catch (error) {
     console.error("Error al agregar like:", error);
   }
@@ -143,7 +168,9 @@ export const removeLike = async (projectId, userId) => {
       likes: increment(-1),
       likedBy: arrayRemove(userId),
     });
-    console.log(`Like eliminado del proyecto ${projectId} por el usuario ${userId}`);
+    console.log(
+      `Like eliminado del proyecto ${projectId} por el usuario ${userId}`
+    );
   } catch (error) {
     console.error("Error al eliminar like:", error);
   }
