@@ -4,6 +4,7 @@ import ProjectCard from "../../profile/components/ProjectCard";
 import ProjectSkeleton from "../../common/components/ProjectSkeleton";
 import { getAllProjects } from "../../profile/services/projectService";
 import SearchBar from "../../common/components/SearchBar";
+import SortButtons from "../components/SortButtons";
 
 const ExplorePage = () => {
   const [projects, setProjects] = useState([]);
@@ -56,28 +57,9 @@ const ExplorePage = () => {
 
           <div className="flex items-center">
             {/* Botones para ordenar */}
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={() => sortProjects("newest")}
-                className={`px-4 py-2 mr-2 rounded cursor-pointer ${
-                  sortOrder === "newest"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-800"
-                }`}
-              >
-                Más nuevos
-              </button>
-              <button
-                onClick={() => sortProjects("oldest")}
-                className={`px-4 py-2 rounded cursor-pointer ${
-                  sortOrder === "oldest"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-800"
-                }`}
-              >
-                Más antiguos
-              </button>
-            </div>
+            <SortButtons
+              currentSortOrder={sortOrder}
+              onSortChange={sortProjects} />
           </div>
         </div>
 
