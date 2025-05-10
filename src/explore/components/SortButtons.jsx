@@ -30,7 +30,7 @@ const SortButtons = ({ currentSortOrder, onSortChange }) => {
   // Determinar el texto del botón móvil
   const buttonText = filterApplied
     ? `${currentSortOrder === "newest" ? "Más nuevos" : "Más antiguos"}`
-    : "Aplicar Filtros";
+    : "Filtros";
 
   return (
     <div className="relative w-full md:w-auto" ref={menuRef}>

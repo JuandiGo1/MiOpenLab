@@ -49,13 +49,13 @@ const ExplorePage = () => {
     <div className="flex bg-gray-100 min-h-screen">
       <main className="flex-1 p-6">
         <div className="flex items-center justify-between mb-6 gap-4">
-          <div className="flex flex-col w-full mb-2">
+          <div className="flex flex-col w-full mb-0">
             <SearchBar onResults={handleResults} setMsgInfo={handleMsgInfo} />
 
             <span className="text-gray-800 text-sm mt-2">{msgInfo}</span>
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center mb-2">
             {/* Botones para ordenar */}
             <SortButtons
               currentSortOrder={sortOrder}
