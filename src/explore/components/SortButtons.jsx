@@ -70,7 +70,7 @@ const SortButtons = ({ currentSortOrder, onSortChange }) => {
               <button
                 key={option.value}
                 onClick={() => handleSortOptionClick(option.value)}
-                className={`block w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center ${
+                className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center ${
                   currentSortOrder === option.value
                     ? "text-[#bd9260] font-semibold bg-[#bd9260]/10" // Opción activa con fondo ligero y texto dorado
                     : "text-gray-700 hover:bg-gray-100"
