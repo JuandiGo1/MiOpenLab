@@ -9,6 +9,7 @@ import { MdDatasetLinked } from "react-icons/md";
 import { RiEditLine } from "react-icons/ri";
 import { LuEraser } from "react-icons/lu";
 import DeleteModal from "../../common/components/DeleteModal";
+import { NewLoader } from "../../common/components/Loader";
 import {
   deleteProject,
   addLike,
@@ -41,6 +42,7 @@ const ProjectCard = ({
   const [likeCount, setLikeCount] = useState(likes);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [authorProfileLink, setAuthorProfileLink]= useState('');
   const authorAvatar = authorPhoto ? authorPhoto : defaultAvatar;
   const navigate = useNavigate();
@@ -110,12 +112,16 @@ const ProjectCard = ({
   };
 
   const handleDelete = async (id) => {
+    setIsDeleting(true); // Activar loader de borrado
     try {
       await deleteProject(id);
       console.log("Project successfully deleted");
       window.location.reload();
     } catch (error) {
       console.error("Failed to delete project:", error);
+    } finally {
+      setIsDeleting(false); // Desactivar loader de borrado
+      setShowDeleteModal(false); // Cerrar el modal
     }
   };
 
@@ -212,12 +218,14 @@ const ProjectCard = ({
             disabled={isLoading}
             className="flex text-gray-500 hover:text-blue-700 transition duration-300 cursor-pointer"
           >
-            {isLiked ? (
+            {isLoading ? (
+              <NewLoader size="18" color="#3B82F6" h="h-auto" /> // Loader para el like
+            ) : isLiked ? (
               <AiFillLike className="text-xl text-blue-700" />
             ) : (
               <AiOutlineLike className="text-xl" />
             )}
-            {likeCount}
+            {!isLoading && <span className="ml-1">{likeCount}</span>} {/* Mostrar contador solo si no está cargando */}
           </button>
           <div className="flex items-center justify-between gap-2">
             {user && user.uid === authorId && (
@@ -241,6 +249,7 @@ const ProjectCard = ({
           project={{ id, title }}
           onDelete={handleDelete}
           onClose={() => setShowDeleteModal(false)}
+          isDeleting={isDeleting}
         />
       )}
     </article>

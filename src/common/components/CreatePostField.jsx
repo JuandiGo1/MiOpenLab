@@ -6,6 +6,7 @@ import { createProject } from "../../profile/services/projectService";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { FaGithub } from "react-icons/fa";
 import { editProject } from "../../profile/services/projectService";
+import { NewLoader } from "../../common/components/Loader";
 
 const CreatePostField = () => {
   const location = useLocation();
@@ -17,6 +18,7 @@ const CreatePostField = () => {
   const [linkDemo, setLinkDemo] = useState("");
   const [msgInfo, setMsgInfo] = useState("");
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   //para capturar el valor del editor md sin que pierda el foco
   const descriptionRef = useRef("");
@@ -44,6 +46,8 @@ const CreatePostField = () => {
       setMsgInfo("Title and description are required!");
       return;
     }
+
+    setIsLoading(true);
 
     const projectData = {
       title: title.trim(),
@@ -73,6 +77,8 @@ const CreatePostField = () => {
     } catch (error) {
       setMsgInfo("Error saving project. Please try again.");
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -94,6 +100,7 @@ const CreatePostField = () => {
             onChange={(e) => setTitle(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none "
             placeholder="Enter project title"
+            disabled={isLoading}
           />
         </div>
 
@@ -113,6 +120,7 @@ const CreatePostField = () => {
               onChange={(e) => setLinkRepo(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300  rounded-lg focus:outline-none "
               placeholder="Enter repository link"
+              disabled={isLoading}
             />
           </div>
 
@@ -131,6 +139,7 @@ const CreatePostField = () => {
               onChange={(e) => setLinkDemo(e.target.value)}
               className=" w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none "
               placeholder="Enter demo link"
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -150,6 +159,7 @@ const CreatePostField = () => {
             options={{
               spellChecker: false,
               placeholder: "Write your project description in Markdown...",
+              readOnly: isLoading
             }}
           />
         </div>
@@ -158,9 +168,10 @@ const CreatePostField = () => {
         <div className="flex justify-between items-center">
           <button
             type="submit"
+            disabled={isLoading}
             className="bg-[#bd9260] text-white text-center font-bold px-4 py-2 w-20 rounded-lg hover:bg-[#ce9456]/80  cursor-pointer transition duration-300 ease-in-out"
           >
-            {projectToEdit ? "Save" : "Post"}
+            {isLoading ? <NewLoader size="20" color="white" h="h-auto" /> : (projectToEdit ? "Save" : "Post")}
           </button>
           <span className="text-sm text-green-900">{msgInfo}</span>
         </div>

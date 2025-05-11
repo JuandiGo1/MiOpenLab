@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { NewLoader } from "./Loader";
 
-const DeleteModal = ({ project, onDelete, onClose }) => {
+const DeleteModal = ({ project, onDelete, onClose, isDeleting }) => {
   const [confirmationText, setConfirmationText] = useState("");
   const [error, setError] = useState("");
-
+  
   const expectedText = `delete-${project.title}`;
 
   const handleDelete = () => {
@@ -37,20 +38,22 @@ const DeleteModal = ({ project, onDelete, onClose }) => {
         <div className="flex justify-end mt-4">
           <button
             onClick={onClose}
+            disabled={isDeleting}
             className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg mr-2 hover:bg-gray-400 cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={handleDelete}
-            disabled={confirmationText !== expectedText}
+            disabled={isDeleting}
+            // disabled={confirmationText !== expectedText}
             className={`px-4 py-2 rounded-lg cursor-pointer ${
               confirmationText === expectedText
                 ? "bg-red-600 text-white hover:bg-red-700"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
-            Eliminar
+            {isDeleting ? <NewLoader size="20" color="white" h="h-auto" /> : "Delete"} {/* Mostrar loader */}
           </button>
         </div>
       </div>
