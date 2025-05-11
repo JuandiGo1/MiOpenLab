@@ -1,15 +1,30 @@
+import { useState, useEffect } from "react";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { NavLink, useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
 import { BiHomeAlt2 } from "react-icons/bi";
 import { RiUser5Line, RiLogoutCircleLine } from "react-icons/ri";
-import { TiBookmark } from "react-icons/ti";
-import { MdAddCircleOutline } from "react-icons/md";
+import { MdOutlineNotifications } from "react-icons/md";
+import { getUnreadNotificationsCount } from "../../notifications/services/notiservice";
 
 const Navbar = ({ children }) => {
   const { logout, user } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
   const profileImage = user?.photoURL || defaultAvatar;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const count = await getUnreadNotificationsCount(user.uid);
+        setUnreadCount(count);
+      } catch (error) {
+        console.error("Error fetching unread notifications count:", error);
+      }
+    };
+
+    fetchUnreadCount();
+  }, [user]);
 
   const handleLogout = async () => {
     try {
@@ -54,7 +69,7 @@ const Navbar = ({ children }) => {
             </li>
             <li>
               <NavLink
-                to={`/profile/${user.username}`}
+                to={user ? `/profile/${user.username}` : `/`}
                 className={({ isActive }) =>
                   isActive
                     ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center gap-2"
@@ -67,26 +82,35 @@ const Navbar = ({ children }) => {
             </li>
             <li>
               <NavLink
-                to="/favorites"
+                to={user ? `/notifications` : `/`}
                 className={({ isActive }) =>
                   isActive
-                    ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center gap-2"
-                    : "flex items-center gap-2 pl-2"
+                    ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center justify-between gap-2 relative"
+                    : "flex items-center gap-2 pl-2 justify-between relative"
                 }
               >
-                <TiBookmark className="text-xl" />
-                Favorites
+                <div className="flex items-center gap-2">
+                  <MdOutlineNotifications className="text-xl" />
+                  Notifications
+                </div>
+
+                {unreadCount > 0 && (
+                  <span className=" bg-blue-400  text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                    {unreadCount}
+                  </span>
+                )}
               </NavLink>
             </li>
-            <li>
-              <NavLink
-                to="/newproject"
-                className="flex items-center bg-[#bd9260] rounded-lg w-35 gap-1 p-2 hover:bg-[#ce9456]/80 transition duration-300 ease-in-out"
-              >
-                <MdAddCircleOutline className="text-xl" />
-                New Project
-              </NavLink>
-            </li>
+            {user && (
+              <li>
+                <NavLink
+                  to="/newproject"
+                  className="flex items-center text-center font-bold bg-[#bd9260] rounded-full w-35 gap-1 px-4 py-3 hover:bg-[#ce9456]/80 transition duration-300 ease-in-out"
+                >
+                  New Project
+                </NavLink>
+              </li>
+            )}
           </ul>
         </div>
         <div className="flex items-start w-full ">
@@ -99,17 +123,17 @@ const Navbar = ({ children }) => {
               Logout
             </button>
           ) : (
-            <div className="flex flex-col justify-between gap-2">
+            <div className="flex flex-col justify-between gap-5 w-50">
               <NavLink
                 to="/"
-                className="flex items-center gap-2 bg-[#a86428] text-white text-bold text-xl px-3 py-2 rounded-xl"
+                className="flex items-center gap-2 bg-[#e7dbce] hover:bg-[#ce9456]/80 hover:text-white transition duration-300 ease-in-out text-gray-900 text-bold text-xl px-3 py-2 rounded-xl"
               >
                 Sing In
               </NavLink>
 
               <NavLink
                 to="/"
-                className="flex items-center gap-2 bg-[#806248] text-white text-bold text-xl px-3 py-2 rounded-xl"
+                className="flex items-center gap-2 bg-[#bd9260] hover:bg-[#ce9456] transition duration-300 ease-in-out text-white text-bold text-xl px-3 py-2 rounded-xl"
               >
                 Sing Up
               </NavLink>

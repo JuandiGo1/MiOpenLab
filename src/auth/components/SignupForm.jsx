@@ -20,12 +20,13 @@ const SignupForm = ({ setIsLogin }) => {
             return;
         }
 
+
         if (password !== confirmPassword) {
             setMsgInfo("Passwords do not match!");
             return;
         }
 
-        const res = await register(email, password, username);
+    const res = await register(email, password, username);
         if (res.success) {
             setMsgInfo("User registered successfully!");
             setIsLogin(true); // Cambia a LoginForm

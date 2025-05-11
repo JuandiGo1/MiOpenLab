@@ -10,7 +10,9 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
-import { db } from "../../firebase/Config";
+import { auth, db } from "../../firebase/Config";
+import { createNotification } from "../../notifications/services/notiservice";
+import { getProjectById } from "../../profile/services/projectService";
 
 // Valida username único
 export async function isUsernameAvailable(username) {
@@ -99,7 +101,7 @@ export async function getUserProfileByUsername(username) {
     const userDoc = querySnapshot.docs[0];
     return { uid: userDoc.id, ...userDoc.data() };
   } else {
-    return null; 
+    return null;
   }
 }
 
@@ -116,8 +118,30 @@ export async function getUserLikes(uid) {
 
 export async function likePost(uid, postId) {
   const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    throw new Error("El usuario no existe.");
+  }
+
+  const userData = userSnap.data();
+
   await updateDoc(userRef, {
     likedProjects: arrayUnion(postId),
+  });
+  const postRef = await getProjectById(postId);
+  // Mandar noti
+  if(postRef.authorId == uid) return; // No notificar si se da like a si mismoo
+  console.log("Mandando noti desde " + userData.username);
+  
+  await createNotification({
+    to: postRef.authorId,
+    from: uid,
+    type: "like",
+    postId: postId,
+    postTitle: postRef.title,
+    fromUsername: userData.username,
+    fromPhoto: userData.photoURL,
   });
 }
 
@@ -131,6 +155,13 @@ export async function unlikePost(uid, postId) {
 export async function followUser(currentUid, targetUid) {
   const currentRef = doc(db, "users", currentUid);
   const targetRef = doc(db, "users", targetUid);
+  const userSnap = await getDoc(currentRef);
+
+  if (!userSnap.exists()) {
+    throw new Error("El usuario no existe.");
+  }
+
+  const userData = userSnap.data();
 
   await updateDoc(currentRef, {
     following: arrayUnion(targetUid),
@@ -138,6 +169,14 @@ export async function followUser(currentUid, targetUid) {
 
   await updateDoc(targetRef, {
     followers: arrayUnion(currentUid),
+  });
+
+  await createNotification({
+    to: targetUid,
+    from: currentUid,
+    type: "follow",
+    fromUsername: userData.username,
+    fromPhoto: userData.photoURL,
   });
 }
 
@@ -174,4 +213,25 @@ export async function getUserFollowing(uid) {
   } else {
     return [];
   }
+}
+
+export async function getUsernameById(uid) {
+  const docRef = doc(db, "users", uid);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    return docSnap.data().username;
+  } else {
+    return null;
+  }
+}
+
+export async function updateName(newName) {
+  const user = auth.currentUser;
+  if (!user) throw new Error("There is no authenticated user.");
+  if (!newName) throw new Error("Username cannot be empty or only spaces!");
+  const userRef = doc(db, "users", user.uid);
+  await updateDoc(userRef, {
+    displayName: newName,
+  });
 }

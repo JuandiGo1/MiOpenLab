@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
 import { followUser, unfollowUser } from "../../auth/services/userService";
+import { ToastContainer, toast } from "react-toastify";
 
 const ProfileHeader = ({
   countPosts,
@@ -18,14 +19,14 @@ const ProfileHeader = ({
   const [isLoading, setIsLoading] = useState(false);
   const profileImage = photoURL || defaultAvatar;
 
-    // Sincronizar isFollowing con currentUserFollows y uid
-    useEffect(() => {
-      if (currentUserFollows?.includes(uid)) {
-        setFollow(true);
-      } else {
-        setFollow(false);
-      }
-    }, [currentUserFollows, uid]);
+  // Sincronizar isFollowing con currentUserFollows y uid
+  useEffect(() => {
+    if (currentUserFollows?.includes(uid)) {
+      setFollow(true);
+    } else {
+      setFollow(false);
+    }
+  }, [currentUserFollows, uid]);
 
   const handleFollow = async () => {
     if (isLoading) return;
@@ -43,6 +44,35 @@ const ProfileHeader = ({
       }
     } catch (error) {
       console.error("Error al actualizar el estado de seguimiento:", error);
+    }
+    setIsLoading(false);
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/profile/${username}`);
+      toast("✅ Profile link copied to clipboard!", {
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    } catch (error) {
+      toast.error("Error on copy link to clipboard...", {
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      console.error("Error copying link:", error);
     }
   };
 
@@ -86,9 +116,10 @@ const ProfileHeader = ({
           </button>
         )}
 
-        <button className="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg">
+        <button onClick={handleCopyLink} className="bg-gray-200 text-gray-600 hover:bg-[#1c2930]/80 hover:text-white transition duration-300 ease-in-out px-4 py-2 rounded-lg cursor-pointer">
           Share
         </button>
+        <ToastContainer />
       </div>
     </div>
   );

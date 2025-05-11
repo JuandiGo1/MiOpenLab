@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { AiOutlineLike, AiFillLike } from "react-icons/ai";
@@ -15,7 +15,11 @@ import {
   removeLike,
 } from "../../profile/services/projectService";
 import formatDate from "../../utils/dateFormatter";
-import { likePost, unlikePost } from "../../auth/services/userService";
+import {
+  likePost,
+  unlikePost,
+  getUsernameById,
+} from "../../auth/services/userService";
 
 const ProjectCard = ({
   id,
@@ -24,6 +28,7 @@ const ProjectCard = ({
   likes,
   authorId,
   authorName,
+  authorUsername,
   authorPhoto,
   createdAt,
   linkRepo,
@@ -36,8 +41,32 @@ const ProjectCard = ({
   const [likeCount, setLikeCount] = useState(likes);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [authorProfileLink, setAuthorProfileLink]= useState('');
   const authorAvatar = authorPhoto ? authorPhoto : defaultAvatar;
   const navigate = useNavigate();
+  // const authorProfileLink = authorUsername
+  //   ? `/profile/${authorUsername}`
+  //   : `/profile/${getUsernameById(authorId)}`;
+
+  useEffect(() => {
+    const fetchAuthorProfileLink = async () => {
+      try {
+        let username;
+        if(!authorUsername){
+           username = await getUsernameById(authorId);
+        }else{
+          username = authorUsername;
+        }
+        
+        
+        setAuthorProfileLink(`/profile/${username}`);
+      } catch (error) {
+        console.error("Error fetching author profile link:", error);
+      }
+    };
+
+    fetchAuthorProfileLink();
+  }, [authorId, authorUsername]);
 
   // Formatear fecha
   const formattedDate = formatDate(createdAt);
@@ -61,7 +90,6 @@ const ProjectCard = ({
         await likePost(user.uid, id);
         await addLike(id, user.uid);
       }
-
     } catch (error) {
       console.error("Error updating like status:", error);
       // Revertir cambios si hay error
@@ -128,7 +156,7 @@ const ProjectCard = ({
                   alt={`${authorName}'s avatar`}
                   className="size-6 rounded-full "
                 />
-                <h3 className="text-md font-mono text-gray-500 ">
+                <h3 onClick={()=> navigate(authorProfileLink)} className="text-md font-mono text-gray-500 hover:underline cursor-pointer ">
                   {authorName}
                 </h3>
               </div>

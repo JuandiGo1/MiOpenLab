@@ -15,6 +15,7 @@
     "@mui/material": "^7.1.0",
     "@tailwindcss/vite": "^4.1.4",
     "firebase": "^11.6.1",
+    "ldrs": "^1.1.7",
     "react": "^19.0.0",
     "react-content-loader": "^7.0.2",
     "react-dom": "^19.0.0",
@@ -22,6 +23,7 @@
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.5.2",
     "react-simplemde-editor": "^5.2.0",
+    "react-toastify": "^11.0.5",
     "tailwindcss": "^4.1.4"
   },
   "devDependencies": {
