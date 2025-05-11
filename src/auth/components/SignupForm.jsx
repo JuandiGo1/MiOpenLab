@@ -117,7 +117,7 @@ const SignupForm = ({ setIsLogin }) => {
                     Already have an account?{" "}
                     <button
                         onClick={() => setIsLogin(true)} // Cambia a SignupForm
-                        className="text-blue-900 font-bold hover:underline cursor-pointer"
+                        className="text-blue-900 font-bold hover:underline cursor-pointer dark:text-blue-200"
                     >
                         Log In
                     </button>

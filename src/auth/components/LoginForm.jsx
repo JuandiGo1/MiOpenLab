@@ -86,7 +86,7 @@ const LoginForm = ({ setIsLogin }) => {
                 Don’t have an account?{" "}
                 <button
                     onClick={() => setIsLogin(false)} // Cambia a SignupForm
-                    className="text-blue-900 font-bold hover:underline cursor-pointer"
+                    className="text-blue-900 font-bold hover:underline cursor-pointer dark:text-blue-200"
                 >
                     Sign Up
                 </button>
