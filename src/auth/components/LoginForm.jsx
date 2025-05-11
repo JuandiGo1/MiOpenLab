@@ -74,15 +74,15 @@ const LoginForm = ({ setIsLogin }) => {
             <div className="mt-4 text-center">
                 <a
                     href="/forgot-password"
-                    className="text-sm text-gray-500 hover:underline dark:text-gray-400"
+                    className="text-sm text-gray-500 hover:underline dark:text-blue-200"
                 >
                     Forgot Password?
                 </a>
             </div>
             {msgInfo && (
-                <p className="mt-4 text-center text-sm text-red-950">{msgInfo}</p>
+                <p className="mt-4 text-center text-sm text-red-950 dark:text-red-600 dark:text-shadow-4xs">{msgInfo}</p>
             )}
-            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-300">
                 Don’t have an account?{" "}
                 <button
                     onClick={() => setIsLogin(false)} // Cambia a SignupForm
@@ -93,7 +93,7 @@ const LoginForm = ({ setIsLogin }) => {
             </p>
             <div className="mt-4">
                 <hr className="border-t border-gray-400 my-4" />
-                <p className="text-center text-gray-500 dark:text-gray-400">or</p>
+                <p className="text-center text-gray-500 dark:text-gray-300">or</p>
                 <div className="mt-4 space-y-2">
                     <button onClick={handleGoogleLogin} className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition duration-300 ease-in-out flex items-center justify-center gap-2 cursor-pointer dark:bg-[#3C3D37] dark:hover:bg-[#5C5D57]">
                         <FaGoogle className="text-2xl" /> Log In with Google

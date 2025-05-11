@@ -111,9 +111,9 @@ const SignupForm = ({ setIsLogin }) => {
                     Sign Up
                 </button>
                 {msgInfo && (
-                    <p className="mt-4 text-center text-sm text-red-950">{msgInfo}</p>
+                    <p className="mt-4 text-center text-sm text-red-950 dark:text-red-600 dark:text-shadow-4xs">{msgInfo}</p>
                 )}
-                <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+                <p className="mt-4 text-sm text-gray-600 dark:text-gray-300">
                     Already have an account?{" "}
                     <button
                         onClick={() => setIsLogin(true)} // Cambia a SignupForm
@@ -124,7 +124,7 @@ const SignupForm = ({ setIsLogin }) => {
                 </p>
                 <div className="mt-4">
                     <hr className="border-t border-gray-400 my-4" />
-                    <p className="text-center text-gray-500 dark:text-gray-400">or</p>
+                    <p className="text-center text-gray-500 dark:text-gray-300">or</p>
                     <div className="mt-4 space-y-2">
                         <button
                             onClick={handleGoogleLogin}
