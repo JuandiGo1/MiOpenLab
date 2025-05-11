@@ -35,10 +35,10 @@ const LoginForm = ({ setIsLogin }) => {
 
   return (
     <div className="w-full max-w-full sm:max-w-md bg-[#EAEOD5] p-8 rounded-lg ">
-      <h2 className="text-2xl font-bold text-[#1c2930] mb-6 dark:text-[#FFFFFF]">Log In</h2>
+      <h2 className="text-2xl font-bold text-[#1c2930] mb-6 dark:text-white">Log In</h2>
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-[#DDDDDD]">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
             Email
           </label>
           <input
@@ -51,7 +51,7 @@ const LoginForm = ({ setIsLogin }) => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-[#DDDDDD]">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
             Password
           </label>
           <input
@@ -74,7 +74,7 @@ const LoginForm = ({ setIsLogin }) => {
       <div className="mt-4 text-center">
         <a
           href="/forgot-password"
-          className="text-sm text-gray-500 hover:underline dark:text-[#AAAAAA]"
+          className="text-sm text-gray-500 hover:underline dark:text-gray-400"
         >
           Forgot Password?
         </a>
@@ -82,7 +82,7 @@ const LoginForm = ({ setIsLogin }) => {
       {msgInfo && (
           <p className="mt-4 text-center text-sm text-red-950">{msgInfo}</p>
         )}
-      <p className="mt-4 text-sm text-gray-600 dark:text-[#AAAAAA]">
+      <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
         Don’t have an account?{" "}
         <button
           onClick={() => setIsLogin(false)} // Cambia a SignupForm
@@ -93,7 +93,7 @@ const LoginForm = ({ setIsLogin }) => {
       </p>
       <div className="mt-4">
         <hr className="border-t border-gray-400 my-4" />
-        <p className="text-center text-gray-500 dark:text-[#AAAAAA]">or</p>
+        <p className="text-center text-gray-500 dark:text-gray-400">or</p>
         <div className="mt-4 space-y-2">
           <button onClick={handleGoogleLogin} className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition duration-300 ease-in-out flex items-center justify-center gap-2 cursor-pointer dark:bg-[#3C3D37] dark:hover:bg-[#5C5D57]">
             <FaGoogle className="text-2xl" /> Log In with Google
