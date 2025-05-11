@@ -44,86 +44,86 @@ const LoginForm = ({ setIsLogin }) => {
     }
   };
 
-    return (
-        <div className="w-full max-w-full sm:max-w-md bg-[#EAE0D5] p-8 rounded-lg ">
-            <h2 className="text-2xl font-bold text-[#1c2930] mb-6 dark:text-white">Log In</h2>
-            <form onSubmit={handleLogin} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                        placeholder="Enter your email"
-                        required
-                        disabled={isLoading || isGoogleLoading}
+  return (
+    <div className="w-full max-w-full sm:max-w-md bg-[#EAE0D5] p-8 rounded-lg ">
+      <h2 className="text-2xl font-bold text-[#1c2930] mb-6 dark:text-white">Log In</h2>
+      <form onSubmit={handleLogin} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            Email
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none"
+            placeholder="Enter your email"
+            required
+            disabled={isLoading || isGoogleLoading}
           />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                        Password
-                    </label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="mt-1 block w-full px-4 py-2 bg-white  border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                        placeholder="Enter your password"
-                        required
-                        disabled={isLoading || isGoogleLoading}
-          />
-                </div>
-                <button
-                    type="button"
-                    onClick={handleLogin}
-                    disabled={isLoading || isGoogleLoading}
-                    className="w-full bg-[#22333B] text-white py-2 px-4 rounded-md hover:bg-[#3c5a68] transition duration-300 ease-in-out cursor-pointer"
-                >
-                    {isLoading ? <NewLoader size="20" color="white" h="h-auto" /> : "Log In"}
-                </button>
-            </form>
-            <div className="mt-4 text-center">
-                <a
-                    href="/forgot-password"
-                    className="text-sm text-gray-500 hover:underline dark:text-blue-200"
-                >
-                    Forgot Password?
-                </a>
-            </div>
-            {msgInfo && (
-              <p className="mt-4 text-center text-sm text-red-950 dark:text-red-600 dark:text-shadow-4xs">{msgInfo}</p>
-          )}
-            <p className="mt-4 text-sm text-gray-600 dark:text-gray-300">
-                Don’t have an account?{" "}
-                <button
-                    onClick={() => !isLoading && !isGoogleLoading && setIsLogin(false)} // Cambia a SignupForm
-                    disabled={isLoading || isGoogleLoading}
-          className="text-blue-900 font-bold hover:underline cursor-pointer"
-                >
-                    Sign Up
-                </button>
-            </p>
-            <div className="mt-4">
-                <hr className="border-t border-gray-400 my-4" />
-                <p className="text-center text-gray-500 dark:text-gray-300">or</p>
-                <div className="mt-4 space-y-2">
-                    <button onClick={handleGoogleLogin}
-                      disabled={isLoading || isGoogleLoading}
-                      className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition duration-300 ease-in-out flex items-center justify-center gap-2 cursor-pointer dark:bg-[#3C3D37] dark:hover:bg-[#5C5D57]"
-                    >
-                      {isGoogleLoading ? <NewLoader size="20" color="white" h="h-auto" /> : (
-                        <>
-                          <FaGoogle className="text-xl" /> Log In with Google
-                        </>
-                      )}
-                    </button>
-                </div>
-            </div>
         </div>
-    );
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            Password
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mt-1 block w-full px-4 py-2 bg-white  border border-gray-300 rounded-md shadow-sm focus:outline-none"
+            placeholder="Enter your password"
+            required
+            disabled={isLoading || isGoogleLoading}
+          />
+        </div>
+        <button
+          type="button"
+          onClick={handleLogin}
+          disabled={isLoading || isGoogleLoading}
+          className="w-full bg-[#22333B] text-white py-2 px-4 rounded-md hover:bg-[#3c5a68] transition duration-300 ease-in-out cursor-pointer"
+        >
+          {isLoading ? <NewLoader size="20" color="white" h="h-auto" /> : "Log In"}
+        </button>
+      </form>
+      <div className="mt-4 text-center">
+        <a
+          href="/forgot-password"
+          className="text-sm text-gray-500 hover:underline dark:text-blue-200"
+        >
+          Forgot Password?
+        </a>
+      </div>
+      {msgInfo && (
+        <p className="mt-4 text-center text-sm text-red-950 dark:text-red-600 dark:text-shadow-4xs">{msgInfo}</p>
+      )}
+      <p className="mt-4 text-sm text-gray-600 dark:text-gray-300">
+        Don’t have an account?{" "}
+        <button
+          onClick={() => !isLoading && !isGoogleLoading && setIsLogin(false)} // Cambia a SignupForm
+          disabled={isLoading || isGoogleLoading}
+          className="text-blue-900 font-bold hover:underline cursor-pointer"
+        >
+          Sign Up
+        </button>
+      </p>
+      <div className="mt-4">
+        <hr className="border-t border-gray-400 my-4" />
+        <p className="text-center text-gray-500 dark:text-gray-300">or</p>
+        <div className="mt-4 space-y-2">
+          <button onClick={handleGoogleLogin}
+            disabled={isLoading || isGoogleLoading}
+            className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition duration-300 ease-in-out flex items-center justify-center gap-2 cursor-pointer dark:bg-[#3C3D37] dark:hover:bg-[#5C5D57]"
+          >
+            {isGoogleLoading ? <NewLoader size="20" color="white" h="h-auto" /> : (
+              <>
+                <FaGoogle className="text-xl" /> Log In with Google
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default LoginForm;
