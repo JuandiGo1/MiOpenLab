@@ -1,13 +1,16 @@
 import { GoSearch } from "react-icons/go";
 import { useState, useEffect } from "react";
 import { searchProjects } from "../../profile/services/projectService";
+import Loader from "../components/Loader";
 
 const SearchBar = ({ onResults, setMsgInfo }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     const delayDebounce = setTimeout(async () => {
       if (searchTerm.trim().length > 0) {
+        setIsSearching(true);
         try {
           const res = await searchProjects(searchTerm);
           setMsgInfo(res.length === 0 ? "No results found, showing all projects." : "");
@@ -15,6 +18,8 @@ const SearchBar = ({ onResults, setMsgInfo }) => {
         } catch (error) {
           console.error("Error fetching search results:", error);
           setMsgInfo("Error searching projects");
+        } finally {
+          setIsSearching(false);
         }
       } else {
         setMsgInfo("");
@@ -35,7 +40,11 @@ const SearchBar = ({ onResults, setMsgInfo }) => {
       </label>
       <div className="relative">
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <GoSearch className="text-gray-400" />
+          {isSearching ? (
+            <Loader size="16" color="#6B7280" /> // Mostrar loader
+          ) : (
+            <GoSearch className="text-gray-400" /> // Mostrar icono de búsqueda
+          )}
         </div>
         <input
           type="search"
