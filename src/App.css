@@ -1,8 +1,11 @@
 @import "tailwindcss";
 @plugin '@tailwindcss/typography';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 .custom-toast {
     background-color: #f1f1f1d5 !important; /* Cambia el color de fondo */
     color: rgb(19, 19, 19) !important; /* Cambia el color del texto */
     --toastify-color-progress-success: #bd9260 !important; /* Cambia el color de la barra de progreso */
   }
+
