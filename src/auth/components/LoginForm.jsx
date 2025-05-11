@@ -101,7 +101,7 @@ const LoginForm = ({ setIsLogin }) => {
         <button
           onClick={() => !isLoading && !isGoogleLoading && setIsLogin(false)} // Cambia a SignupForm
           disabled={isLoading || isGoogleLoading}
-          className="text-blue-900 font-bold hover:underline cursor-pointer"
+          className="text-blue-900 font-bold hover:underline cursor-pointer dark:text-blue-200"
         >
           Sign Up
         </button>
