@@ -54,7 +54,7 @@ const SignupForm = ({ setIsLogin }) => {
     }
   };
 
-  return (
+return (
     <div className="w-full max-w-full sm:max-w-md bg-[#EAEOD5] p-8 rounded-lg">
       <h2 className="text-2xl font-bold text-[#1c2930] mb-6 dark:text-white">Sign Up</h2>
       <form onSubmit={handleSignup} className="space-y-4">
