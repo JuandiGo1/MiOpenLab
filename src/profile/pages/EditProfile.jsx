@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../../auth/hooks/useAuth";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
 import { useNavigate } from "react-router-dom";
+import { NewLoader } from "../../common/components/Loader";
 
 const EditProfile = () => {
   const { user, updateName } = useAuth();
@@ -9,6 +10,7 @@ const EditProfile = () => {
   const [photo, setPhoto] = useState(user?.photoURL || defaultAvatar);
   const [msgInfo, setMsgInfo] = useState("");
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -28,13 +30,16 @@ const EditProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setMsgInfo("Updating...");
+      setIsLoading(true);
+      //setMsgInfo("Updating...");
       await updateName(name);
       //await updateProfilePic(photo);
       setMsgInfo("Succesfully!");
       navigate(`/profile/${user.username}`);
     } catch (error) {
       setMsgInfo(error.message);
+    } finally {
+      setIsLoading(false); // Desactivar loader
     }
   };
 
@@ -66,6 +71,7 @@ const EditProfile = () => {
               accept="image/*"
               className="hidden"
               onChange={handlePhotoChange}
+              disabled={isLoading}
             />
           </div>
 
@@ -83,6 +89,7 @@ const EditProfile = () => {
               value={name}
               onChange={handleNameChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none "
+              disabled={isLoading}
             />
           </div>
 
@@ -92,7 +99,7 @@ const EditProfile = () => {
             onClick={handleSubmit}
             className="w-full bg-[#c9965b] text-white px-4 py-2 rounded-lg hover:bg-[#e29d4e] transition duration-300 ease-in-out cursor-pointer"
           >
-            Save Changes
+            {isLoading ? <NewLoader size="20" color="white" h="h-auto" /> : "Save Changes"}
           </button>
         </form>
       </div>

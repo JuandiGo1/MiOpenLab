@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import NotificationItem from "../components/NotificationItem";
 import { getUserNotifications, markAllAsRead } from "../services/notiservice";
 import TopProjectsBar from "../../common/components/TopProjects";
-import Loader from "../../common/components/Loader";
+import { NewLoader } from "../../common/components/Loader";
 import { useAuth } from "../../auth/hooks/useAuth";
 
 const NotificationsPage = () => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isMarkingRead, setIsMarkingRead] = useState(false); // Estado para controlar el botón de "Marcar todo como leído"
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -26,6 +27,8 @@ const NotificationsPage = () => {
   }, [user]);
 
   const handleMarkAllAsRead = async () => {
+    if (isMarkingRead) return; // Evitar múltiples clics
+    setIsMarkingRead(true);
     try {
       await markAllAsRead(user.uid);
       setNotifications((prev) =>
@@ -33,27 +36,34 @@ const NotificationsPage = () => {
       );
     } catch (error) {
       console.error("Error marking notifications as read:", error);
+    } finally {
+      setIsMarkingRead(false);
     }
   };
 
   return (
     <div className="flex bg-gray-100 justify-between w-full min-h-screen">
       <div className="p-6 bg-gray-100 w-full min-h-screen">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Notifications</h1>
-          <button
-            onClick={handleMarkAllAsRead}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Mark All as Read
-          </button>
+        <div className="flex justify-between items-center mb-6 gap-6">
+          <h1 className="text-3xl font-bold text-[#1c2930]">Notifications</h1>
+          {notifications.length > 0 && ( // Mostrar botón solo si hay notificaciones
+            <button
+              onClick={handleMarkAllAsRead}
+              disabled={isMarkingRead || notifications.every(n => n.isRead)} // Deshabilitar si ya todas están leídas
+              className="bg-[#bd9260] text-white px-4 py-2 rounded-lg hover:bg-[#ca9c6e] transition duration-150 ease-in-out flex items-center justify-center min-w-[150px] min-h-[40px] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isMarkingRead ? <NewLoader size="20" color="white" h="h-auto" /> : "Mark All as Read"}
+            </button>
+          )}
         </div>
         {loading ? (
-          <Loader />
+          <div className="flex justify-center items-center pt-10"> {/* Contenedor para centrar el loader principal */}
+            <NewLoader size="50" /> {/* MODIFICADO: Usar NewLoader para la carga inicial */}
+          </div>
         ) : notifications.length === 0 ? (
-          <p>No notifications yet.</p>
+          <p className="text-center text-gray-500 mt-10">No notifications yet.</p>
         ) : (
-          <div className="flex flex-col gap-4">
+          <div className="space-y-3"> {/* Usar space-y para espaciado entre items */}
             {notifications.map((notification) => (
               <NotificationItem key={notification.id} {...notification} />
             ))}
