@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
 import { followUser, unfollowUser } from "../../auth/services/userService";
 import { ToastContainer, toast } from "react-toastify";
+import { NewLoader } from "../../common/components/Loader";
 
 const ProfileHeader = ({
   countPosts,
@@ -44,8 +45,9 @@ const ProfileHeader = ({
       }
     } catch (error) {
       console.error("Error al actualizar el estado de seguimiento:", error);
+    } finally {
+      setIsLoading(false); // Desactivar el loader
     }
-    setIsLoading(false);
   };
 
   const handleCopyLink = async () => {
@@ -112,7 +114,11 @@ const ProfileHeader = ({
                 : "bg-[#bd9260] text-white hover:bg-[#ce9456]/80"
             } transition duration-300 ease-in-out px-4 py-2 rounded-lg cursor-pointer`}
           >
-            {isFollowing ? "Unfollow" : "Follow"}
+            {isLoading ? (
+              <NewLoader size="20" color={isFollowing ? "#1c2930" : "white"} h="h-auto" />
+            ) : (
+              isFollowing ? "Unfollow" : "Follow"
+            )}
           </button>
         )}
 

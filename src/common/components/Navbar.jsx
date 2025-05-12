@@ -14,15 +14,15 @@ const Navbar = ({ children }) => {
     const profileImage = user?.photoURL || defaultAvatar;
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchUnreadCount = async () => {
-            try {
-                const count = await getUnreadNotificationsCount(user.uid);
-                setUnreadCount(count);
-            } catch (error) {
-                console.error("Error fetching unread notifications count:", error);
-            }
-        };
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const count = await getUnreadNotificationsCount(user.uid);
+        setUnreadCount(count);
+      } catch (error) {
+        console.error("Error fetching unread notifications count:", error);
+      }
+    };
 
         fetchUnreadCount();
     }, [user]);

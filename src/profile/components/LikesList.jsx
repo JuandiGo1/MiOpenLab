@@ -10,21 +10,31 @@ const LikesList = ({ userId }) => {
 
   useEffect(() => {
     const fetchLikedProjects = async () => {
+      if (!userId) {
+        setLoading(false);
+        setLikedProjects([]);
+        return;
+      }
+      setLoading(true);
       try {
         const likedProjectIds = await getUserLikes(userId);
 
-        // Obtener la información de cada proyecto
-        const projectsData = await Promise.all(
-          likedProjectIds.map(async (projectId) => {
-            const project = await getProjectById(projectId);
-            return project;
-          })
-        );
+        if (likedProjectIds && likedProjectIds.length > 0) {
+          const projectsDataPromises = likedProjectIds.map(async (projectId) => {
+            return await getProjectById(projectId); // Esto puede devolver null
+          });
+          const fetchedProjects = await Promise.all(projectsDataPromises);
 
-        setLikedProjects(projectsData);
-        setLoading(false);
+          // Filtrar proyectos que sean null (no encontrados o eliminados)
+          const validProjects = fetchedProjects.filter(project => project !== null);
+          setLikedProjects(validProjects);
+        } else {
+          setLikedProjects([]); // No hay IDs de proyectos likeados
+        }
       } catch (error) {
         console.error("Error fetching liked projects:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -40,8 +50,8 @@ const LikesList = ({ userId }) => {
         {loading
           ? [...Array(3)].map((_, index) => <ProjectSkeleton key={index} />)
           : likedProjects.map((project) => (
-              <ProjectCard key={project.id} {...project} />
-            ))}
+            <ProjectCard key={project.id} {...project} />
+          ))}
       </div>
     </div>
   );
