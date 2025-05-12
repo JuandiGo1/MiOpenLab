@@ -13,6 +13,7 @@ const Navbar = ({ children }) => {
     const [unreadCount, setUnreadCount] = useState(0);
     const profileImage = user?.photoURL || defaultAvatar;
     const navigate = useNavigate();
+    const [darkMode, setDarkMode] = useState(false);
 
     useEffect(() => {
         const fetchUnreadCount = async () => {
@@ -37,9 +38,29 @@ const Navbar = ({ children }) => {
         }
     };
 
+    useEffect(() => {
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark") {
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+        }
+    }, []);
+
+    const handleThemeChange = () => {
+        const currentTheme = localStorage.getItem("theme");
+        if (currentTheme === "dark") {
+            localStorage.setItem("theme", "light");
+            document.documentElement.classList.remove("dark");
+        } else {
+            localStorage.setItem("theme", "dark");
+            document.documentElement.classList.add("dark");
+        }
+    }
+
     return (
         <div className="flex min-h-screen ">
-            <nav className="flex  flex-col items-center justify-between bg-[#1c2930] text-white p-6 shadow-md w-64 h-screen fixed">
+            <nav className="flex  flex-col items-center justify-between bg-[#1c2930] text-white p-6 shadow-md w-64 h-screen fixed dark:bg-red-900">
                 <div className="flex flex-col items-start justify-between w-full gap-10">
                     <div className="flex items-center justify-start gap-2 mb-3">
                         <img
@@ -143,7 +164,7 @@ const Navbar = ({ children }) => {
                         )}
                     </div>
                     <div className="flex items-center justify-center">
-                        <ThemeSwitch />
+                        <ThemeSwitch checked={darkMode} onChange={handleThemeChange} />
                     </div>
                 </div>
             </nav>
