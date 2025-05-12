@@ -30,7 +30,7 @@ const NotificationItem = ({
             <AiFillLike />
           </span>
         </div>
-        <div className="flex gap-1 ml-1">
+        <div className="flex gap-1 ml-2">
           <span className="font-bold dark:text-white">{fromUsername} </span>
           <span className="text-gray-600 dark:text-gray-200">
             {" "}
@@ -41,7 +41,7 @@ const NotificationItem = ({
           </span>
         </div>
       </div>
-      <p className="text-xs text-gray-400 mt-2 dark:text-gray-300">{formattedDate}</p>
+      <p className="flex justify-end text-xs text-gray-400 mt-2 dark:text-gray-300">{formattedDate}</p>
     </div>
   ) : (
     <div
