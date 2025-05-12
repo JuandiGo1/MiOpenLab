@@ -60,7 +60,7 @@ const Navbar = ({ children }) => {
 
     return (
         <div className="flex min-h-screen ">
-            <nav className="flex  flex-col items-center justify-between bg-[#1c2930] text-white p-6 shadow-md w-64 h-screen fixeds">
+            <nav className="flex flex-col items-center justify-between bg-[#1c2930] text-white p-6 shadow-md w-64 h-screen fixed">
                 <div className="flex flex-col items-start justify-between w-full gap-10">
                     <div className="flex items-center justify-start gap-2 mb-3">
                         <img
