@@ -16,7 +16,7 @@ const NotificationItem = ({
   return type === "like" ? (
     <div
       className={`p-4 rounded-xl shadow-md w-full ${
-        read ? "bg-white dark:bg-[#444444]/90" : "bg-[#e2f0f5] dark:bg-[#333333]"
+        read ? "bg-white dark:bg-[#181818]/90" : "bg-[#e2f0f5] dark:bg-[#444444]"
       }`}
     >
       <div className="flex items-center justify-start mb-2">
@@ -46,7 +46,7 @@ const NotificationItem = ({
   ) : (
     <div
       className={`p-4 rounded-xl shadow-md w-full ${
-        read ? "bg-white dark:bg-[#6565fc]/90" : "bg-[#e2f0f5] dark:bg-[#4343e8]"
+        read ? "bg-white dark:bg-[#181818]/90" : "bg-[#e2f0f5] dark:bg-[#444444]"
       }`}
     >
       <div className="flex items-center justify-start mb-2">
