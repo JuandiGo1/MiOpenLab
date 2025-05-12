@@ -1,8 +1,6 @@
 import ContentLoader from "react-content-loader";
 import { useEffect, useState } from "react";
 
-let isDarkMode = localStorage.getItem("theme") === "dark";
-
 const ProjectSkeleton = (props) => {
     const [isDarkMode, setIsDarkMode] = useState(false);
 
