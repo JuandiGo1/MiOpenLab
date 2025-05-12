@@ -143,14 +143,14 @@ const ProjectCard = ({
   };
 
   return (
-    <article className="flex flex-col justify-between bg-white rounded-lg shadow-md  mb-4">
+    <article className="flex flex-col justify-between bg-white rounded-lg shadow-md mb-4 dark:bg-[#333333]">
       <div>
         {/* Header */}
         <div className="flex flex-col items-start justify-between my-4">
           <div className="flex items-center justify-between w-full">
             <div className="flex flex-col justify-start gap-1">
               <h2
-                className="text-3xl font-semibold text-gray-800 px-4 hover:underline cursor-pointer"
+                className="text-3xl font-semibold text-gray-800 px-4 hover:underline cursor-pointer dark:text-white"
                 onClick={handleViewDetails}
               >
                 {title}
@@ -162,7 +162,7 @@ const ProjectCard = ({
                   alt={`${authorName}'s avatar`}
                   className="size-6 rounded-full "
                 />
-                <h3 onClick={()=> navigate(authorProfileLink)} className="text-md font-mono text-gray-500 hover:underline cursor-pointer ">
+                <h3 onClick={()=> navigate(authorProfileLink)} className="text-md font-mono text-gray-500 hover:underline cursor-pointer dark:text-gray-300 ">
                   {authorName}
                 </h3>
               </div>
@@ -170,7 +170,7 @@ const ProjectCard = ({
 
             <div className="flex flex-col gap-1 items-start justify-center ">
               <a
-                className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456]"
+                className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456] dark:text-gray-50 dark:hover:text-[#8293ff]"
                 href={linkRepo}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -181,7 +181,7 @@ const ProjectCard = ({
 
               {linkDemo && (
                 <a
-                  className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456]"
+                  className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456] dark:text-gray-50 dark:hover:text-[#8293ff]"
                   href={linkDemo}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -194,15 +194,15 @@ const ProjectCard = ({
           </div>
         </div>
 
-        <hr className="border-t w-full border-gray-200 my-2" />
+        <hr className="border-t w-full border-gray-200 my-2 dark:border-[#404040]" />
         {/* Renderizar la descripción en formato Markdown */}
         <div
-          className="prose prose-sm w-full max-w-none text-gray-600 p-4 mb-4 cursor-pointer"
+          className="prose prose-sm w-full max-w-none text-gray-600 p-4 mb-4 cursor-pointer dark:text-gray-300"
           onClick={handleViewDetails}
         >
           <ReactMarkdown>{`${description.slice(0, 150)}...`}</ReactMarkdown>
           {description.length > 100 && (
-            <button className="text-blue-500 hover:underline mt-2 cursor-pointer">
+            <button className="text-blue-500 hover:underline mt-2 cursor-pointer dark:text-blue-400">
               Ver más
             </button>
           )}
@@ -210,18 +210,18 @@ const ProjectCard = ({
       </div>
 
       {/* Footer */}
-      <div className="flex flex-col justify-between items-start text-sm text-gray-500">
-        <hr className="border-t w-full border-gray-200 " />
+      <div className="flex flex-col justify-between items-start text-sm text-gray-500 dark:text-gray-300">
+        <hr className="border-t w-full border-gray-200 dark:border-[#404040]" />
         <div className="flex items-center justify-between w-full p-4">
           <button
             onClick={handleLike}
             disabled={isLoading}
-            className="flex text-gray-500 hover:text-blue-700 transition duration-300 cursor-pointer"
+            className="flex text-gray-500 hover:text-blue-700 transition duration-300 cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
           >
             {isLoading ? (
               <NewLoader size="18" color="#3B82F6" h="h-auto" /> // Loader para el like
             ) : isLiked ? (
-              <AiFillLike className="text-xl text-blue-700" />
+              <AiFillLike className="text-xl text-blue-700 dark:text-blue-400" />
             ) : (
               <AiOutlineLike className="text-xl" />
             )}
@@ -232,15 +232,15 @@ const ProjectCard = ({
               <div className="flex items-center gap-2">
                 <RiEditLine
                   onClick={handleEdit}
-                  className="text-xl text-gray-500 cursor-pointer hover:text-blue-700"
+                  className="text-xl text-gray-500 cursor-pointer hover:text-blue-700 dark:text-gray-300 dark:hover:text-blue-400"
                 />
                 <LuEraser
                   onClick={() => setShowDeleteModal(true)}
-                  className="text-xl text-gray-500 cursor-pointer hover:text-red-700"
+                  className="text-xl text-gray-500 cursor-pointer hover:text-red-700 dark:text-gray-300 dark:hover:text-red-400"
                 />
               </div>
             )}
-            <span className="text-gray-500">{formattedDate}</span>
+            <span className="text-gray-500 dark:text-gray-300">{formattedDate}</span>
           </div>
         </div>
       </div>
