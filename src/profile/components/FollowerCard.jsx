@@ -16,8 +16,8 @@ const FollowerCard = ({ follower }) => {
           className="w-10 h-10 rounded-full object-cover"
         />
         <div className="flex flex-col">
-          <span className="font-bold">{follower.displayName || "Unknown User"}</span>
-          <span className="font-mono">@{follower.username || "@"}</span>
+          <span className="font-bold dark:text-gray-50">{follower.displayName || "Unknown User"}</span>
+          <span className="font-mono dark:text-gray-200">@{follower.username || "@"}</span>
         </div>
       </div>
     </li>

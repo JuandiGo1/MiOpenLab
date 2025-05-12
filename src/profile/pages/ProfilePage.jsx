@@ -84,12 +84,12 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="flex bg-gray-100  min-h-screen">
+    <div className="flex bg-gray-100  min-h-screen dark:bg-[#181818]">
       {/* Main Content */}
       <main className="flex-1 p-6">
         {/* Profile Header */}
         {loading ? (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6 dark:bg-[#333333]">
             <Loader h={"h-35"}/>
           </div>
           
@@ -104,13 +104,13 @@ const ProfilePage = () => {
         )}
 
         {/* Tabs */}
-        <div className="flex space-x-4 border-b mb-6">
+        <div className="flex space-x-4 border-b mb-6 dark:border-gray-700">
           <button
             onClick={() => setActiveTab("posts")}
             className={`pb-2 cursor-pointer ${
               activeTab === "posts"
-                ? "border-b-2 border-blue-600"
-                : "text-gray-600"
+                ? "border-b-2 border-[#bd9260]  dark:border-blue-600 dark:text-gray-50"
+                : "text-gray-600 dark:text-gray-300"
             }`}
           >
             Posts
@@ -119,8 +119,8 @@ const ProfilePage = () => {
             onClick={() => setActiveTab("followers")}
             className={`pb-2 cursor-pointer ${
               activeTab === "followers"
-                ? "border-b-2 border-blue-600"
-                : "text-gray-600"
+                ? "border-b-2 border-[#bd9260]  dark:border-blue-600 dark:text-gray-50"
+                : "text-gray-600 dark:text-gray-300"
             }`}
           >
             Followers
@@ -129,8 +129,8 @@ const ProfilePage = () => {
             onClick={() => setActiveTab("following")}
             className={`pb-2 cursor-pointer ${
               activeTab === "following"
-                ? "border-b-2 border-blue-600"
-                : "text-gray-600"
+                ? "border-b-2 border-[#bd9260]  dark:border-blue-600 dark:text-gray-50"
+                : "text-gray-600 dark:text-gray-300"
             }`}
           >
             Following
@@ -139,8 +139,8 @@ const ProfilePage = () => {
             onClick={() => setActiveTab("likes")}
             className={`pb-2 cursor-pointer ${
               activeTab === "likes"
-                ? "border-b-2 border-blue-600"
-                : "text-gray-600"
+                ? "border-b-2 border-[#bd9260]  dark:border-blue-600 dark:text-gray-50"
+                : "text-gray-600 dark:text-gray-300"
             }`}
           >
             Likes

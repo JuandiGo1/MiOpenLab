@@ -39,12 +39,12 @@ const FollowersList = ({ userId }) => {
 
   return (
     <>
-      <h2 className="text-xl font-bold mb-4">Followers ({followers.length})</h2>
+      <h2 className="text-xl font-bold mb-4 dark:text-white">Followers ({followers.length})</h2>
       {loading ? (
         <Loader />
 
       ) : followers.length === 0 ? (
-        <p className="flex justify-center items-center w-full h-64 text-gray-500">No followers yet.</p>
+        <p className="flex justify-center items-center w-full h-64 text-gray-500 dark:text-gray-200">No followers yet.</p>
       ) : (
         <ul className="flex flex-col gap-4">
           {followers.map((follower) => (
