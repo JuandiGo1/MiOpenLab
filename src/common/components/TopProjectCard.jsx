@@ -20,7 +20,9 @@ const TopProjectCard = ({
   return (
     <div
       onClick={() => navigate(`/project/${id}`)}
-      className="flex flex-col gap-1 bg-gray-50 border-1 border-[#24363f] rounded-xl shadow-md  hover:-translate-y-1 transition-transform duration-200 cursor-pointer"
+      className="flex flex-col gap-1 bg-gray-50 border-1 border-[#24363f] rounded-xl 
+      shadow-md  hover:-translate-y-1 transition-transform duration-200 cursor-pointer
+      dark:bg-[#1c2930] dark:border-[#24363f] dark:hover:bg-[#24363f] dark:hover:text-white"
     >
       <div className="flex flex-col bg-[#24363f] rounded-t-lg  items-start p-4 gap-1">
         <h3 className="text-lg font-bold text-white">{title}</h3>
@@ -32,7 +34,7 @@ const TopProjectCard = ({
       </div>
 
 
-      <div className="text-sm text-gray-600 mt-1 px-4 py-2">
+      <div className="text-sm text-gray-600 mt-1 px-4 py-2 dark:text-gray-200">
         <ReactMarkdown>{truncatedDescription}</ReactMarkdown>
       </div>
     </div>
