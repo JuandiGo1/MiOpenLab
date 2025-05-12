@@ -197,12 +197,12 @@ const ProjectCard = ({
         <hr className="border-t w-full border-gray-200 my-2 dark:border-[#404040]" />
         {/* Renderizar la descripción en formato Markdown */}
         <div
-          className="prose prose-sm w-full max-w-none text-gray-600 p-4 mb-4 cursor-pointer dark:text-gray-300"
+          className="prose prose-sm w-full max-w-none text-gray-600 p-4 mb-4 cursor-pointer dark:text-gray-300 dark:bg-[#333333] dark:prose-invert"
           onClick={handleViewDetails}
         >
           <ReactMarkdown>{`${description.slice(0, 150)}...`}</ReactMarkdown>
           {description.length > 100 && (
-            <button className="text-blue-500 hover:underline mt-2 cursor-pointer dark:text-blue-400">
+            <button className="text-blue-500 hover:underline mt-2 cursor-pointer dark:text-blue-400 ">
               Ver más
             </button>
           )}
