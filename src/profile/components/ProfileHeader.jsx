@@ -79,7 +79,7 @@ const ProfileHeader = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+    <div className="bg-white rounded-lg shadow-md p-6 mb-6 dark:bg-[#333333]">
       <div className="flex items-center">
         <img
           src={profileImage}
