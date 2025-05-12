@@ -41,7 +41,7 @@ const SortButtons = ({ currentSortOrder, onSortChange }) => {
           className={`w-full text-left flex justify-between items-center p-4 text-sm rounded-lg shadow-sm transition-all duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-offset-1 ${ // MODIFICADO: Añadido text-sm
             filterApplied
               ? "bg-[#bd9260] text-white font-semibold hover:bg-[#ca9c6e] focus:ring-[#bd9260] dark:bg-[#5858FA] dark:hover:bg-[#6e6eff] dark:focus:ring-[#5858FA]" // Estilo FILLED cuando hay filtro
-              : "border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 focus:ring-gray-400" // Estilo OUTLINED inicial
+              : "border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 focus:ring-gray-400 dark:border-gray-600 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600" // Estilo OUTLINED inicial
           }`} 
           aria-haspopup="true"
           aria-expanded={isMobileMenuOpen}
