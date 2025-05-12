@@ -45,7 +45,7 @@ const LoginForm = ({ setIsLogin }) => {
   };
 
   return (
-    <div className="w-full max-w-full sm:max-w-md bg-[#EAE0D5] p-8 rounded-lg ">
+    <div className="w-full max-w-full sm:max-w-md bg-[#EAE0D5] p-8 rounded-lg dark:bg-gray-800 shadow-lg">
       <h2 className="text-2xl font-bold text-[#1c2930] mb-6 dark:text-white">Log In</h2>
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
