@@ -135,38 +135,38 @@ const Navbar = ({ children }) => {
                         )}
                     </ul>
                 </div>
-                <div className="flex items-center justify-around gap-2">
-                    <div className="flex items-start w-full ">
-                        {user ? (
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center justify-start gap-2  text-white px-4 py-2 rounded-xl hover:bg-[#806248]/10 cursor-pointer"
-                            >
-                                <RiLogoutCircleLine className="text-xl" />
-                                Logout
-                            </button>
-                        ) : (
-                            <div className="flex flex-col justify-between gap-5 w-50">
-                                <NavLink
-                                    to="/"
-                                    className="flex items-center gap-2 bg-[#e7dbce] hover:bg-[#ce9456]/80 hover:text-white transition duration-300 ease-in-out text-gray-900 text-bold text-xl px-3 py-2 rounded-xl"
-                                >
-                                    Sing In
-                                </NavLink>
-
-                                <NavLink
-                                    to="/"
-                                    className="flex items-center gap-2 bg-[#bd9260] hover:bg-[#ce9456] transition duration-300 ease-in-out text-white text-bold text-xl px-3 py-2 rounded-xl"
-                                >
-                                    Sing Up
-                                </NavLink>
-                            </div>
-                        )}
-                    </div>
-                    <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center">
                         <ThemeSwitch checked={darkMode} onChange={handleThemeChange} />
-                    </div>
                 </div>
+                <div className="flex items-start w-full ">
+                    {user ? (
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center justify-start gap-2  text-white px-4 py-2 rounded-xl hover:bg-[#806248]/10 cursor-pointer"
+                        >
+                            <RiLogoutCircleLine className="text-xl" />
+                            Logout
+                        </button>
+                    ) : (
+                        <div className="flex flex-col justify-between gap-5 w-50">
+                            <NavLink
+                                to="/"
+                                className="flex items-center gap-2 bg-[#e7dbce] hover:bg-[#ce9456]/80 hover:text-white transition duration-300 ease-in-out text-gray-900 text-bold text-xl px-3 py-2 rounded-xl"
+                            >
+                                Sing In
+                            </NavLink>
+
+                            <NavLink
+                                to="/"
+                                className="flex items-center gap-2 bg-[#bd9260] hover:bg-[#ce9456] transition duration-300 ease-in-out text-white text-bold text-xl px-3 py-2 rounded-xl"
+                            >
+                                Sing Up
+                            </NavLink>
+                        </div>
+                    )}
+                </div>
+
+
             </nav>
             <main className="flex-1 ml-64 overflow-y-auto ">{children}</main>
         </div>
