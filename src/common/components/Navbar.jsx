@@ -13,16 +13,17 @@ const Navbar = ({ children }) => {
     const [unreadCount, setUnreadCount] = useState(0);
     const profileImage = user?.photoURL || defaultAvatar;
     const navigate = useNavigate();
+    const [darkMode, setDarkMode] = useState(false);
 
-  useEffect(() => {
-    const fetchUnreadCount = async () => {
-      try {
-        const count = await getUnreadNotificationsCount(user.uid);
-        setUnreadCount(count);
-      } catch (error) {
-        console.error("Error fetching unread notifications count:", error);
-      }
-    };
+    useEffect(() => {
+        const fetchUnreadCount = async () => {
+            try {
+                const count = await getUnreadNotificationsCount(user.uid);
+                setUnreadCount(count);
+            } catch (error) {
+                console.error("Error fetching unread notifications count:", error);
+            }
+        };
 
         fetchUnreadCount();
     }, [user]);
@@ -37,9 +38,41 @@ const Navbar = ({ children }) => {
         }
     };
 
+    useEffect(() => {
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark") {
+            document.documentElement.classList.add("dark");
+            setDarkMode(true);
+        }
+    }, []);
+
+    const handleThemeChange = () => {
+        const newTheme = !darkMode;
+        setDarkMode(newTheme);
+        if (newTheme) {
+            document.documentElement.classList.add("dark");
+            localStorage.setItem("theme", "dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+            localStorage.setItem("theme", "light");
+
+        fetchUnreadCount();
+    }, [user]);
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            console.log("Cierre de sesión exitoso.");
+            navigate("/");
+        } catch (error) {
+            console.error("Error cerrando sesión:", error.message);
+
+        }
+    };
+
     return (
         <div className="flex min-h-screen ">
-            <nav className="flex  flex-col items-center justify-between bg-[#1c2930] text-white p-6 shadow-md w-64 h-screen fixed">
+            <nav className="flex flex-col items-center justify-between bg-[#1c2930] text-white p-6 shadow-md w-64 h-screen fixed">
                 <div className="flex flex-col items-start justify-between w-full gap-10">
                     <div className="flex items-center justify-start gap-2 mb-3">
                         <img
@@ -62,6 +95,7 @@ const Navbar = ({ children }) => {
                                 className={({ isActive }) =>
                                     isActive
                                         ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center gap-2"
+
                                         : "flex items-center gap-2 pl-2"
                                 }
                             >
@@ -106,45 +140,48 @@ const Navbar = ({ children }) => {
                             <li>
                                 <NavLink
                                     to="/newproject"
-                                    className="flex items-center text-center font-bold bg-[#bd9260] rounded-full w-35 gap-1 px-4 py-3 hover:bg-[#ce9456]/80 transition duration-300 ease-in-out"
+                                    className="flex items-center text-center font-bold bg-[#bd9260] rounded-full w-35 gap-1 px-4 py-3 
+                                    hover:bg-[#ce9456]/80 transition duration-300 ease-in-out
+                                    dark:bg-[#806248] dark:text-white dark:hover:bg-[#ce9456]/80 dark:hover:text-white"
                                 >
                                     New Project
                                 </NavLink>
                             </li>
                         )}
                     </ul>
-                </div>
-                <div className="flex items-center justify-around gap-2">
-                    <div className="flex items-start w-full ">
-                        {user ? (
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center justify-start gap-2  text-white px-4 py-2 rounded-xl hover:bg-[#806248]/10 cursor-pointer"
-                            >
-                                <RiLogoutCircleLine className="text-xl" />
-                                Logout
-                            </button>
-                        ) : (
-                            <div className="flex flex-col justify-between gap-5 w-50">
-                                <NavLink
-                                    to="/"
-                                    className="flex items-center gap-2 bg-[#e7dbce] hover:bg-[#ce9456]/80 hover:text-white transition duration-300 ease-in-out text-gray-900 text-bold text-xl px-3 py-2 rounded-xl"
-                                >
-                                    Sing In
-                                </NavLink>
 
-                                <NavLink
-                                    to="/"
-                                    className="flex items-center gap-2 bg-[#bd9260] hover:bg-[#ce9456] transition duration-300 ease-in-out text-white text-bold text-xl px-3 py-2 rounded-xl"
-                                >
-                                    Sing Up
-                                </NavLink>
-                            </div>
-                        )}
+                    <div className="flex items-center justify-between w-full">
+                        <ThemeSwitch checked={darkMode} onChange={handleThemeChange} />
                     </div>
-                    <div className="flex items-center justify-center">
-                        <ThemeSwitch />
-                    </div>
+                </div>
+                <div className="flex items-start w-full ">
+                    {user ? (
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center justify-start gap-2  text-white px-4 py-2 rounded-xl hover:bg-[#806248]/10 cursor-pointer"
+                        >
+                            <RiLogoutCircleLine className="text-xl" />
+                            Logout
+                        </button>
+                    ) : (
+                        <div className="flex flex-col justify-between gap-5 w-50">
+                            <NavLink
+                                to="/"
+                                className="flex items-center gap-2 bg-[#e7dbce] hover:bg-[#ce9456]/80 hover:text-white transition duration-300 ease-in-out text-gray-900 text-bold text-xl px-3 py-2 rounded-xl 
+                                dark:bg-[#a89580] dark:text-white dark:hover:bg-[#ce9456]/80 dark:hover:text-white"
+                            >
+                                Sing In
+                            </NavLink>
+
+                            <NavLink
+                                to="/"
+                                className="flex items-center gap-2 bg-[#bd9260] hover:bg-[#ce9456] transition duration-300 ease-in-out text-white text-bold text-xl px-3 py-2 rounded-xl 
+                                dark:bg-[#806248] dark:text-white dark:hover:bg-[#ce9456] dark:hover:text-white"
+                            >
+                                Sing Up
+                            </NavLink>
+                        </div>
+                    )}
                 </div>
             </nav>
             <main className="flex-1 ml-64 overflow-y-auto ">{children}</main>
