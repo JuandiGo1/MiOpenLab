@@ -40,7 +40,7 @@ const SortButtons = ({ currentSortOrder, onSortChange }) => {
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className={`w-full text-left flex justify-between items-center p-4 text-sm rounded-lg shadow-sm transition-all duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-offset-1 ${ // MODIFICADO: Añadido text-sm
             filterApplied
-              ? "bg-[#bd9260] text-white font-semibold hover:bg-[#ca9c6e] focus:ring-[#bd9260]" // Estilo FILLED cuando hay filtro
+              ? "bg-[#bd9260] text-white font-semibold hover:bg-[#ca9c6e] focus:ring-[#bd9260] dark:bg-[#5858FA] dark:hover:bg-[#6e6eff] dark:focus:ring-[#5858FA]" // Estilo FILLED cuando hay filtro
               : "border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 focus:ring-gray-400" // Estilo OUTLINED inicial
           }`} 
           aria-haspopup="true"
@@ -57,11 +57,11 @@ const SortButtons = ({ currentSortOrder, onSortChange }) => {
         {isMobileMenuOpen && (
           <div
             id="sort-menu-mobile"
-            className="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-xl py-2 transition-opacity duration-150 ease-out"
+            className="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-xl py-2 transition-opacity duration-150 ease-out dark:bg-gray-700 dark:border-gray-800"
             role="menu"
           >
-            <div className="px-4 py-2 border-b border-gray-200">
-              <h3 className="text-sm font-semibold text-gray-800">Seleccionar orden</h3>
+            <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100">Seleccionar orden</h3>
             </div>
             {[
               { label: "Más nuevos", value: "newest" },
@@ -72,14 +72,14 @@ const SortButtons = ({ currentSortOrder, onSortChange }) => {
                 onClick={() => handleSortOptionClick(option.value)}
                 className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center ${
                   currentSortOrder === option.value
-                    ? "text-[#bd9260] font-semibold bg-[#bd9260]/10" // Opción activa con fondo ligero y texto dorado
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "text-[#bd9260] font-semibold bg-[#bd9260]/10 dark:bg-[#5858FA]/80 dark:text-gray-50" // Opción activa con fondo ligero y texto dorado
+                    : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600" // Opción inactiva
                 }`}
                 role="menuitem"
               >
                 {option.label}
                 {currentSortOrder === option.value && (
-                  <FiCheck className="w-5 h-5 text-[#bd9260]" /> // Checkmark para la opción activa
+                  <FiCheck className="w-5 h-5 text-[#bd9260] dark:text-white" /> // Checkmark para la opción activa
                 )}
               </button>
             ))}
