@@ -91,16 +91,16 @@ const ProfileHeader = ({
           className="w-24 h-24 rounded-full object-cover"
         />
         <div className="ml-4">
-          <h1 className="text-2xl font-bold">{displayName}</h1>
-          <p className="text-gray-600">@{username}</p>
-          <p className="text-gray-600">{countPosts} posts</p>
+          <h1 className="text-2xl font-bold dark:text-white">{displayName}</h1>
+          <p className="text-gray-600 dark:text-gray-200">@{username}</p>
+          <p className="text-gray-600 dark:text-gray-200">{countPosts} posts</p>
         </div>
       </div>
       <div className="mt-4 flex space-x-4">
         {currentUserUsername === username ? (
           <button
             onClick={() => navigate("/profile/edit")}
-            className="bg-[#bd9260] hover:bg-[#ce9456]/80 transition duration-300 ease-in-out text-white px-4 py-2 rounded-lg cursor-pointer"
+            className="bg-[#bd9260] hover:bg-[#ce9456]/80 transition duration-300 ease-in-out text-white px-4 py-2 rounded-lg cursor-pointer dark:bg-[#5858FA] dark:hover:bg-[#4343e8]"
           >
             Edit Profile
           </button>
@@ -122,7 +122,7 @@ const ProfileHeader = ({
           </button>
         )}
 
-        <button onClick={handleCopyLink} className="bg-gray-200 text-gray-600 hover:bg-[#1c2930]/80 hover:text-white transition duration-300 ease-in-out px-4 py-2 rounded-lg cursor-pointer">
+        <button onClick={handleCopyLink} className="bg-gray-200 text-gray-600 hover:bg-[#1c2930]/80 hover:text-white transition duration-300 ease-in-out px-4 py-2 rounded-lg cursor-pointer dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-[#1c2930] dark:hover:text-white">
           Share
         </button>
         <ToastContainer />
