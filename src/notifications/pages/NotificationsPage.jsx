@@ -42,15 +42,17 @@ const NotificationsPage = () => {
   };
 
   return (
-    <div className="flex bg-gray-100 justify-between w-full min-h-screen">
-      <div className="flex-1 p-6 bg-gray-100 w-full min-h-screen">
+    <div className="flex bg-gray-100 justify-between w-full min-h-screen dark:bg-[#181818]">
+      <div className="flex-1 p-6 bg-gray-100 w-full min-h-screen dark:bg-[#181818]">
         <div className="flex justify-between items-center mb-6 gap-6">
-          <h1 className="text-3xl font-bold text-[#1c2930]">Notifications</h1>
+          <h1 className="text-3xl font-bold text-[#1c2930] dark:text-white">Notifications</h1>
           {notifications.length > 0 && ( // Mostrar botón solo si hay notificaciones
             <button
               onClick={handleMarkAllAsRead}
               disabled={isMarkingRead || notifications.every(n => n.isRead)} // Deshabilitar si ya todas están leídas
-              className="bg-[#bd9260] text-white px-4 py-2 rounded-lg hover:bg-[#ca9c6e] transition duration-150 ease-in-out flex items-center justify-center min-w-[150px] min-h-[40px] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-[#bd9260] text-white px-4 py-2 rounded-lg hover:bg-[#ca9c6e] transition duration-150 ease-in-out 
+              flex items-center justify-center min-w-[150px] min-h-[40px] disabled:opacity-50 disabled:cursor-not-allowed
+              dark:bg-[#5858FA] dark:hover:bg-[#4343e8] dark:disabled:bg-[#6565fc]"
             >
               {isMarkingRead ? <NewLoader size="20" color="white" h="h-auto" /> : "Mark All as Read"}
             </button>
@@ -61,7 +63,7 @@ const NotificationsPage = () => {
             <NewLoader size="50" /> {/* MODIFICADO: Usar NewLoader para la carga inicial */}
           </div>
         ) : notifications.length === 0 ? (
-          <p className="text-center text-gray-500 mt-10">No notifications yet.</p>
+          <p className="text-center text-gray-500 mt-10 dark:text-gray-300">No notifications yet.</p>
         ) : (
           <div className="space-y-3"> {/* Usar space-y para espaciado entre items */}
             {notifications.map((notification) => (
