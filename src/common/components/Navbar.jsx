@@ -48,15 +48,16 @@ const Navbar = ({ children }) => {
     }, []);
 
     const handleThemeChange = () => {
-        const currentTheme = localStorage.getItem("theme");
-        if (currentTheme === "dark") {
-            localStorage.setItem("theme", "light");
-            document.documentElement.classList.remove("dark");
-        } else {
-            localStorage.setItem("theme", "dark");
+        const newTheme = !darkMode;
+        setDarkMode(newTheme);
+        if (newTheme) {
             document.documentElement.classList.add("dark");
+            localStorage.setItem("theme", "dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+            localStorage.setItem("theme", "light");
         }
-    }
+    };
 
     return (
         <div className="flex min-h-screen ">
