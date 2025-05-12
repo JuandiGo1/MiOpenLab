@@ -43,7 +43,7 @@ const LikesList = ({ userId }) => {
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">
+      <h2 className="text-xl font-bold mb-4 dark:text-white">
         Liked Projects ({likedProjects.length})
       </h2>
       <div className="grid grid-cols-1 gap-6">
