@@ -16,7 +16,7 @@ const NotificationItem = ({
   return type === "like" ? (
     <div
       className={`p-4 rounded-xl shadow-md w-full ${
-        read ? "bg-white dark:bg-[#333333]" : "bg-[#e2f0f5] dark:bg-[#444444]"
+        read ? "bg-white dark:bg-[#444444]/90" : "bg-[#e2f0f5] dark:bg-[#333333]"
       }`}
     >
       <div className="flex items-center justify-start mb-2">
@@ -46,7 +46,7 @@ const NotificationItem = ({
   ) : (
     <div
       className={`p-4 rounded-xl shadow-md w-full ${
-        read ? "bg-white" : "bg-[#e2f0f5]"
+        read ? "bg-white dark:bg-[#6565fc]/90" : "bg-[#e2f0f5] dark:bg-[#4343e8]"
       }`}
     >
       <div className="flex items-center justify-start mb-2">
@@ -61,11 +61,11 @@ const NotificationItem = ({
           </span>
         </div>
         <div className="flex gap-1 ml-1">
-          <span className="font-bold">{fromUsername}</span>
-          <span className="text-gray-600">is following you </span>
+          <span className="font-bold dark:text-white">{fromUsername}</span>
+          <span className="text-gray-600 dark:text-gray-200">is following you </span>
         </div>
       </div>
-      <p className="text-xs text-gray-400 mt-2">{formattedDate}</p>
+      <p className="text-xs text-gray-400 mt-2 dark:text-gray-200">{formattedDate}</p>
     </div>
   );
 };
