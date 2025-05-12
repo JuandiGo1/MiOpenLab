@@ -83,14 +83,14 @@ const CreatePostField = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-5xl my-5">
-      <h2 className="text-xl text-[#1c2930] font-bold mb-4">
+    <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-5xl my-5 dark:bg-[#333]">
+      <h2 className="text-xl text-[#1c2930] font-bold mb-4 dark:text-white">
         Create New Project
       </h2>
       <form onSubmit={handleSubmit}>
         {/* Title */}
         <div className="mb-4">
-          <label htmlFor="title" className="block text-gray-700 font-bold mb-2">
+          <label htmlFor="title" className="block text-gray-700 font-bold mb-2 dark:text-gray-100">
             Title
           </label>
           <input
@@ -98,7 +98,7 @@ const CreatePostField = () => {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none "
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none dark:bg-[#333] dark:text-white dark:border-gray-500"
             placeholder="Enter project title"
             disabled={isLoading}
           />
@@ -109,7 +109,7 @@ const CreatePostField = () => {
           <div className="flex-1 mb-4">
             <label
               htmlFor="linkRepo"
-              className="flex gap-1 items-center text-gray-700 font-bold mb-2"
+              className="flex gap-1 items-center text-gray-700 font-bold mb-2 dark:text-gray-100"
             >
               Repository Link <FaGithub className="text-xl" />
             </label>
@@ -118,7 +118,7 @@ const CreatePostField = () => {
               type="url"
               value={linkRepo}
               onChange={(e) => setLinkRepo(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300  rounded-lg focus:outline-none "
+              className="w-full px-4 py-2 border border-gray-300  rounded-lg focus:outline-none dark:bg-[#333] dark:text-white dark:border-gray-500"
               placeholder="Enter repository link"
               disabled={isLoading}
             />
@@ -128,7 +128,7 @@ const CreatePostField = () => {
           <div className="flex-1 mb-4">
             <label
               htmlFor="linkDemo"
-              className="block text-gray-700 font-bold mb-2"
+              className="block text-gray-700 font-bold mb-2 dark:text-gray-100"
             >
               Demo Link (Optional)
             </label>
@@ -137,7 +137,7 @@ const CreatePostField = () => {
               type="url"
               value={linkDemo}
               onChange={(e) => setLinkDemo(e.target.value)}
-              className=" w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none "
+              className=" w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none dark:bg-[#333] dark:text-white dark:border-gray-500"
               placeholder="Enter demo link"
               disabled={isLoading}
             />
@@ -148,18 +148,19 @@ const CreatePostField = () => {
         <div className="mb-4">
           <label
             htmlFor="description"
-            className="block text-gray-700 font-bold mb-2"
+            className="block text-gray-700 font-bold mb-2 dark:text-gray-100"
           >
             Description
           </label>
           <SimpleMDE
             id="description"
+            className="w-full border border-gray-300 rounded-lg focus:outline-none dark:bg-[#333] dark:text-white dark:border-gray-500 dark:placeholder-gray-400 "
             value={descriptionRef.current}
             onChange={(value) => (descriptionRef.current = value)}
             options={{
               spellChecker: false,
               placeholder: "Write your project description in Markdown...",
-              readOnly: isLoading
+              readOnly: isLoading,              
             }}
           />
         </div>
@@ -169,7 +170,8 @@ const CreatePostField = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-[#bd9260] text-white text-center font-bold px-4 py-2 w-20 rounded-lg hover:bg-[#ce9456]/80  cursor-pointer transition duration-300 ease-in-out"
+            className="bg-[#bd9260] text-white text-center font-bold px-4 py-2 w-20 rounded-lg hover:bg-[#ce9456]/80  cursor-pointer transition duration-300 ease-in-out
+            dark:bg-[#5858FA] dark:hover:bg-[#4343e8]"
           >
             {isLoading ? <NewLoader size="20" color="white" h="h-auto" /> : (projectToEdit ? "Save" : "Post")}
           </button>
