@@ -16,7 +16,7 @@ const NotificationItem = ({
   return type === "like" ? (
     <div
       className={`p-4 rounded-xl shadow-md w-full ${
-        read ? "bg-white" : "bg-[#e2f0f5]"
+        read ? "bg-white dark:bg-[#333333]" : "bg-[#e2f0f5] dark:bg-[#444444]"
       }`}
     >
       <div className="flex items-center justify-start mb-2">
@@ -26,13 +26,13 @@ const NotificationItem = ({
             alt={`${fromUsername}'s avatar`}
             className="w-10 h-10 rounded-full object-cover"
           />
-          <span className="absolute bottom-0 right-0 bg-blue-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+          <span className="absolute bottom-0 right-0 bg-blue-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full dark:bg-blue-400">
             <AiFillLike />
           </span>
         </div>
         <div className="flex gap-1 ml-1">
-          <span className="font-bold">{fromUsername} </span>
-          <span className="text-gray-600">
+          <span className="font-bold dark:text-white">{fromUsername} </span>
+          <span className="text-gray-600 dark:text-gray-200">
             {" "}
             liked your project{" "}
             <strong>
@@ -41,7 +41,7 @@ const NotificationItem = ({
           </span>
         </div>
       </div>
-      <p className="text-xs text-gray-400 mt-2">{formattedDate}</p>
+      <p className="text-xs text-gray-400 mt-2 dark:text-gray-300">{formattedDate}</p>
     </div>
   ) : (
     <div
