@@ -93,13 +93,13 @@ const SortButtons = ({ currentSortOrder, onSortChange }) => {
           onClick={() => onSortChange("newest")}
           className={`relative py-4 px-4 mr-4 font-medium text-center cursor-pointer transition-colors duration-300 ease-out focus:outline-none ${
             currentSortOrder === "newest"
-              ? "text-black font-semibold" // Texto activo blanco para mejor contraste
-              : "text-gray-500 hover:text-gray-700"
+              ? "text-black font-semibold dark:text-white" // Texto activo blanco para mejor contraste
+              : "text-gray-500 hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-300" // Texto inactivo gris
           }`}
         >
           Más nuevos
           <span
-            className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[4px] w-16 bg-[#bd9260] rounded-full transform transition-transform duration-300 ease-out ${ // Barra activa color dorado
+            className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[4px] w-16 bg-[#bd9260] rounded-full transform transition-transform duration-300 ease-out dark:bg-[#5858FA] ${ // Barra activa color dorado
               currentSortOrder === "newest" ? "scale-x-100" : "scale-x-0"
             }`}
           ></span>
@@ -108,13 +108,13 @@ const SortButtons = ({ currentSortOrder, onSortChange }) => {
           onClick={() => onSortChange("oldest")}
           className={`relative py-4 px-4 font-medium text-center cursor-pointer transition-colors duration-300 ease-out focus:outline-none ${
             currentSortOrder === "oldest"
-              ? "text-black font-semibold" // Texto activo blanco
-              : "text-gray-500 hover:text-gray-700"
+              ? "text-black font-semibold dark:text-white" // Texto activo blanco
+              : "text-gray-500 hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-300" // Texto inactivo gris
           }`}
         >
           Más antiguos
           <span
-            className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[4px] w-16 bg-[#bd9260] rounded-full transform transition-transform duration-300 ease-out ${ // Barra activa color dorado
+            className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[4px] w-16 bg-[#bd9260] rounded-full transform transition-transform duration-300 ease-out dark:bg-[#5858FA] ${ // Barra activa color dorado
               currentSortOrder === "oldest" ? "scale-x-100" : "scale-x-0"
             }`}
           ></span>
