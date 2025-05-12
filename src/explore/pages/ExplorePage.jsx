@@ -46,7 +46,7 @@ const ExplorePage = () => {
   };
 
   return (
-    <div className="flex bg-gray-100 min-h-screen">
+    <div className="flex bg-gray-100 min-h-screen dark:bg-[#181818]">
       <main className="flex-1 p-6">
         <div className="flex items-center justify-between mb-6 gap-4">
           <div className="flex flex-col w-full mb-0">

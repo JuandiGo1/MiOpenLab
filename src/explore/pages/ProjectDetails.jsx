@@ -59,7 +59,7 @@ const ProjectDetails = () => {
   const formattedDate = formatDate(reconstructedTimestamp);
 
   return (
-    <div className="w-full  mx-auto p-6 bg-white">
+    <div className="w-full  mx-auto p-6 bg-white dark:bg-[#333333]">
       <div className="flex items-center mb-6">
         <img
           src={authorPhoto || DefaultAvatar}
@@ -67,13 +67,13 @@ const ProjectDetails = () => {
           className="w-12 h-12 rounded-full mr-4"
         />
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
-          <p className="text-sm text-gray-500">By {authorName}</p>
-          <p className="text-sm text-gray-500">{formattedDate}</p>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">{title}</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-300">By {authorName}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-300">{formattedDate}</p>
         </div>
       </div>
 
-      <div className="w-full prose prose-lg max-w-none text-gray-600 mb-6">
+      <div className="w-full prose prose-lg max-w-none text-gray-600 mb-6 dark:text-gray-200 dark:prose-invert">
         <ReactMarkdown>{description}</ReactMarkdown>
       </div>
 
@@ -83,7 +83,7 @@ const ProjectDetails = () => {
             href={linkRepo}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-blue-600 hover:underline"
+            className="flex items-center gap-2 text-blue-600 hover:underline dark:text-blue-400"
           >
             <FaGithub className="text-xl" />
             Repository
@@ -94,7 +94,7 @@ const ProjectDetails = () => {
             href={linkDemo}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-blue-600 hover:underline"
+            className="flex items-center gap-2 text-blue-600 hover:underline dark:text-blue-400"
           >
             <MdDatasetLinked className="text-xl" />
             Demo

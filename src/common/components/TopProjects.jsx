@@ -6,6 +6,12 @@ import Loader from "../components/Loader";
 const TopProjectsBar = () => {
   const [topProjects, setTopProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const theme = localStorage.getItem("theme");
+    setIsDarkMode(theme === "dark");
+  }, []);  
 
   useEffect(() => {
     const fetchTopProjects = async () => {
@@ -24,12 +30,12 @@ const TopProjectsBar = () => {
   }, []);
 
   return (
-    <aside className="w-1/5 bg-white p-6 shadow-md sticky top-0">
-      <h2 className="text-lg font-bold mb-4">Top Projects</h2>
+    <aside className="w-1/5 bg-white p-6 shadow-md sticky top-0 dark:bg-[#1c2930] h-screen overflow-y-auto">
+      <h2 className="text-lg font-bold mb-4 dark:text-white">Top Projects</h2>
       {loading ? (
         // <p className="text-gray-500 dark:text-gray-400">Loading top projects...</p> // Anterior
         <div className="flex justify-center items-center h-40"> {/* Contenedor para el loader */}
-          <Loader size="30" color="#bd9260" h="h-auto" />
+          <Loader size="30" color={!isDarkMode ? "#bd9260" : "#5858FA"} h="h-auto" />
         </div>
       ) : (
         <div className="flex flex-col gap-4">
