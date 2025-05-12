@@ -139,7 +139,43 @@ export const editProject = async (projectId, newData) => {
 
 export const deleteProject = async (projectId) => {
   const projectRef = doc(db, "projects", projectId);
-  await deleteDoc(projectRef);
+  try {
+    // Obtener el documento del proyecto para acceder a su array 'likedBy'
+    const projectSnap = await getDoc(projectRef);
+
+    if (projectSnap.exists()) {
+      const projectData = projectSnap.data();
+      const usersWhoLiked = projectData.likedBy || []; // Array de UIDs de usuarios
+
+      // Para cada usuario que dio like, eliminar el projectId de su array 'likedProjects'
+      const updateUserPromises = usersWhoLiked.map(async (userId) => {
+        const userRef = doc(db, "users", userId);
+        try {
+          await updateDoc(userRef, {
+            likedProjects: arrayRemove(projectId)
+          });
+          console.log(`Proyecto ${projectId} eliminado de los likes del usuario ${userId}`);
+        } catch (userUpdateError) {
+          // Considera cómo manejar errores aquí. Por ahora, solo log.
+          console.error(`Error al actualizar los likes del usuario ${userId} para el proyecto ${projectId}:`, userUpdateError);
+        }
+      });
+
+      // Esperar a que todas las actualizaciones de usuarios se completen
+      await Promise.all(updateUserPromises);
+
+      // Finalmente, eliminar el documento del proyecto
+      await deleteDoc(projectRef);
+      console.log(`Proyecto ${projectId} y sus referencias de likes eliminados exitosamente.`);
+
+    } else {
+      console.error(`El proyecto ${projectId} no fue encontrado para eliminar.`);
+      // Puedes lanzar un error aquí si es necesario
+    }
+  } catch (error) {
+    console.error(`Error al eliminar el proyecto ${projectId}:`, error);
+    throw error; // Re-lanzar el error para que el llamador lo maneje
+  }
 };
 
 export const addLike = async (projectId, userId) => {

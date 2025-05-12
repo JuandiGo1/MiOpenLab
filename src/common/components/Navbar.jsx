@@ -55,6 +55,18 @@ const Navbar = ({ children }) => {
         } else {
             document.documentElement.classList.remove("dark");
             localStorage.setItem("theme", "light");
+
+        fetchUnreadCount();
+    }, [user]);
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            console.log("Cierre de sesión exitoso.");
+            navigate("/");
+        } catch (error) {
+            console.error("Error cerrando sesión:", error.message);
+
         }
     };
 
@@ -82,7 +94,8 @@ const Navbar = ({ children }) => {
                                 to="/home"
                                 className={({ isActive }) =>
                                     isActive
-                                        ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center gap-2 "
+                                        ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center gap-2"
+
                                         : "flex items-center gap-2 pl-2"
                                 }
                             >
@@ -136,6 +149,7 @@ const Navbar = ({ children }) => {
                             </li>
                         )}
                     </ul>
+
                     <div className="flex items-center justify-between w-full">
                         <ThemeSwitch checked={darkMode} onChange={handleThemeChange} />
                     </div>
