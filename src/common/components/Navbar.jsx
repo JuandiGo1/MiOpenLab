@@ -25,7 +25,9 @@ const Navbar = ({ children }) => {
             }
         };
 
-        fetchUnreadCount();
+        if (user) {
+            fetchUnreadCount();
+        }
     }, [user]);
 
     const handleLogout = async () => {
@@ -55,18 +57,6 @@ const Navbar = ({ children }) => {
         } else {
             document.documentElement.classList.remove("dark");
             localStorage.setItem("theme", "light");
-
-        fetchUnreadCount();
-    }, [user]);
-
-    const handleLogout = async () => {
-        try {
-            await logout();
-            console.log("Cierre de sesión exitoso.");
-            navigate("/");
-        } catch (error) {
-            console.error("Error cerrando sesión:", error.message);
-
         }
     };
 
