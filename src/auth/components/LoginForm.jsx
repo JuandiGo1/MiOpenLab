@@ -80,7 +80,7 @@ const LoginForm = ({ setIsLogin }) => {
           type="button"
           onClick={handleLogin}
           disabled={isLoading || isGoogleLoading}
-          className="w-full bg-[#22333B] text-white py-2 px-4 rounded-md hover:bg-[#3c5a68] transition duration-300 ease-in-out cursor-pointer"
+          className="w-full bg-[#22333B] text-white py-2 px-4 rounded-md hover:bg-[#3c5a68] dark:bg-[#3c6578] transition duration-300 ease-in-out cursor-pointer"
         >
           {isLoading ? <NewLoader size="20" color="white" h="h-auto" /> : "Log In"}
         </button>
@@ -112,7 +112,7 @@ const LoginForm = ({ setIsLogin }) => {
         <div className="mt-4 space-y-2">
           <button onClick={handleGoogleLogin}
             disabled={isLoading || isGoogleLoading}
-            className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition duration-300 ease-in-out flex items-center justify-center gap-2 cursor-pointer dark:bg-[#3C3D37] dark:hover:bg-[#5C5D57]"
+            className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition duration-300 ease-in-out flex items-center justify-center gap-2 cursor-pointer dark:bg-[#6e553f] dark:hover:bg-[#664f3c]"
           >
             {isGoogleLoading ? <NewLoader size="20" color="white" h="h-auto" /> : (
               <>
