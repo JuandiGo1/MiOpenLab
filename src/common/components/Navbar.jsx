@@ -62,7 +62,7 @@ const Navbar = ({ children }) => {
 
     return (
         <div className="flex min-h-screen ">
-            <nav className="flex flex-col items-center justify-between bg-[#1c2930] text-white p-6 shadow-md w-64 h-screen fixed">
+            <nav className="flex flex-col items-center justify-between bg-[#1c2930] text-white p-6 shadow-md w-64 h-screen fixed dark:bg-gray-900">
                 <div className="flex flex-col items-start justify-between w-full gap-10">
                     <div className="flex items-center justify-start gap-2 mb-3">
                         <img
@@ -132,7 +132,7 @@ const Navbar = ({ children }) => {
                                     to="/newproject"
                                     className="flex items-center text-center font-bold bg-[#bd9260] rounded-full w-35 gap-1 px-4 py-3 
                                     hover:bg-[#ce9456]/80 transition duration-300 ease-in-out
-                                    dark:bg-[#806248] dark:text-white dark:hover:bg-[#ce9456]/80 dark:hover:text-white"
+                                    dark:bg-[#5858FA] dark:text-white dark:hover:bg-[#4343e8] dark:hover:text-white"
                                 >
                                     New Project
                                 </NavLink>
@@ -158,7 +158,7 @@ const Navbar = ({ children }) => {
                             <NavLink
                                 to="/"
                                 className="flex items-center gap-2 bg-[#e7dbce] hover:bg-[#ce9456]/80 hover:text-white transition duration-300 ease-in-out text-gray-900 text-bold text-xl px-3 py-2 rounded-xl 
-                                dark:bg-[#a89580] dark:text-white dark:hover:bg-[#ce9456]/80 dark:hover:text-white"
+                                dark:bg-[#4343e8] dark:text-white dark:hover:bg-[#5858FA] dark:hover:text-white"
                             >
                                 Sing In
                             </NavLink>
@@ -166,7 +166,7 @@ const Navbar = ({ children }) => {
                             <NavLink
                                 to="/"
                                 className="flex items-center gap-2 bg-[#bd9260] hover:bg-[#ce9456] transition duration-300 ease-in-out text-white text-bold text-xl px-3 py-2 rounded-xl 
-                                dark:bg-[#806248] dark:text-white dark:hover:bg-[#ce9456] dark:hover:text-white"
+                                dark:bg-[#2838c9] dark:text-white dark:hover:bg-[#2e3ec9] dark:hover:text-white"
                             >
                                 Sing Up
                             </NavLink>

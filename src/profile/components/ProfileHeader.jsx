@@ -1,9 +1,11 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
 import { followUser, unfollowUser } from "../../auth/services/userService";
 import { ToastContainer, toast } from "react-toastify";
 import { NewLoader } from "../../common/components/Loader";
+
 
 const ProfileHeader = ({
   countPosts,
@@ -19,7 +21,7 @@ const ProfileHeader = ({
   const [isFollowing, setFollow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const profileImage = photoURL || defaultAvatar;
-
+  const [hovering, setHovering] = React.useState(false)
   // Sincronizar isFollowing con currentUserFollows y uid
   useEffect(() => {
     if (currentUserFollows?.includes(uid)) {
@@ -79,7 +81,7 @@ const ProfileHeader = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+    <div className="bg-white rounded-lg shadow-md p-6 mb-6 dark:bg-[#333333]">
       <div className="flex items-center">
         <img
           src={profileImage}
@@ -91,38 +93,41 @@ const ProfileHeader = ({
           className="w-24 h-24 rounded-full object-cover"
         />
         <div className="ml-4">
-          <h1 className="text-2xl font-bold">{displayName}</h1>
-          <p className="text-gray-600">@{username}</p>
-          <p className="text-gray-600">{countPosts} posts</p>
+          <h1 className="text-2xl font-bold dark:text-white">{displayName}</h1>
+          <p className="text-gray-600 dark:text-gray-200">@{username}</p>
+          <p className="text-gray-600 dark:text-gray-200">{countPosts} posts</p>
         </div>
       </div>
       <div className="mt-4 flex space-x-4">
         {currentUserUsername === username ? (
           <button
             onClick={() => navigate("/profile/edit")}
-            className="bg-[#bd9260] hover:bg-[#ce9456]/80 transition duration-300 ease-in-out text-white px-4 py-2 rounded-lg cursor-pointer"
+            className="bg-[#bd9260] hover:bg-[#ce9456]/80 transition duration-300 ease-in-out text-white 
+            px-4 py-2 rounded-lg cursor-pointer dark:bg-[#5858FA] dark:hover:bg-[#4343e8]"
           >
             Edit Profile
           </button>
         ) : (
           <button
             onClick={handleFollow}
+            onMouseEnter={() => setHovering(true)}
+            onMouseLeave={() => setHovering(false)}
             disabled={isLoading}
             className={`${
               isFollowing
-                ? "bg-gray-300 border-[#bd9260] text-gray-700 hover:bg-gray-400"
-                : "bg-[#bd9260] text-white hover:bg-[#ce9456]/80"
+                ? "bg-gray-300 border-[#bd9260] text-gray-600 hover:bg-red-400 dark:text-gray-200 dark:bg-[#1c2930] dark:hover:bg-red-400"
+                : "bg-[#bd9260] text-white hover:bg-[#ce9456]/80 dark:bg-[#5858FA] dark:hover:bg-[#4343e8]"
             } transition duration-300 ease-in-out px-4 py-2 rounded-lg cursor-pointer`}
           >
             {isLoading ? (
               <NewLoader size="20" color={isFollowing ? "#1c2930" : "white"} h="h-auto" />
             ) : (
-              isFollowing ? "Unfollow" : "Follow"
+              isFollowing ? (hovering ? 'Unfollow' : 'Following') : 'Follow'
             )}
           </button>
         )}
 
-        <button onClick={handleCopyLink} className="bg-gray-200 text-gray-600 hover:bg-[#1c2930]/80 hover:text-white transition duration-300 ease-in-out px-4 py-2 rounded-lg cursor-pointer">
+        <button onClick={handleCopyLink} className="bg-gray-200 text-gray-600 hover:bg-[#1c2930]/80 hover:text-white transition duration-300 ease-in-out px-4 py-2 rounded-lg cursor-pointer dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-[#1c2930] dark:hover:text-white">
           Share
         </button>
         <ToastContainer />

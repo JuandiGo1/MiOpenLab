@@ -39,11 +39,11 @@ const FollowingList = ({ userId }) => {
 
   return (
     <>
-      <h2 className="text-xl font-bold mb-4">Following ({following.length})</h2>
+      <h2 className="text-xl font-bold mb-4 dark:text-white">Following ({following.length})</h2>
       {loading ? (
         <Loader />
       ) : following.length === 0 ? (
-        <p className="text-gray-500">No following yet.</p>
+        <p className="text-gray-500 dark:text-gray-200">No following yet.</p>
       ) : (
         <ul className="flex flex-col gap-4">
           {following.map((followed) => (

@@ -44,9 +44,9 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4 justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4 text-center">Edit Profile</h2>
+    <div className="flex flex-col gap-4 justify-center items-center min-h-screen bg-gray-100 dark:bg-[#181818]">
+      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md dark:bg-[#333]">
+        <h2 className="text-2xl font-bold mb-4 text-center dark:text-white">Edit Profile</h2>
         <form onSubmit={handleSubmit}>
           {/* Foto de perfil */}
           <div className="flex flex-col items-center mb-4">
@@ -61,7 +61,7 @@ const EditProfile = () => {
             />
             <label
               htmlFor="photo"
-              className="bg-[#c9965b] text-white px-4 py-2 rounded-lg cursor-pointer"
+              className="bg-[#c9965b] text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#e29d4e] transition duration-300 ease-in-out dark:bg-[#5858FA] dark:hover:bg-[#4343e8]"
             >
               Change Photo
             </label>
@@ -79,7 +79,7 @@ const EditProfile = () => {
           <div className="mb-4">
             <label
               htmlFor="name"
-              className="block text-gray-700 font-bold mb-2"
+              className="block text-gray-700 font-bold mb-2 dark:text-gray-100"
             >
               Name
             </label>
@@ -88,7 +88,7 @@ const EditProfile = () => {
               type="text"
               value={name}
               onChange={handleNameChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none "
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none dark:bg-[#333] dark:text-white dark:border-gray-500"
               disabled={isLoading}
             />
           </div>
@@ -97,7 +97,8 @@ const EditProfile = () => {
           <button
             type="submit"
             onClick={handleSubmit}
-            className="w-full bg-[#c9965b] text-white px-4 py-2 rounded-lg hover:bg-[#e29d4e] transition duration-300 ease-in-out cursor-pointer"
+            className="w-full bg-[#c9965b] text-white px-4 py-2 rounded-lg hover:bg-[#e29d4e] transition duration-300 ease-in-out cursor-pointer
+            dark:bg-[#5858FA] dark:hover:bg-[#4343e8]"
           >
             {isLoading ? <NewLoader size="20" color="white" h="h-auto" /> : "Save Changes"}
           </button>
