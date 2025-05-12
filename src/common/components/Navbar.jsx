@@ -60,7 +60,7 @@ const Navbar = ({ children }) => {
 
     return (
         <div className="flex min-h-screen ">
-            <nav className="flex  flex-col items-center justify-between bg-[#1c2930] text-white p-6 shadow-md w-64 h-screen fixed dark:bg-red-900">
+            <nav className="flex  flex-col items-center justify-between bg-[#1c2930] text-white p-6 shadow-md w-64 h-screen fixeds">
                 <div className="flex flex-col items-start justify-between w-full gap-10">
                     <div className="flex items-center justify-start gap-2 mb-3">
                         <img
@@ -82,7 +82,7 @@ const Navbar = ({ children }) => {
                                 to="/home"
                                 className={({ isActive }) =>
                                     isActive
-                                        ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center gap-2"
+                                        ? "bg-[#EAE0D5]/40 pl-2 py-1 rounded-xl w-full flex items-center gap-2 "
                                         : "flex items-center gap-2 pl-2"
                                 }
                             >
@@ -127,16 +127,18 @@ const Navbar = ({ children }) => {
                             <li>
                                 <NavLink
                                     to="/newproject"
-                                    className="flex items-center text-center font-bold bg-[#bd9260] rounded-full w-35 gap-1 px-4 py-3 hover:bg-[#ce9456]/80 transition duration-300 ease-in-out"
+                                    className="flex items-center text-center font-bold bg-[#bd9260] rounded-full w-35 gap-1 px-4 py-3 
+                                    hover:bg-[#ce9456]/80 transition duration-300 ease-in-out
+                                    dark:bg-[#806248] dark:text-white dark:hover:bg-[#ce9456]/80 dark:hover:text-white"
                                 >
                                     New Project
                                 </NavLink>
                             </li>
                         )}
                     </ul>
-                </div>
-                <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-between w-full">
                         <ThemeSwitch checked={darkMode} onChange={handleThemeChange} />
+                    </div>
                 </div>
                 <div className="flex items-start w-full ">
                     {user ? (
@@ -151,22 +153,22 @@ const Navbar = ({ children }) => {
                         <div className="flex flex-col justify-between gap-5 w-50">
                             <NavLink
                                 to="/"
-                                className="flex items-center gap-2 bg-[#e7dbce] hover:bg-[#ce9456]/80 hover:text-white transition duration-300 ease-in-out text-gray-900 text-bold text-xl px-3 py-2 rounded-xl"
+                                className="flex items-center gap-2 bg-[#e7dbce] hover:bg-[#ce9456]/80 hover:text-white transition duration-300 ease-in-out text-gray-900 text-bold text-xl px-3 py-2 rounded-xl 
+                                dark:bg-[#a89580] dark:text-white dark:hover:bg-[#ce9456]/80 dark:hover:text-white"
                             >
                                 Sing In
                             </NavLink>
 
                             <NavLink
                                 to="/"
-                                className="flex items-center gap-2 bg-[#bd9260] hover:bg-[#ce9456] transition duration-300 ease-in-out text-white text-bold text-xl px-3 py-2 rounded-xl"
+                                className="flex items-center gap-2 bg-[#bd9260] hover:bg-[#ce9456] transition duration-300 ease-in-out text-white text-bold text-xl px-3 py-2 rounded-xl 
+                                dark:bg-[#806248] dark:text-white dark:hover:bg-[#ce9456] dark:hover:text-white"
                             >
                                 Sing Up
                             </NavLink>
                         </div>
                     )}
                 </div>
-
-
             </nav>
             <main className="flex-1 ml-64 overflow-y-auto ">{children}</main>
         </div>
