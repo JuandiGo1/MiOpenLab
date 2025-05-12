@@ -63,7 +63,7 @@ const NotificationsPage = () => {
             <NewLoader size="50" /> {/* MODIFICADO: Usar NewLoader para la carga inicial */}
           </div>
         ) : notifications.length === 0 ? (
-          <p className="text-center text-gray-500 mt-10">No notifications yet.</p>
+          <p className="text-center text-gray-500 mt-10 dark:text-gray-300">No notifications yet.</p>
         ) : (
           <div className="space-y-3"> {/* Usar space-y para espaciado entre items */}
             {notifications.map((notification) => (
