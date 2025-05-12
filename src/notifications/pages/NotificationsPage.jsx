@@ -43,7 +43,7 @@ const NotificationsPage = () => {
 
   return (
     <div className="flex bg-gray-100 justify-between w-full min-h-screen">
-      <div className="p-6 bg-gray-100 w-full min-h-screen">
+      <div className="flex-1 p-6 bg-gray-100 w-full min-h-screen">
         <div className="flex justify-between items-center mb-6 gap-6">
           <h1 className="text-3xl font-bold text-[#1c2930]">Notifications</h1>
           {notifications.length > 0 && ( // Mostrar botón solo si hay notificaciones

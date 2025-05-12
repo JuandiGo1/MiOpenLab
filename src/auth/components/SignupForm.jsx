@@ -117,7 +117,7 @@ const SignupForm = ({ setIsLogin }) => {
         <button
           type="button"
           onClick={handleSignup}
-          className="w-full bg-[#22333B] text-white py-2 px-4 rounded-md hover:bg-[#3c5a68] transition duration-300 ease-in-out cursor-pointer"
+          className="w-full bg-[#22333B] text-white py-2 px-4 rounded-md hover:bg-[#3c5a68] dark:bg-[#3c6578]  transition duration-300 ease-in-out cursor-pointer"
         >
           {isLoading ? <NewLoader size="20" color="white" h="h-auto" /> : "Sign Up"}
         </button>
@@ -129,7 +129,7 @@ const SignupForm = ({ setIsLogin }) => {
           <button
             onClick={() => !isLoading && !isGoogleLoading && setIsLogin(true)} // Cambia a SignupForm
             disabled={isLoading || isGoogleLoading}
-            className="text-blue-900 font-bold hover:underline cursor-pointer"
+            className="text-blue-900 font-bold hover:underline cursor-pointer dark:text-blue-200"
           >
             Log In
           </button>
@@ -140,7 +140,7 @@ const SignupForm = ({ setIsLogin }) => {
           <div className="mt-4 space-y-2">
             <button
               onClick={handleGoogleLogin}
-              className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition duration-300 ease-in-out flex items-center justify-center gap-2 cursor-pointer dark:bg-[#3C3D37] dark:hover:bg-[#5C5D57]"
+              className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition duration-300 ease-in-out flex items-center justify-center gap-2 cursor-pointer dark:bg-[#6e553f] dark:hover:bg-[#664f3c]"
             >
               {isGoogleLoading ? <NewLoader size="20" color="white" h="h-auto" /> : (
                 <>

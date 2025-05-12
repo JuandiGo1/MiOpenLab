@@ -161,6 +161,7 @@ const ProjectCard = ({
                   src={authorAvatar}
                   alt={`${authorName}'s avatar`}
                   className="size-6 rounded-full "
+                  loading="lazy"
                 />
                 <h3 onClick={()=> navigate(authorProfileLink)} className="text-md font-mono text-gray-500 hover:underline cursor-pointer dark:text-gray-300 ">
                   {authorName}
