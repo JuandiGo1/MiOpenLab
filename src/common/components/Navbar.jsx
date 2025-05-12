@@ -15,11 +15,15 @@ const Navbar = ({ children }) => {
 
   useEffect(() => {
     const fetchUnreadCount = async () => {
-      try {
-        const count = await getUnreadNotificationsCount(user.uid);
-        setUnreadCount(count);
-      } catch (error) {
-        console.error("Error fetching unread notifications count:", error);
+      if (user) {
+        try {
+          const count = await getUnreadNotificationsCount(user.uid);
+          setUnreadCount(count);
+        } catch (error) {
+          console.error("Error fetching unread notifications count:", error);
+        }
+      } else {
+        setUnreadCount(0); 
       }
     };
 
