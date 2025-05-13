@@ -1,5 +1,5 @@
-# 📘 MiOpenLab
-
+# 📘 [MiOpenLab
+](https://mi-openlab.vercel.app/)
 **MiOpenLab** es una aplicación inspirada en la iniciativa **OpenLab** de la Universidad del Norte. Su propósito es permitir que estudiantes y docentes suban, compartan y reutilicen proyectos académicos funcionales, promoviendo así el aprendizaje colaborativo y la innovación práctica en el entorno universitario.
 
 ---
