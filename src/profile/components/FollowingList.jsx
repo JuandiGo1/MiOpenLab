@@ -11,6 +11,12 @@ const FollowingList = ({ userId }) => {
   const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const theme = localStorage.getItem("theme");
+    setIsDarkMode(theme === "dark");
+  }, []);  
 
   useEffect(() => {
     const fetchFollowing = async () => {
@@ -41,7 +47,7 @@ const FollowingList = ({ userId }) => {
     <>
       <h2 className="text-xl font-bold mb-4 dark:text-white">Following ({following.length})</h2>
       {loading ? (
-        <Loader />
+        <Loader color={!isDarkMode ? "#bd9260" : "#5858FA"} />
       ) : following.length === 0 ? (
         <p className="text-gray-500 dark:text-gray-200">No following yet.</p>
       ) : (

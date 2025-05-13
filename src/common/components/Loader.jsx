@@ -19,11 +19,8 @@ const Loader = ({ size = "50", color = "#24363f", h= "h-64" }) => {
   );
 };
 
-export default Loader;
 
-
-
-const NewLoader = ({ size = "50", color = "#24363f", h = "h-64" }) => {
+export const NewLoader = ({ size = "50", color = "#24363f", h = "h-64" }) => {
     return (
         <div className={`flex justify-center items-center w-full ${h}`}>
             <Treadmill
@@ -35,4 +32,5 @@ const NewLoader = ({ size = "50", color = "#24363f", h = "h-64" }) => {
     );
 };
 
-export { NewLoader };
+
+export default Loader;

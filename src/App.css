@@ -22,3 +22,7 @@
     background: #26334b;
     border-color: #95a5a6;
 }
+
+.dark .CodeMirror-selectedtext {
+    background: #014cbd;
+}
