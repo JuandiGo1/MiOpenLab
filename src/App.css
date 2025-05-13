@@ -9,3 +9,11 @@
     --toastify-color-progress-success: #bd9260 !important; /* Cambia el color de la barra de progreso */
   }
 
+.dark .CodeMirror {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.dark .CodeMirror-cursor {
+  border-left: 2px solid #ffffff;
+}

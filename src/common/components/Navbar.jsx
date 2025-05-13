@@ -174,7 +174,7 @@ const Navbar = ({ children }) => {
                     )}
                 </div>
             </nav>
-            <main className="flex-1 ml-64 overflow-y-auto ">{children}</main>
+            <main className="flex-1 ml-64 overflow-y-auto dark:bg-[#333333] ">{children}</main>
         </div>
     );
 };

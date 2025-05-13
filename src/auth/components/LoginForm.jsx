@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { NewLoader } from "../../common/components/Loader";
 
-
 const LoginForm = ({ setIsLogin }) => {
   const { login, loginGoogle } = useAuth();
   const [email, setEmail] = useState("");
@@ -38,15 +37,16 @@ const LoginForm = ({ setIsLogin }) => {
     } catch (error) {
       console.error(error.message);
       setMsgInfo("Error signing in with Google. Please try again.");
-    }
-    finally {
+    } finally {
       setIsGoogleLoading(false); // Desactivar loader
     }
   };
 
   return (
     <div className="w-full max-w-full sm:max-w-md bg-[#EAE0D5] p-8 rounded-lg dark:bg-gray-800 shadow-lg">
-      <h2 className="text-2xl font-bold text-[#1c2930] mb-6 dark:text-white">Log In</h2>
+      <h2 className="text-2xl font-bold text-[#1c2930] mb-6 dark:text-white">
+        Log In
+      </h2>
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -82,7 +82,11 @@ const LoginForm = ({ setIsLogin }) => {
           disabled={isLoading || isGoogleLoading}
           className="w-full bg-[#22333B] text-white py-2 px-4 rounded-md hover:bg-[#3c5a68] dark:bg-[#3c6578] transition duration-300 ease-in-out cursor-pointer"
         >
-          {isLoading ? <NewLoader size="20" color="white" h="h-auto" /> : "Log In"}
+          {isLoading ? (
+            <NewLoader size="20" color="white" h="h-auto" />
+          ) : (
+            "Log In"
+          )}
         </button>
       </form>
       <div className="mt-4 text-center">
@@ -94,7 +98,9 @@ const LoginForm = ({ setIsLogin }) => {
         </a>
       </div>
       {msgInfo && (
-        <p className="mt-4 text-center text-sm text-red-950 dark:text-red-600 dark:text-shadow-4xs">{msgInfo}</p>
+        <p className="mt-4 text-center text-sm text-red-950 dark:text-red-600 dark:text-shadow-4xs">
+          {msgInfo}
+        </p>
       )}
       <p className="mt-4 text-sm text-gray-600 dark:text-gray-300">
         Don’t have an account?{" "}
@@ -109,16 +115,26 @@ const LoginForm = ({ setIsLogin }) => {
       <div className="mt-4">
         <hr className="border-t border-gray-400 my-4" />
         <p className="text-center text-gray-500 dark:text-gray-300">or</p>
-        <div className="mt-4 space-y-2">
-          <button onClick={handleGoogleLogin}
+        <div className="flex flex-col mt-4 space-y-2">
+          <button
+            onClick={handleGoogleLogin}
             disabled={isLoading || isGoogleLoading}
             className="w-full bg-[#806248] text-white py-2 px-4 rounded-md hover:bg-[#ac8461] transition duration-300 ease-in-out flex items-center justify-center gap-2 cursor-pointer dark:bg-[#6e553f] dark:hover:bg-[#664f3c]"
           >
-            {isGoogleLoading ? <NewLoader size="20" color="white" h="h-auto" /> : (
+            {isGoogleLoading ? (
+              <NewLoader size="20" color="white" h="h-auto" />
+            ) : (
               <>
                 <FaGoogle className="text-xl" /> Log In with Google
               </>
             )}
+          </button>
+          <button
+            onClick={() => navigate("/home")} // Cambia a SignupForm
+            disabled={isLoading || isGoogleLoading}
+            className="text-gray-500 dark:text-gray-300  hover:underline cursor-pointer"
+          >
+            Continue without login
           </button>
         </div>
       </div>
