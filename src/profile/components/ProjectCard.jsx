@@ -9,7 +9,6 @@ import { MdDatasetLinked } from "react-icons/md";
 import { RiEditLine } from "react-icons/ri";
 import { LuEraser } from "react-icons/lu";
 import DeleteModal from "../../common/components/DeleteModal";
-import { NewLoader } from "../../common/components/Loader";
 import {
   deleteProject,
   addLike,
@@ -219,14 +218,12 @@ const ProjectCard = ({
             disabled={isLoading}
             className="flex text-gray-500 hover:text-blue-700 transition duration-300 cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
           >
-            {isLoading ? (
-              <NewLoader size="18" color="#3B82F6" h="h-auto" /> // Loader para el like
-            ) : isLiked ? (
-              <AiFillLike className="text-xl text-blue-700 dark:text-blue-400" />
+            {isLiked ? (
+              <AiFillLike className="text-xl text-blue-700" />
             ) : (
               <AiOutlineLike className="text-xl" />
             )}
-            {!isLoading && <span className="ml-1">{likeCount}</span>} {/* Mostrar contador solo si no está cargando */}
+            {likeCount}
           </button>
           <div className="flex items-center justify-between gap-2">
             {user && user.uid === authorId && (
