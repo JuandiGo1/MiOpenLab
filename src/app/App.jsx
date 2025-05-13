@@ -10,12 +10,14 @@ import CreateProject from "../profile/pages/CreateProject.jsx";
 import ProjectDetails from "../explore/pages/ProjectDetails.jsx";
 import "../App.css";
 import NotificationsPage from "../notifications/pages/NotificationsPage.jsx";
+import NotFound from "../common/components/NotFound.jsx";
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="*" element={<NotFound />} />
           <Route path="/" element={<LoginPage />} />
           <Route
             path="/home"
