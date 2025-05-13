@@ -17,3 +17,8 @@
 .dark .CodeMirror-cursor {
   border-left: 2px solid #ffffff;
 }
+
+.dark .editor-toolbar button.active, .editor-toolbar button:hover {
+    background: #26334b;
+    border-color: #95a5a6;
+}
