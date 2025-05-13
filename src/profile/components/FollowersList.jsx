@@ -5,12 +5,18 @@ import {
 } from "../../auth/services/userService";
 import { useNavigate } from "react-router-dom";
 import FollowerCard from "./FollowerCard";
-import Loader from "../../common/components/Loader"
+import Loader from "../../common/components/Loader";
 
 const FollowersList = ({ userId }) => {
   const [followers, setFollowers] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const theme = localStorage.getItem("theme");
+    setIsDarkMode(theme === "dark");
+  }, []);
 
   useEffect(() => {
     const fetchFollowers = async () => {
@@ -30,7 +36,7 @@ const FollowersList = ({ userId }) => {
       } catch (error) {
         console.error("Error fetching followers:", error);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
@@ -39,12 +45,15 @@ const FollowersList = ({ userId }) => {
 
   return (
     <>
-      <h2 className="text-xl font-bold mb-4 dark:text-white">Followers ({followers.length})</h2>
+      <h2 className="text-xl font-bold mb-4 dark:text-white">
+        Followers ({followers.length})
+      </h2>
       {loading ? (
-        <Loader />
-
+        <Loader color={!isDarkMode ? "#bd9260" : "#5858FA"} />
       ) : followers.length === 0 ? (
-        <p className="flex justify-center items-center w-full h-64 text-gray-500 dark:text-gray-200">No followers yet.</p>
+        <p className="flex justify-center items-center w-full h-64 text-gray-500 dark:text-gray-200">
+          No followers yet.
+        </p>
       ) : (
         <ul className="flex flex-col gap-4">
           {followers.map((follower) => (

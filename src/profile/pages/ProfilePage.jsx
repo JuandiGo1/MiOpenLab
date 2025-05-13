@@ -20,6 +20,12 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [countPosts, setCountPosts] = useState(0);
   const [activeTab, setActiveTab] = useState("posts");
+   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const theme = localStorage.getItem("theme");
+    setIsDarkMode(theme === "dark");
+  }, []);  
 
   useEffect(() => {
     const fetchProfileUser = async () => {
@@ -90,7 +96,7 @@ const ProfilePage = () => {
         {/* Profile Header */}
         {loading ? (
           <div className="bg-white rounded-lg shadow-md p-6 mb-6 dark:bg-[#333333]">
-            <Loader h={"h-35"}/>
+            <Loader color={!isDarkMode ? "#bd9260" : "#5858FA"} h={"h-35"}/>
           </div>
           
         ) : (

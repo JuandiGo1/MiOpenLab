@@ -13,10 +13,11 @@ import { AuthContext } from "./AuthContext";
 import { getUserProfile } from "../services/userService";
 import LoadingScreen from "../../common/components/LoadingScreen";
 
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  
   // Escuchar cambios de sesión
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
