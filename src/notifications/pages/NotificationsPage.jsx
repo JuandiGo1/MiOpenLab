@@ -32,7 +32,7 @@ const NotificationsPage = () => {
     try {
       await markAllAsRead(user.uid);
       setNotifications((prev) =>
-        prev.map((noti) => ({ ...noti, isRead: true }))
+        prev.map((noti) => ({ ...noti, read: true }))
       );
     } catch (error) {
       console.error("Error marking notifications as read:", error);
@@ -49,7 +49,7 @@ const NotificationsPage = () => {
           {notifications.length > 0 && ( // Mostrar botón solo si hay notificaciones
             <button
               onClick={handleMarkAllAsRead}
-              disabled={isMarkingRead || notifications.every(n => n.isRead)} // Deshabilitar si ya todas están leídas
+              disabled={isMarkingRead || notifications.every(n => n.read)} // Deshabilitar si ya todas están leídas
               className="bg-[#bd9260] text-white px-4 py-2 rounded-lg hover:bg-[#ca9c6e] transition duration-150 ease-in-out 
               flex items-center justify-center min-w-[150px] min-h-[40px] disabled:opacity-50 disabled:cursor-not-allowed
               dark:bg-[#5858FA] dark:hover:bg-[#4343e8] dark:disabled:bg-[#6565fc]"
