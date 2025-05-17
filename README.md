@@ -70,5 +70,7 @@
    ```
 
    Accede desde [http://localhost:5173](http://localhost:5173)
+   ![image](https://github.com/user-attachments/assets/b9fb11d0-80ac-42a6-a29f-1b9d7da44893)
+
 
 ---
