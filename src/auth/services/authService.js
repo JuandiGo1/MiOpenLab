@@ -7,6 +7,7 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  sendPasswordResetEmail 
 } from "firebase/auth";
 import { createUserProfile, createUserProfileIfNotExists, updateName} from "./userService";
 
@@ -122,4 +123,20 @@ export async function updateDisplayName(newName) {
   await updateName(newName);
 
   return newName;
+}
+
+export async function resetPassword(email) {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return { success: true, message: "Reset email sent. Check your inbox." };
+  } catch (error) {
+    let message = "An error occurred.";
+    if (error.code === "auth/user-not-found") {
+      message = "No user found with this email.";
+    } else if (error.code === "auth/invalid-email") {
+      message = "Invalid email address.";
+    }
+
+    return { success: false, message };
+  }
 }

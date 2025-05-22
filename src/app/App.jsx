@@ -11,6 +11,7 @@ import ProjectDetails from "../explore/pages/ProjectDetails.jsx";
 import "../App.css";
 import NotificationsPage from "../notifications/pages/NotificationsPage.jsx";
 import NotFound from "../common/components/NotFound.jsx";
+import ForgotPasswordPage from "../auth/pages/ForgotPassworPage.jsx";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Routes>
           <Route path="*" element={<NotFound />} />
           <Route path="/" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route
             path="/home"
             element={

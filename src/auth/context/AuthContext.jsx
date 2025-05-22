@@ -8,6 +8,7 @@ import {
   signInWithGoogle,
   uploadProfilePicture,
   updateDisplayName,
+  resetPassword
 } from "../services/authService";
 import { AuthContext } from "./AuthContext";
 import { getUserProfile } from "../services/userService";
@@ -50,6 +51,7 @@ export function AuthProvider({ children }) {
   const logout = () => logoutUser();
   const updateName = (newName) => updateDisplayName(newName);
   const updateProfilePic = (img) => uploadProfilePicture(img);
+  const resetPass= (email) => resetPassword(email);
 
   const value = {
     user,
@@ -60,6 +62,7 @@ export function AuthProvider({ children }) {
     loading,
     updateName,
     updateProfilePic,
+    resetPass
   };
 
   return (
