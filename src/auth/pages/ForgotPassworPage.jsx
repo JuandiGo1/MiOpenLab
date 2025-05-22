@@ -22,13 +22,18 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="w-full max-w-full h-screen bg-[#1c2930] p-8 rounded-lg dark:bg-gray-800 justify-center items-center flex">
+    <div className="flex flex-col w-full max-w-full h-screen bg-[#1c2930] p-8 rounded-lg dark:bg-gray-800 justify-center items-center">
+      <div className="flex flex-col text-white items-center justify-center mb-4">
+        <h1 className="text-4xl sm:text-5xl font-bold ">
+          MiOpenLab
+        </h1>
+        <p className="text-xl">Share your Job!</p>
+      </div>
       <div className="flex flex-col gap-3 w-1/3 items-center justify-center bg-[#EAE0D5] p-8 rounded-xl dark:bg-gray-800 shadow-lg ">
-        <h1 className="font-bold text-2xl ">Forgot Password</h1>
+        <h2 className="font-bold text-2xl ">Forgot Password</h2>
         <p className="">Please enter your email to reset your password.</p>
         <form onSubmit={handleResetPassword} className="space-y-4">
           <div>
-
             <input
               type="email"
               value={email}
