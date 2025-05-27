@@ -1,5 +1,7 @@
 import { auth, storage} from "../../firebase/Config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebase/Config";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -107,6 +109,12 @@ export async function logoutUser() {
 export async function uploadProfilePicture(file) {
   if (!auth.currentUser) throw new Error("There is no authenticated user.");
 
+  // Validar tipo de archivo
+  const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+  if (!validTypes.includes(file.type)) {
+    throw new Error("Only PNG, JPG, JPEG, and WEBP images are allowed.");
+  }
+  
   const storageRef = ref(storage, `profilePictures/${auth.currentUser.uid}`);
 
   // Sube la imagen al Storage
@@ -115,8 +123,17 @@ export async function uploadProfilePicture(file) {
   // Obtiene la URL pública
   const photoURL = await getDownloadURL(storageRef);
   await updateProfile(auth.currentUser, { photoURL });
+  console.log("Profile picture updated:", photoURL);
+
+  // Actualizar también en la colección users de Firestore
+  await updateUserPhotoURL(auth.currentUser.uid, photoURL);
 
   return photoURL;
+}
+
+export async function updateUserPhotoURL(uid, photoURL) {
+  const userRef = doc(db, "users", uid);
+  await updateDoc(userRef, { photoURL });
 }
 
 export async function updateDisplayName(newName) {

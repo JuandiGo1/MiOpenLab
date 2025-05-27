@@ -5,9 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { NewLoader } from "../../common/components/Loader";
 
 const EditProfile = () => {
-  const { user, updateName } = useAuth();
+  const { user, updateName, updateProfilePic } = useAuth();
   const [name, setName] = useState(user.displayName);
   const [photo, setPhoto] = useState(user?.photoURL || defaultAvatar);
+  const [photoFile, setPhotoFile] = useState(null);
   const [msgInfo, setMsgInfo] = useState("");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -19,9 +20,10 @@ const EditProfile = () => {
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setPhotoFile(file); // archivo a subir
       const reader = new FileReader();
       reader.onload = () => {
-        setPhoto(reader.result);
+        setPhoto(reader.result); // base64 solo para previsualización
       };
       reader.readAsDataURL(file);
     }
@@ -31,9 +33,11 @@ const EditProfile = () => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      //setMsgInfo("Updating...");
+      setMsgInfo("Updating...");
       await updateName(name);
-      //await updateProfilePic(photo);
+      if (photoFile) {
+        await updateProfilePic(photoFile);
+      }
       setMsgInfo("Succesfully!");
       navigate(`/profile/${user.username}`);
     } catch (error) {
@@ -46,7 +50,9 @@ const EditProfile = () => {
   return (
     <div className="flex flex-col gap-4 justify-center items-center min-h-screen bg-gray-100 dark:bg-[#181818]">
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md dark:bg-[#333]">
-        <h2 className="text-2xl font-bold mb-4 text-center dark:text-white">Edit Profile</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center dark:text-white">
+          Edit Profile
+        </h2>
         <form onSubmit={handleSubmit}>
           {/* Foto de perfil */}
           <div className="flex flex-col items-center mb-4">
@@ -100,7 +106,11 @@ const EditProfile = () => {
             className="w-full bg-[#c9965b] text-white px-4 py-2 rounded-lg hover:bg-[#e29d4e] transition duration-300 ease-in-out cursor-pointer
             dark:bg-[#5858FA] dark:hover:bg-[#4343e8]"
           >
-            {isLoading ? <NewLoader size="20" color="white" h="h-auto" /> : "Save Changes"}
+            {isLoading ? (
+              <NewLoader size="20" color="white" h="h-auto" />
+            ) : (
+              "Save Changes"
+            )}
           </button>
         </form>
       </div>
