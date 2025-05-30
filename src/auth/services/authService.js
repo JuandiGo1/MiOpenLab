@@ -138,9 +138,38 @@ export async function uploadProfilePicture(file) {
   return photoURL;
 }
 
+export async function uploadBannerPicture(file) {
+  if (!auth.currentUser) throw new Error("There is no authenticated user.");
+
+  // Validar tipo de archivo
+  const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+  if (!validTypes.includes(file.type)) {
+    throw new Error("Only PNG, JPG, JPEG, and WEBP images are allowed.");
+  }
+
+  const storageRef = ref(storage, `banners/${auth.currentUser.uid}`);
+
+  // Sube la imagen al Storage
+  await uploadBytes(storageRef, file);
+
+  // Obtiene la URL pública
+  const bannerURL = await getDownloadURL(storageRef);
+  console.log("Banner picture updated:", bannerURL);
+
+  // Actualizar en la colección users de Firestore
+  await updateUserBannerURL(auth.currentUser.uid, bannerURL);
+
+  return bannerURL;
+}
+
 export async function updateUserPhotoURL(uid, photoURL) {
   const userRef = doc(db, "users", uid);
   await updateDoc(userRef, { photoURL });
+}
+
+export async function updateUserBannerURL(uid, bannerURL) {
+  const userRef = doc(db, "users", uid);
+  await updateDoc(userRef, { bannerURL });
 }
 
 export async function updateDisplayName(newName) {

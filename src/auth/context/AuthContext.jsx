@@ -10,6 +10,7 @@ import {
   updateDisplayName,
   resetPassword,
   updateDataProfile,
+  uploadBannerPicture
 } from "../services/authService";
 import { AuthContext } from "./AuthContext";
 import { getUserProfile } from "../services/userService";
@@ -51,6 +52,7 @@ export function AuthProvider({ children }) {
   const logout = () => logoutUser();
   const updateName = (newName) => updateDisplayName(newName);
   const updateProfilePic = (img) => uploadProfilePicture(img);
+  const updateBannerPic = (img) => uploadBannerPicture(img);
   const resetPass = (email) => resetPassword(email);
   const updateUserProfile = (profileData) => updateDataProfile(profileData);
 
@@ -63,6 +65,7 @@ export function AuthProvider({ children }) {
     loading,
     updateName,
     updateProfilePic,
+    updateBannerPic,
     resetPass,
     updateUserProfile
   };

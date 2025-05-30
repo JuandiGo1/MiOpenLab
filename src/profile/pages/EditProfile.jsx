@@ -3,12 +3,22 @@ import { useAuth } from "../../auth/hooks/useAuth";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
 import { useNavigate } from "react-router-dom";
 import { NewLoader } from "../../common/components/Loader";
+import defaultBanner from "../../assets/defaultBanner.jpg";
+import { FaEdit } from "react-icons/fa";
 
 const EditProfile = () => {
-  const { user, updateName, updateProfilePic, updateUserProfile } = useAuth();
+  const {
+    user,
+    updateName,
+    updateProfilePic,
+    updateUserProfile,
+    updateBannerPic,
+  } = useAuth();
   const [name, setName] = useState(user.displayName);
   const [photo, setPhoto] = useState(user?.photoURL || defaultAvatar);
   const [photoFile, setPhotoFile] = useState(null);
+  const [banner, setBanner] = useState(user?.bannerURL || defaultBanner);
+  const [bannerFile, setBannerFile] = useState(null);
   const [bio, setBio] = useState(user?.bio || "");
   const [headline, setHeadline] = useState(user?.headline || "");
   const [msgInfo, setMsgInfo] = useState("");
@@ -28,6 +38,16 @@ const EditProfile = () => {
       reader.onload = () => {
         setPhoto(reader.result); // base64 solo para previsualización
       };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBannerChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setBannerFile(file);
+      const reader = new FileReader();
+      reader.onload = () => setBanner(reader.result);
       reader.readAsDataURL(file);
     }
   };
@@ -54,6 +74,7 @@ const EditProfile = () => {
       const promises = [
         updateName(name),
         photoFile ? updateProfilePic(photoFile) : Promise.resolve(),
+        bannerFile ? updateBannerPic(bannerFile) : Promise.resolve(),
         updateUserProfile({
           bio,
           headline,
@@ -82,31 +103,63 @@ const EditProfile = () => {
           Edit Profile
         </h2>
         <form onSubmit={handleSubmit}>
-          {/* Foto de perfil */}
-          <div className="flex flex-col items-center mb-4">
-            <img
-              src={photo}
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = defaultAvatar;
-              }}
-              alt="Profile"
-              className="w-24 h-24 rounded-full object-cover mb-2"
-            />
-            <label
-              htmlFor="photo"
-              className="bg-[#c9965b] text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#e29d4e] transition duration-300 ease-in-out dark:bg-[#5858FA] dark:hover:bg-[#4343e8]"
-            >
-              Change Photo
-            </label>
-            <input
-              id="photo"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handlePhotoChange}
-              disabled={isLoading}
-            />
+          <div className="flex items-center justify-center gap-2">
+            {/* Banner */}
+            <div className="flex flex-col items-center mb-4">
+              <label
+                htmlFor="banner"
+                className="relative w-full h-32 cursor-pointer group"
+              >
+                <img
+                  src={banner}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = defaultBanner;
+                  }}
+                  alt="Banner"
+                  className="w-full h-32 object-cover rounded-lg mb-2 transition duration-200 group-hover:brightness-75"
+                />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <FaEdit className="text-3xl text-white" />
+                </div>
+                <input
+                  id="banner"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleBannerChange}
+                  disabled={isLoading}
+                />
+              </label>
+            </div>
+            {/* Foto de perfil */}
+            <div className="flex flex-col items-center mb-4">
+              <label
+                htmlFor="photo"
+                className="relative w-24 h-24 cursor-pointer group"
+              >
+                <img
+                  src={photo}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = defaultAvatar;
+                  }}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full object-cover mb-2 transition duration-200 group-hover:brightness-75"
+                />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <FaEdit className="text-2xl text-white" />
+                </div>
+                <input
+                  id="photo"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handlePhotoChange}
+                  disabled={isLoading}
+                />
+              </label>
+            </div>
           </div>
 
           {/* Nombre */}
