@@ -49,7 +49,14 @@ export async function createUserProfile({ uid, displayName, photoURL }) {
     username,
     displayName,
     photoURL,
+    bannerURL: "",         // URL de la imagen de banner
     bio: "",
+    headline: "",           // Titular
+    skills: [],             // Lista de aptitudes
+    badges: [],             // Lista de insignias
+    location: "",           // Ubicación
+    linkedin: "",           // Perfil LinkedIn
+    github: "",             // Perfil GitHub
     likes: [],
     followers: [],
     following: [],
@@ -71,6 +78,14 @@ export async function createUserProfileIfNotExists({
       displayName,
       username,
       photoURL,
+      bannerURL:"",
+      bio: "",
+      headline: "",
+      skills: [],
+      badges: [],
+      location: "",
+      linkedin: "",
+      github: "",
       createdAt: Date.now(),
       followers: [],
       following: [],
@@ -234,4 +249,32 @@ export async function updateName(newName) {
   await updateDoc(userRef, {
     displayName: newName,
   });
+}
+
+export async function updateUserProfile(uid, data) {
+  if (!uid) throw new Error("User ID is required for updating profile.");
+  const userRef = doc(db, "users", uid);
+  await updateDoc(userRef, data);
+}
+
+export async function ensureUserFields(uid) {
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+  if (!userSnap.exists()) return;
+
+  const data = userSnap.data();
+  const missingFields = {};
+
+  if (data.bannerURL === undefined) missingFields.bannerURL = "";
+  if (data.bio === undefined) missingFields.bio = "";
+  if (data.headline === undefined) missingFields.headline = "";
+  if (data.skills === undefined) missingFields.skills = [];
+  if (data.badges === undefined) missingFields.badges = [];
+  if (data.location === undefined) missingFields.location = "";
+  if (data.linkedin === undefined) missingFields.linkedin = "";
+  if (data.github === undefined) missingFields.github = "";
+
+  if (Object.keys(missingFields).length > 0) {
+    await updateDoc(userRef, missingFields);
+  }
 }

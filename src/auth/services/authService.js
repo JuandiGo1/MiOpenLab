@@ -1,5 +1,7 @@
 import { auth, storage} from "../../firebase/Config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebase/Config";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -7,8 +9,9 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  sendPasswordResetEmail 
 } from "firebase/auth";
-import { createUserProfile, createUserProfileIfNotExists, updateName} from "./userService";
+import { createUserProfile, createUserProfileIfNotExists, updateName, ensureUserFields, updateUserProfile } from "./userService";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -24,6 +27,9 @@ export async function signInWithGoogle() {
       displayName: user.displayName,
       photoURL: user.photoURL || "",
     });
+
+    // Asegurar campos nuevos
+    await ensureUserFields(user.uid);
 
     return { success: true, user };
   } catch (error) {
@@ -82,6 +88,10 @@ export async function loginUser(email, password) {
       username: user.displayName.replace(/\s+/g, "").toLowerCase(),
       photoURL: user.photoURL || "",
     });
+
+    // Asegurar campos nuevos
+    await ensureUserFields(user.uid);
+
     return { success: true, user: user };
   } catch (error) {
     if (error.code === "auth/user-not-found") {
@@ -106,6 +116,12 @@ export async function logoutUser() {
 export async function uploadProfilePicture(file) {
   if (!auth.currentUser) throw new Error("There is no authenticated user.");
 
+  // Validar tipo de archivo
+  const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+  if (!validTypes.includes(file.type)) {
+    throw new Error("Only PNG, JPG, JPEG, and WEBP images are allowed.");
+  }
+  
   const storageRef = ref(storage, `profilePictures/${auth.currentUser.uid}`);
 
   // Sube la imagen al Storage
@@ -114,12 +130,74 @@ export async function uploadProfilePicture(file) {
   // Obtiene la URL pública
   const photoURL = await getDownloadURL(storageRef);
   await updateProfile(auth.currentUser, { photoURL });
+  console.log("Profile picture updated:", photoURL);
+
+  // Actualizar también en la colección users de Firestore
+  await updateUserPhotoURL(auth.currentUser.uid, photoURL);
 
   return photoURL;
+}
+
+export async function uploadBannerPicture(file) {
+  if (!auth.currentUser) throw new Error("There is no authenticated user.");
+
+  // Validar tipo de archivo
+  const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+  if (!validTypes.includes(file.type)) {
+    throw new Error("Only PNG, JPG, JPEG, and WEBP images are allowed.");
+  }
+
+  const storageRef = ref(storage, `banners/${auth.currentUser.uid}`);
+
+  // Sube la imagen al Storage
+  await uploadBytes(storageRef, file);
+
+  // Obtiene la URL pública
+  const bannerURL = await getDownloadURL(storageRef);
+  console.log("Banner picture updated:", bannerURL);
+
+  // Actualizar en la colección users de Firestore
+  await updateUserBannerURL(auth.currentUser.uid, bannerURL);
+
+  return bannerURL;
+}
+
+export async function updateUserPhotoURL(uid, photoURL) {
+  const userRef = doc(db, "users", uid);
+  await updateDoc(userRef, { photoURL });
+}
+
+export async function updateUserBannerURL(uid, bannerURL) {
+  const userRef = doc(db, "users", uid);
+  await updateDoc(userRef, { bannerURL });
 }
 
 export async function updateDisplayName(newName) {
   await updateName(newName);
 
   return newName;
+}
+
+export async function resetPassword(email) {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return { success: true, message: "Reset email sent. Check your inbox." };
+  } catch (error) {
+    let message = "An error occurred.";
+    if (error.code === "auth/user-not-found") {
+      message = "No user found with this email.";
+    } else if (error.code === "auth/invalid-email") {
+      message = "Invalid email address.";
+    }
+
+    return { success: false, message };
+  }
+}
+
+export async function updateDataProfile(profileData) {
+  if (!auth.currentUser) throw new Error("There is no authenticated user.");
+  
+  await updateUserProfile(auth.currentUser.uid, profileData);
+
+  return { success: true, message: "Profile updated successfully." };
 }
