@@ -251,6 +251,13 @@ export async function updateName(newName) {
   });
 }
 
+export async function updateUserProfile(uid, data) {
+  console.log("Updating user profile for UID:", uid);
+  if (!uid) throw new Error("User ID is required for updating profile.");
+  console.log("Data to update:", data);
+  const userRef = doc(db, "users", uid);
+  await updateDoc(userRef, data);
+}
 
 export async function ensureUserFields(uid) {
   const userRef = doc(db, "users", uid);

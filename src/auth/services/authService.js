@@ -11,7 +11,7 @@ import {
   signInWithPopup,
   sendPasswordResetEmail 
 } from "firebase/auth";
-import { createUserProfile, createUserProfileIfNotExists, updateName, ensureUserFields } from "./userService";
+import { createUserProfile, createUserProfileIfNotExists, updateName, ensureUserFields, updateUserProfile } from "./userService";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -91,7 +91,7 @@ export async function loginUser(email, password) {
 
     // Asegurar campos nuevos
     await ensureUserFields(user.uid);
-    
+
     return { success: true, user: user };
   } catch (error) {
     if (error.code === "auth/user-not-found") {
@@ -163,4 +163,12 @@ export async function resetPassword(email) {
 
     return { success: false, message };
   }
+}
+
+export async function updateDataProfile(profileData) {
+  if (!auth.currentUser) throw new Error("There is no authenticated user.");
+  
+  await updateUserProfile(auth.currentUser.uid, profileData);
+
+  return { success: true, message: "Profile updated successfully." };
 }
