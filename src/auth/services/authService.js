@@ -11,7 +11,7 @@ import {
   signInWithPopup,
   sendPasswordResetEmail 
 } from "firebase/auth";
-import { createUserProfile, createUserProfileIfNotExists, updateName} from "./userService";
+import { createUserProfile, createUserProfileIfNotExists, updateName, ensureUserFields } from "./userService";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -27,6 +27,9 @@ export async function signInWithGoogle() {
       displayName: user.displayName,
       photoURL: user.photoURL || "",
     });
+
+    // Asegurar campos nuevos
+    await ensureUserFields(user.uid);
 
     return { success: true, user };
   } catch (error) {
@@ -85,6 +88,10 @@ export async function loginUser(email, password) {
       username: user.displayName.replace(/\s+/g, "").toLowerCase(),
       photoURL: user.photoURL || "",
     });
+
+    // Asegurar campos nuevos
+    await ensureUserFields(user.uid);
+    
     return { success: true, user: user };
   } catch (error) {
     if (error.code === "auth/user-not-found") {
