@@ -19,7 +19,6 @@ const ProfileHeader = ({
   countPosts,
   currentUserUsername,
   currentUserUserUid,
-  currentUserFollows,
   uid,
   photoURL,
   bannerURL,
