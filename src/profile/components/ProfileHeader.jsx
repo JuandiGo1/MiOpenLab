@@ -226,7 +226,7 @@ const ProfileHeader = ({
               <FaGem className="text-xl text-gray-700 dark:text-gray-200 mr-2" />
               <div>
                 <span className="font-semibold text-gray-900 dark:text-white">
-                  Principales aptitudes
+                  Main skills
                 </span>
                 <div className="text-gray-700 dark:text-gray-200 text-sm mt-1">
                   {skills.map((skill, idx) => (
