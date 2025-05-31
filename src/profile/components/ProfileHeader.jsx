@@ -6,11 +6,14 @@ import defaultBanner from "../../assets/defaultBanner.jpg";
 import { followUser, unfollowUser } from "../../auth/services/userService";
 import { ToastContainer, toast } from "react-toastify";
 import { NewLoader } from "../../common/components/Loader";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase/Config";
 import {
   FaLinkedin,
   FaGithubSquare,
   FaGem,
 } from "react-icons/fa";
+
 
 const ProfileHeader = ({
   countPosts,
@@ -32,37 +35,64 @@ const ProfileHeader = ({
   const navigate = useNavigate();
   const [isFollowing, setFollow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFollowStatusLoading, setIsFollowStatusLoading] = useState(true);
   const profileImage = photoURL || defaultAvatar;
   const bannerImage = bannerURL || defaultBanner;
   const [hovering, setHovering] = useState(false);
 
   // Sincronizar isFollowing con currentUserFollows y uid
   useEffect(() => {
-    if (currentUserFollows?.includes(uid)) {
-      setFollow(true);
+    if (currentUserUserUid && uid) {
+      setIsFollowStatusLoading(true);
+      const currentUserDocRef = doc(db, "users", currentUserUserUid);
+
+      const unsubscribe = onSnapshot(
+        currentUserDocRef,
+        (docSnap) => {
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            const currentlyFollowing = userData.following || [];
+            setFollow(currentlyFollowing.includes(uid));
+          } else {
+            setFollow(false);
+            console.warn(`User document for ${currentUserUserUid} not found.`);
+          }
+          setIsFollowStatusLoading(false);
+        },
+        (error) => {
+          console.error("Error listening to user's following status:", error);
+          setFollow(false); // Default on error
+          setIsFollowStatusLoading(false);
+        }
+      );
+
+      return () => unsubscribe(); // Cleanup listener
     } else {
+      // Not enough info to determine follow status
       setFollow(false);
+      setIsFollowStatusLoading(false);
     }
-  }, [currentUserFollows, uid]);
+  }, [currentUserUserUid, uid]);
 
   const handleFollow = async () => {
-    if (isLoading) return;
+    if (isLoading || isFollowStatusLoading) return; // Prevent action if status is loading or another action is in progress
     setIsLoading(true);
 
+    const previousIsFollowing = isFollowing; // Store state before action
+    // Optimistic UI update
+    setFollow(!previousIsFollowing);
     try {
-      if (isFollowing) {
-        // Dejar de seguir al usuario
+      if (previousIsFollowing) {
         await unfollowUser(currentUserUserUid, uid);
-        setFollow(false); // Actualizar el estado local
       } else {
-        // Seguir al usuario
-        await followUser(currentUserUserUid, uid); // Actualizar Firestore
-        setFollow(true); // Actualizar el estado local
+        await followUser(currentUserUserUid, uid);
       }
+      //onSnapshot asegura que el estado se sincronice con la base de datos.
     } catch (error) {
       console.error("Error al actualizar el estado de seguimiento:", error);
+      setFollow(previousIsFollowing); // Revert optimistic update on error
     } finally {
-      setIsLoading(false); // Desactivar el loader
+      setIsLoading(false);
     }
   };
 

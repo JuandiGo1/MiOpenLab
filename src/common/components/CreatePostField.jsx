@@ -16,6 +16,7 @@ const CreatePostField = () => {
   const [title, setTitle] = useState("");
   const [linkRepo, setLinkRepo] = useState("");
   const [linkDemo, setLinkDemo] = useState("");
+  const [isPublic, setIsPublic] = useState(true); // New state for visibility
   const [msgInfo, setMsgInfo] = useState("");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +30,7 @@ const CreatePostField = () => {
       setLinkRepo(projectToEdit.linkRepo || "");
       setLinkDemo(projectToEdit.linkDemo || "");
       descriptionRef.current = projectToEdit.description || "";
+      setIsPublic(projectToEdit.isPublic === undefined ? true : projectToEdit.isPublic); // Set isPublic from projectToEdit
     }
   }, [projectToEdit]);
 
@@ -54,6 +56,7 @@ const CreatePostField = () => {
       description: description.trim(),
       linkRepo: linkRepo.trim() || null,
       linkDemo: linkDemo.trim() || null,
+      isPublic: isPublic, // Include isPublic in projectData
     };
 
     try {
@@ -163,6 +166,21 @@ const CreatePostField = () => {
               readOnly: isLoading,              
             }}
           />
+        </div>
+
+        {/* Visibility Toggle */}
+        <div className="mb-4">
+          <label htmlFor="isPublic" className="flex items-center text-gray-700 font-bold dark:text-gray-100">
+            <input
+              id="isPublic"
+              type="checkbox"
+              checked={isPublic}
+              onChange={(e) => setIsPublic(e.target.checked)}
+              className="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+              disabled={isLoading}
+            />
+            Public (visible to everyone)
+          </label>
         </div>
 
         {/* Submit Button */}
