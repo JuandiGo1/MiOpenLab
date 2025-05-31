@@ -7,8 +7,10 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  sendPasswordResetEmail 
 } from "firebase/auth";
-import { createUserProfile, createUserProfileIfNotExists, updateName} from "./userService";
+import { createUserProfile, createUserProfileIfNotExists, updateName, ensureUserFields, updateUserProfile } from "./userService";
+import { updateUserCommentsProfile } from "../../common/services/commentService";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -106,6 +108,12 @@ export async function logoutUser() {
 export async function uploadProfilePicture(file) {
   if (!auth.currentUser) throw new Error("There is no authenticated user.");
 
+  // Validar tipo de archivo
+  const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+  if (!validTypes.includes(file.type)) {
+    throw new Error("Only PNG, JPG, JPEG, and WEBP images are allowed.");
+  }
+  
   const storageRef = ref(storage, `profilePictures/${auth.currentUser.uid}`);
 
   // Sube la imagen al Storage
@@ -114,12 +122,25 @@ export async function uploadProfilePicture(file) {
   // Obtiene la URL pública
   const photoURL = await getDownloadURL(storageRef);
   await updateProfile(auth.currentUser, { photoURL });
+  console.log("Profile picture updated:", photoURL);
+
+  // Actualizar también en la colección users de Firestore
+  await updateUserPhotoURL(auth.currentUser.uid, photoURL);
+
+  // Actualizar todos los comentarios del usuario
+  await updateUserCommentsProfile(auth.currentUser.uid, photoURL, auth.currentUser.displayName);
 
   return photoURL;
 }
 
 export async function updateDisplayName(newName) {
+  const user = auth.currentUser;
+  if (!user) throw new Error("There is no authenticated user.");
+
   await updateName(newName);
+
+  // Actualizar los comentarios con el nuevo nombre
+  await updateUserCommentsProfile(user.uid, user.photoURL, newName);
 
   return newName;
 }

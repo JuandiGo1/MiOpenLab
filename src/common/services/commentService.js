@@ -9,19 +9,20 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../../firebase/Config";
 import { createNotification } from "../../notifications/services/notiservice";
 import { getProjectById } from "../../profile/services/projectService";
 
-export const createComment = async (projectId, userId, content, userDisplayName, userPhotoURL) => {
-  try {
+export const createComment = async (projectId, userId, content, userDisplayName, userPhotoURL) => {  try {
     const projectRef = doc(db, "projects", projectId);
     const userRef = doc(db, "users", userId);
     
     const commentRef = await addDoc(collection(db, "comments"), {
       projectRef, // Reference to the project document
       userRef,    // Reference to the user document
+      userId,     // Also store userId for easier querying
       content,
       userDisplayName, // We keep these for quick access without additional queries
       userPhotoURL,   // We keep these for quick access without additional queries
@@ -52,11 +53,9 @@ export const createComment = async (projectId, userId, content, userDisplayName,
   }
 };
 
-export const getProjectComments = async (projectId) => {
-  try {
+export const getProjectComments = async (projectId) => {  try {
     const projectRef = doc(db, "projects", projectId);
-    const commentsRef = collection(db, "comments");
-    const q = query(
+    const commentsRef = collection(db, "comments");    const q = query(
       commentsRef,
       where("projectRef", "==", projectRef),
       orderBy("createdAt", "desc")
@@ -96,9 +95,37 @@ export const deleteComment = async (commentId, projectId, userId) => {
       });
     }
 
-    await deleteDoc(commentRef);
-  } catch (error) {
+    await deleteDoc(commentRef);  } catch (error) {
     console.error("Error deleting comment:", error);
+    throw error;
+  }
+};
+
+export const updateUserCommentsProfile = async (userId, newPhotoURL, newDisplayName) => {
+  try {
+    const commentsRef = collection(db, "comments");
+    const userRef = doc(db, "users", userId);
+    
+    // Get all comments by the user
+    const q = query(
+      commentsRef,
+      where("userRef", "==", userRef)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    
+    // Batch update all comments
+    const batch = writeBatch(db);
+    querySnapshot.docs.forEach((doc) => {
+      batch.update(doc.ref, {
+        userPhotoURL: newPhotoURL,
+        userDisplayName: newDisplayName
+      });
+    });
+    
+    await batch.commit();
+  } catch (error) {
+    console.error("Error updating user comments profile:", error);
     throw error;
   }
 };
