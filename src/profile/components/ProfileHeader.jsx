@@ -6,6 +6,11 @@ import defaultBanner from "../../assets/defaultBanner.jpg";
 import { followUser, unfollowUser } from "../../auth/services/userService";
 import { ToastContainer, toast } from "react-toastify";
 import { NewLoader } from "../../common/components/Loader";
+import {
+  FaLinkedin,
+  FaGithubSquare,
+  FaGem,
+} from "react-icons/fa";
 
 const ProfileHeader = ({
   countPosts,
@@ -21,6 +26,8 @@ const ProfileHeader = ({
   headline,
   skills = [],
   location,
+  linkedin,
+  github,
 }) => {
   const navigate = useNavigate();
   const [isFollowing, setFollow] = useState(false);
@@ -164,11 +171,39 @@ const ProfileHeader = ({
       </div>
       {/* Info principal */}
       <div className="pt-14 px-8 pb-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold dark:text-white">
-              {displayName}
-            </h1>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full">
+          <div className="w-full">
+            <div className="flex items-center justify-between w-full">
+              <h1 className="text-2xl font-bold dark:text-white">
+                {displayName}
+              </h1>
+
+              {linkedin || github ? (
+                <div className="flex space-x-4">
+                  {linkedin && (
+                    <a
+                      href={linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                      <FaLinkedin className="text-3xl" />
+                    </a>
+                  )}
+                  {github && (
+                    <a
+                      href={github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-800 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-200"
+                    >
+                      <FaGithubSquare className="text-3xl" />
+                    </a>
+                  )}
+                </div>
+              ) : null}
+            </div>
+
             <p className="text-gray-600 dark:text-gray-200">@{username}</p>
             {headline && (
               <p className="text-gray-800 dark:text-gray-300 mt-1">
@@ -186,15 +221,26 @@ const ProfileHeader = ({
         {bio && <p className="mt-4 text-gray-700 dark:text-gray-200">{bio}</p>}
         {/* Aptitudes */}
         {skills && skills.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {skills.map((skill, idx) => (
-              <span
-                key={idx}
-                className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold dark:bg-blue-900 dark:text-blue-200"
-              >
-                {skill}
-              </span>
-            ))}
+          <div className="mt-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#222] px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center">
+              <FaGem className="text-xl text-gray-700 dark:text-gray-200 mr-2" />
+              <div>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  Main skills
+                </span>
+                <div className="text-gray-700 dark:text-gray-200 text-sm mt-1">
+                  {skills.map((skill, idx) => (
+                    <span key={idx}>
+                      {skill}
+                      {idx < skills.length - 1 && (
+                        <span className="mx-1">•</span>
+                      )}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
           </div>
         )}
         {/* Posts count */}
