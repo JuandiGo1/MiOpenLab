@@ -4,6 +4,7 @@ import { createComment, getProjectComments, deleteComment } from '../services/co
 import DefaultAvatar from '../../assets/defaultAvatar.jpg';
 import { NewLoader } from '../components/Loader';
 import formatDate from '../../utils/dateFormatter';
+import { Timestamp } from 'firebase/firestore'; 
 
 const Comments = ({ projectId }) => {
   const { user } = useAuth();
