@@ -18,7 +18,7 @@ import formatDate from "../../utils/dateFormatter";
 import {
   likePost,
   unlikePost,
-  getUsernameById,
+  getUserProfile
 } from "../../auth/services/userService";
 
 const ProjectCard = ({
@@ -27,9 +27,6 @@ const ProjectCard = ({
   description,
   likes,
   authorId,
-  authorName,
-  authorUsername,
-  authorPhoto,
   createdAt,
   linkRepo,
   linkDemo,
@@ -43,7 +40,8 @@ const ProjectCard = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [authorProfileLink, setAuthorProfileLink]= useState('');
-  const authorAvatar = authorPhoto ? authorPhoto : defaultAvatar;
+  const [authorProfile, setAuthorProfile] = useState(null);
+  //const authorAvatar = authorPhoto ? authorPhoto : defaultAvatar;
   const navigate = useNavigate();
   // const authorProfileLink = authorUsername
   //   ? `/profile/${authorUsername}`
@@ -52,14 +50,10 @@ const ProjectCard = ({
   useEffect(() => {
     const fetchAuthorProfileLink = async () => {
       try {
-        let username;
-        if(!authorUsername){
-           username = await getUsernameById(authorId);
-        }else{
-          username = authorUsername;
-        }
-        
-        
+        const profile = await getUserProfile(authorId);
+        setAuthorProfile(profile);
+        const username = profile?.username || '';
+
         setAuthorProfileLink(`/profile/${username}`);
       } catch (error) {
         console.error("Error fetching author profile link:", error);
@@ -67,7 +61,7 @@ const ProjectCard = ({
     };
 
     fetchAuthorProfileLink();
-  }, [authorId, authorUsername]);
+  }, [authorId]);
 
   // Formatear fecha
   const formattedDate = formatDate(createdAt);
@@ -133,8 +127,8 @@ const ProjectCard = ({
           description,
           linkRepo,
           linkDemo,
-          authorName,
-          authorPhoto,
+          authorName: authorProfile?.displayName || 'Unknown Author',
+          authorPhoto: authorProfile?.photoURL || defaultAvatar,
           createdAt,
         },
       },
@@ -157,13 +151,13 @@ const ProjectCard = ({
 
               <div className="flex items-center justify-start gap-1 px-4 ">
                 <img
-                  src={authorAvatar}
-                  alt={`${authorName}'s avatar`}
-                  className="size-6 rounded-full "
+                  src={authorProfile?.photoURL || defaultAvatar}
+                  alt={`${authorProfile?.displayName}'s avatar`}
+                  className="size-6 rounded-full object-cover"
                   loading="lazy"
                 />
                 <h3 onClick={()=> navigate(authorProfileLink)} className="text-md font-mono text-gray-500 hover:underline cursor-pointer dark:text-gray-300 ">
-                  {authorName}
+                  {authorProfile?.displayName}
                 </h3>
               </div>
             </div>

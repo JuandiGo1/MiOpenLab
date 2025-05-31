@@ -20,7 +20,7 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [countPosts, setCountPosts] = useState(0);
   const [activeTab, setActiveTab] = useState("posts");
-   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     const theme = localStorage.getItem("theme");

@@ -144,6 +144,7 @@ export async function uploadBannerPicture(file) {
   // Validar tipo de archivo
   const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
   if (!validTypes.includes(file.type)) {
+    console.error("Invalid file type:", file.type);
     throw new Error("Only PNG, JPG, JPEG, and WEBP images are allowed.");
   }
 
