@@ -49,10 +49,9 @@ const Comments = ({ projectId }) => {
       setSubmitting(false);
     }
   };
-
   const handleDelete = async (commentId) => {
     try {
-      await deleteComment(commentId);
+      await deleteComment(commentId, projectId, user.uid);
       await loadComments();
     } catch (error) {
       console.error('Error deleting comment:', error);
