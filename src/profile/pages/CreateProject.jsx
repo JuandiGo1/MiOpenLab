@@ -1,4 +1,4 @@
-import React from "react";
+
 import CreatePostField from "../../common/components/CreatePostField";
 
 const CreateProject = () => {

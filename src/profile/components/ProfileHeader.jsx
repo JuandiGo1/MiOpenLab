@@ -6,7 +6,11 @@ import defaultBanner from "../../assets/defaultBanner.jpg";
 import { followUser, unfollowUser } from "../../auth/services/userService";
 import { ToastContainer, toast } from "react-toastify";
 import { NewLoader } from "../../common/components/Loader";
-import { FaLinkedin, FaGithubSquare } from "react-icons/fa";
+import {
+  FaLinkedin,
+  FaGithubSquare,
+  FaGem,
+} from "react-icons/fa";
 
 const ProfileHeader = ({
   countPosts,
@@ -174,7 +178,7 @@ const ProfileHeader = ({
                 {displayName}
               </h1>
 
-              { linkedin || github ? (
+              {linkedin || github ? (
                 <div className="flex space-x-4">
                   {linkedin && (
                     <a
@@ -183,7 +187,7 @@ const ProfileHeader = ({
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                     >
-                      <FaLinkedin className="text-3xl"/>
+                      <FaLinkedin className="text-3xl" />
                     </a>
                   )}
                   {github && (
@@ -217,15 +221,26 @@ const ProfileHeader = ({
         {bio && <p className="mt-4 text-gray-700 dark:text-gray-200">{bio}</p>}
         {/* Aptitudes */}
         {skills && skills.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {skills.map((skill, idx) => (
-              <span
-                key={idx}
-                className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold dark:bg-blue-900 dark:text-blue-200"
-              >
-                {skill}
-              </span>
-            ))}
+          <div className="mt-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#222] px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center">
+              <FaGem className="text-xl text-gray-700 dark:text-gray-200 mr-2" />
+              <div>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  Principales aptitudes
+                </span>
+                <div className="text-gray-700 dark:text-gray-200 text-sm mt-1">
+                  {skills.map((skill, idx) => (
+                    <span key={idx}>
+                      {skill}
+                      {idx < skills.length - 1 && (
+                        <span className="mx-1">•</span>
+                      )}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
           </div>
         )}
         {/* Posts count */}
