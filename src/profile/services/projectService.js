@@ -31,6 +31,7 @@ export async function createProject(projectData, currentUser) {
       updatedAt: serverTimestamp(),
       likes: 0,
       likedBy: [],
+      isPublic: projectData.isPublic, // Add this line
     });
 
     console.log("Proyecto creado con ID:", docRef.id);
@@ -134,7 +135,9 @@ export const searchProjects = async (searchTerm) => {
 
 export const editProject = async (projectId, newData) => {
   const projectRef = doc(db, "projects", projectId);
-  await updateDoc(projectRef, newData); // newData: { title, description, ... }
+  // Asegurar que newData puede incluir isPublic al hacer spread.
+  await updateDoc(projectRef, newData)
+
 };
 
 export const deleteProject = async (projectId) => {
