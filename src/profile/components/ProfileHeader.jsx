@@ -8,12 +8,9 @@ import { ToastContainer, toast } from "react-toastify";
 import { NewLoader } from "../../common/components/Loader";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/Config";
-import {
-  FaLinkedin,
-  FaGithubSquare,
-  FaGem,
-} from "react-icons/fa";
-
+import { FaLinkedin, FaGithubSquare, FaGem } from "react-icons/fa";
+import { PhotoProvider, PhotoView } from "react-photo-view";
+import "react-photo-view/dist/react-photo-view.css";
 
 const ProfileHeader = ({
   countPosts,
@@ -129,27 +126,37 @@ const ProfileHeader = ({
     <div className="bg-white rounded-lg shadow-md mb-6 dark:bg-[#333333] overflow-hidden">
       {/* Banner */}
       <div className="relative h-40 w-full">
-        <img
-          src={bannerImage}
-          alt="Banner"
-          className="object-cover w-full h-full"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = defaultBanner;
-          }}
-        />
+        <PhotoProvider bannerVisible={false}>
+          <PhotoView src={bannerImage}>
+            <img
+              src={bannerImage}
+              alt="Banner"
+              className="object-cover w-full h-full cursor-pointer"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = defaultBanner;
+              }}
+            />
+          </PhotoView>
+        </PhotoProvider>
+
         {/* Foto de perfil superpuesta */}
         <div className="absolute left-8 right-8 -bottom-12 flex items-center justify-between z-10 w-[calc(100%-4rem)]">
           {/* Foto de perfil */}
-          <img
-            src={profileImage}
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = defaultAvatar;
-            }}
-            alt="Profile"
-            className="w-30 h-30 rounded-full object-cover border-4 border-white shadow-lg dark:border-[#333333]"
-          />
+          <PhotoProvider bannerVisible={false}>
+            <PhotoView src={profileImage}>
+              <img
+                src={profileImage}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = defaultAvatar;
+                }}
+                alt="Profile"
+                className="w-30 h-30 rounded-full object-cover border-4 border-white shadow-lg dark:border-[#333333] cursor-pointer"
+              />
+            </PhotoView>
+          </PhotoProvider>
+
           {/* Botones */}
           <div className="flex space-x-2 mt-4">
             {currentUserUsername === username ? (
@@ -269,7 +276,6 @@ const ProfileHeader = ({
                 </div>
               </div>
             </div>
-
           </div>
         )}
         {/* Posts count */}
