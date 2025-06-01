@@ -30,7 +30,7 @@ const TopProjectsBar = () => {
   }, []);
 
   return (
-    <aside className="w-1/5 bg-white p-6 shadow-md sticky top-0 dark:bg-gray-900">
+    <aside className="hidden md:block w-[300px] flex-shrink-0 bg-white p-6 shadow-md sticky top-0 overflow-y-auto dark:bg-gray-900">
       <h2 className="text-lg font-bold mb-4 dark:text-white">Top Projects</h2>
       {loading ? (
         // <p className="text-gray-500 dark:text-gray-400">Loading top projects...</p> // Anterior
