@@ -43,9 +43,7 @@ const ExplorePage = () => {
             }
           } else {
             fetchedProjects = []; // No hay usuario, así que no hay feed personalizado
-            setMsgInfo(
-              "Sign in to see projects from users you follow."
-            );
+            setMsgInfo("Sign in to see projects from users you follow.");
           }
         }
         setProjects(fetchedProjects);
@@ -74,11 +72,18 @@ const ExplorePage = () => {
 
   // Modificado para ordenar searchResults o projects
   const sortProjectsHandler = (order) => {
-    const dataToSort = searchResults.length > 0 ? [...searchResults] : [...projects];
+    const dataToSort =
+      searchResults.length > 0 ? [...searchResults] : [...projects];
 
     const sortedData = dataToSort.sort((a, b) => {
-      const timeA = a.createdAt && typeof a.createdAt.seconds === 'number' ? a.createdAt.seconds : 0;
-      const timeB = b.createdAt && typeof b.createdAt.seconds === 'number' ? b.createdAt.seconds : 0;
+      const timeA =
+        a.createdAt && typeof a.createdAt.seconds === "number"
+          ? a.createdAt.seconds
+          : 0;
+      const timeB =
+        b.createdAt && typeof b.createdAt.seconds === "number"
+          ? b.createdAt.seconds
+          : 0;
       return order === "newest" ? timeB - timeA : timeA - timeB;
     });
 
@@ -91,19 +96,23 @@ const ExplorePage = () => {
   };
 
   return (
-    <div className="flex bg-gray-100 min-h-screen dark:bg-[#181818]">
-      <main className="flex-1 p-6 ">
+    <div className="flex bg-gray-100 min-h-screen min-w-[320px] dark:bg-[#181818]">
+      <main className="flex-1 p-6 min-w-0">
         {/* Row 1: SearchBar and SortButtons */}
         <div className="flex items-center justify-between mb-1 gap-4">
-          <div className="flex flex-col w-full mb-0">
+          <div className="flex flex-col w-full mb-0 min-w-0">
             <SearchBar onResults={handleResults} setMsgInfo={handleMsgInfo} />
             {/* msgInfo se mostrará aquí, ya sea de fetchProjectsData o de SearchBar */}
-            <span className="text-gray-800 text-sm mt-2 dark:text-gray-300">{msgInfo}</span>
+            <span className="text-gray-800 text-sm mt-2 dark:text-gray-300 break-words">
+              {msgInfo}
+            </span>
           </div>
-          <div className="flex items-center mb-2">
+          <div className="flex items-center mb-2 flex-shrink-0">
             <SortButtons
               currentSortOrder={sortOrder}
-              onSortChange={sortProjectsHandler} /> {/* Usar el handler actualizado */}
+              onSortChange={sortProjectsHandler}
+            />{" "}
+            {/* Usar el handler actualizado */}
           </div>
         </div>
 
@@ -113,22 +122,20 @@ const ExplorePage = () => {
             <button
               onClick={() => setActiveView("discover")}
               disabled={loading}
-              className={`flex items-center gap-1 px-4 py-1 text-sm font-semibold rounded-full transition-colors duration-200 focus:outline-none ${
-                activeView === "discover"
-                  ? "bg-white text-blue-600 dark:bg-gray-900 dark:text-blue-500 shadow-md" 
+              className={`flex items-center gap-1 px-4 py-1 text-sm font-semibold rounded-full transition-colors duration-200 focus:outline-none ${activeView === "discover"
+                  ? "bg-white text-blue-600 dark:bg-gray-900 dark:text-blue-500 shadow-md"
                   : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-              } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               Discover
             </button>
             <button
               onClick={() => setActiveView("following")}
               disabled={loading}
-              className={`flex items-center gap-1 px-4 py-1 text-sm font-semibold rounded-full transition-colors duration-200 focus:outline-none ${
-                activeView === "following"
+              className={`flex items-center gap-1 px-4 py-1 text-sm font-semibold rounded-full transition-colors duration-200 focus:outline-none ${activeView === "following"
                   ? "bg-white text-blue-600 dark:bg-gray-900 dark:text-blue-500 shadow-md"
                   : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-              } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               Following
             </button>
@@ -138,32 +145,41 @@ const ExplorePage = () => {
         {/* Mostrar skeletons mientras cargan los proyectos */}
         {loading ? (
           <div className="grid grid-cols-1 gap-6">
-            {[...Array(6)].map((_, index) => <ProjectSkeleton key={index} />)}
+            {[...Array(6)].map((_, index) => (
+              <ProjectSkeleton key={index} />
+            ))}
           </div>
-        ) : (searchResults.length > 0 || projects.length > 0) ? (
+        ) : searchResults.length > 0 || projects.length > 0 ? (
           // Si hay proyectos de búsqueda o de la vista actual
           <div className="grid grid-cols-1 gap-6">
-            {(searchResults.length > 0 ? searchResults : projects).map((project) => (
-              <ProjectCard key={project.id} {...project} />
-            ))}
+            {(searchResults.length > 0 ? searchResults : projects).map(
+              (project) => (
+                <ProjectCard key={project.id} {...project} />
+              )
+            )}
           </div>
         ) : (
           // Si no hay skeletons, ni resultados de búsqueda, ni proyectos (área vacía)
-          <div className="text-center py-10 mt-4"> 
-            <p className="text-xl text-gray-600 dark:text-gray-400">
+          <div className="text-center py-10 mt-4">
+            <p className="text-xl text-gray-600 dark:text-gray-400 break-words">
               {msgInfo || "There is no content to display."}
             </p>
             {/* Mensaje y CTA específico para el feed "Siguiendo" vacío */}
-            {activeView === 'following' && user && (!projects || projects.length === 0) && (!searchResults || searchResults.length === 0) && (
-                 <p className="mt-4 text-md text-gray-500 dark:text-gray-500">
-                    You can <button 
-                                onClick={() => setActiveView('discover')} 
-                                className="text-blue-500 hover:underline focus:outline-none font-semibold"
-                             >
-                                explore more projects
-                             </button> to discover and follow new creators.
-                 </p>
-            )}
+            {activeView === "following" &&
+              user &&
+              (!projects || projects.length === 0) &&
+              (!searchResults || searchResults.length === 0) && (
+                <p className="mt-4 text-md text-gray-500 dark:text-gray-500 break-words">
+                  You can{" "}
+                  <button
+                    onClick={() => setActiveView("discover")}
+                    className="text-blue-500 hover:underline focus:outline-none font-semibold"
+                  >
+                    explore more projects
+                  </button>{" "}
+                  to discover and follow new creators.
+                </p>
+              )}
           </div>
         )}
       </main>
