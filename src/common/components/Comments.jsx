@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../auth/hooks/useAuth';
-import { createComment, getProjectComments, deleteComment } from '../services/commentService';
+import { 
+  createComment, 
+  getProjectComments, 
+  deleteComment,
+  likeComment,
+  unlikeComment 
+} from '../services/commentService';
 import DefaultAvatar from '../../assets/defaultAvatar.jpg';
 import { NewLoader } from '../components/Loader';
 import formatDate from '../../utils/dateFormatter';
-import { Timestamp } from 'firebase/firestore'; 
+import { Timestamp } from 'firebase/firestore';
+import { AiOutlineLike, AiFillLike } from "react-icons/ai";
 
 const Comments = ({ projectId }) => {
   const { user } = useAuth();
@@ -12,6 +19,7 @@ const Comments = ({ projectId }) => {
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [likingComments, setLikingComments] = useState({});
 
   useEffect(() => {
     loadComments();
@@ -34,13 +42,7 @@ const Comments = ({ projectId }) => {
 
     setSubmitting(true);
     try {
-      await createComment(
-        projectId,
-        user.uid,
-        newComment,
-        user.displayName,
-        user.photoURL
-      );
+      await createComment(projectId, user.uid, newComment);
       setNewComment('');
       await loadComments();
     } catch (error) {
@@ -55,6 +57,44 @@ const Comments = ({ projectId }) => {
       await loadComments();
     } catch (error) {
       console.error('Error deleting comment:', error);
+    }
+  };
+
+  const handleLikeComment = async (commentId, commentAuthorId) => {
+    if (!user || likingComments[commentId]) return;
+
+    setLikingComments(prev => ({ ...prev, [commentId]: true }));
+    
+    try {
+      const commentIndex = comments.findIndex(c => c.id === commentId);
+      const comment = comments[commentIndex];
+      const isLiked = comment.likes.includes(user.uid);
+
+      if (isLiked) {
+        await unlikeComment(commentId, user.uid);
+        setComments(prev => {
+          const newComments = [...prev];
+          newComments[commentIndex] = {
+            ...comment,
+            likes: comment.likes.filter(id => id !== user.uid)
+          };
+          return newComments;
+        });
+      } else {
+        await likeComment(commentId, user.uid, commentAuthorId);
+        setComments(prev => {
+          const newComments = [...prev];
+          newComments[commentIndex] = {
+            ...comment,
+            likes: [...comment.likes, user.uid]
+          };
+          return newComments;
+        });
+      }
+    } catch (error) {
+      console.error('Error updating comment like:', error);
+    } finally {
+      setLikingComments(prev => ({ ...prev, [commentId]: false }));
     }
   };
 
@@ -122,8 +162,7 @@ const Comments = ({ projectId }) => {
               alt={comment.userDisplayName}
               className="w-10 h-10 rounded-full"
             />
-            <div className="flex-1">
-              <div className="flex justify-between items-start">
+            <div className="flex-1">              <div className="flex justify-between items-start">
                 <div>
                   <h3 className="font-semibold text-gray-800 dark:text-white">
                     {comment.userDisplayName}
@@ -132,16 +171,48 @@ const Comments = ({ projectId }) => {
                     {comment.createdAt ? formatDate(comment.createdAt) : ''}
                   </p>
                 </div>
-                {user && user.uid === comment.userId && (
-                  <button
-                    onClick={() => handleDelete(comment.id)}
-                    className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                  >
-                    Delete
-                  </button>
-                )}
+                <div className="flex items-center gap-4">
+                  {user && (
+                    <button
+                      onClick={() => handleLikeComment(comment.id, comment.userId)}
+                      disabled={likingComments[comment.id]}
+                      className="flex items-center gap-1 text-gray-500 hover:text-blue-700 transition duration-300 cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
+                    >                      {(comment.likes || []).includes(user.uid) ? (
+                        <AiFillLike className="text-blue-700" />
+                      ) : (
+                        <AiOutlineLike />
+                      )}
+                      <span>{(comment.likes || []).length}</span>
+                    </button>
+                  )}
+                  {user && user.uid === comment.userId && (
+                    <button
+                      onClick={() => handleDelete(comment.id)}
+                      className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
               </div>
               <p className="mt-2 text-gray-600 dark:text-gray-300">{comment.content}</p>
+              {/* Likes Section */}
+              <div className="flex items-center gap-2 mt-2">
+                <button
+                  onClick={() => handleLikeComment(comment.id, comment.userId)}
+                  disabled={likingComments[comment.id]}
+                  className="flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                >
+                  {comment.likes.includes(user.uid) ? (
+                    <AiFillLike className="text-blue-600" />
+                  ) : (
+                    <AiOutlineLike />
+                  )}
+                  <span className="ml-1 text-sm">
+                    {comment.likes.length > 0 ? comment.likes.length : ''}
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         ))}

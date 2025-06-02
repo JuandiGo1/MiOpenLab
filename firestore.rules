@@ -37,6 +37,12 @@ service cloud.firestore {
       // Solo el autor del comentario puede eliminarlo
       allow delete: if request.auth != null && 
           get(resource.data.userRef).id == request.auth.uid;
+          
+      // Solo permitir actualizaciones de likes
+      allow update: if request.auth != null &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']) &&
+          (request.resource.data.likes.toSet().difference(resource.data.likes.toSet()).size() <= 1) &&
+          (resource.data.likes.toSet().difference(request.resource.data.likes.toSet()).size() <= 1);
     }
   }
 }

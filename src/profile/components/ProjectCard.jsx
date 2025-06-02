@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { AiOutlineLike, AiFillLike } from "react-icons/ai";
+import { FaComment } from "react-icons/fa";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { FaGithub } from "react-icons/fa";
@@ -14,6 +15,7 @@ import {
   addLike,
   removeLike,
 } from "../../profile/services/projectService";
+import { getProjectCommentsCount } from "../../common/services/commentService";
 import formatDate from "../../utils/dateFormatter";
 import {
   likePost,
@@ -39,17 +41,14 @@ const ProjectCard = ({
     user?.likedProjects?.includes(id) || false
   ); // Estado para rastrear si se ha dado "like"
   const [likeCount, setLikeCount] = useState(likes);
+  const [commentCount, setCommentCount] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [authorProfileLink, setAuthorProfileLink] = useState("");
   const [authorProfile, setAuthorProfile] = useState(null);
   const mainImage = images && images.length > 0 ? images[0] : null;
-  //const authorAvatar = authorPhoto ? authorPhoto : defaultAvatar;
   const navigate = useNavigate();
-  // const authorProfileLink = authorUsername
-  //   ? `/profile/${authorUsername}`
-  //   : `/profile/${getUsernameById(authorId)}`;
 
   useEffect(() => {
     const fetchAuthorProfileLink = async () => {
@@ -64,8 +63,18 @@ const ProjectCard = ({
       }
     };
 
+    const fetchCommentCount = async () => {
+      try {
+        const count = await getProjectCommentsCount(id);
+        setCommentCount(count);
+      } catch (error) {
+        console.error("Error fetching comment count:", error);
+      }
+    };
+
     fetchAuthorProfileLink();
-  }, [authorId]);
+    fetchCommentCount();
+  }, [authorId, id]);
 
   // Formatear fecha
   const formattedDate = formatDate(createdAt);
@@ -225,20 +234,29 @@ const ProjectCard = ({
 
       {/* Footer */}
       <div className="flex flex-col justify-between items-start text-sm text-gray-500 dark:text-gray-300">
-        <hr className="border-t w-full border-gray-200 dark:border-[#404040]" />
-        <div className="flex items-center justify-between w-full p-4">
-          <button
-            onClick={handleLike}
-            disabled={isLoading}
-            className="flex text-gray-500 hover:text-blue-700 transition duration-300 cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
-          >
-            {isLiked ? (
-              <AiFillLike className="text-xl text-blue-700" />
-            ) : (
-              <AiOutlineLike className="text-xl" />
-            )}
-            {likeCount}
-          </button>
+        <hr className="border-t w-full border-gray-200 dark:border-[#404040]" />        <div className="flex items-center justify-between w-full p-4">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleLike}
+              disabled={isLoading}
+              className="flex items-center gap-1 text-gray-500 hover:text-blue-700 transition duration-300 cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
+            >
+              {isLiked ? (
+                <AiFillLike className="text-xl text-blue-700" />
+              ) : (
+                <AiOutlineLike className="text-xl" />
+              )}
+              {likeCount}
+            </button>
+            <button
+              onClick={handleViewDetails}
+              className="flex items-center gap-1 text-gray-500 hover:text-blue-700 transition duration-300 cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
+            >
+              <FaComment className="text-xl" />
+              {commentCount}
+            </button>
+          </div>
+
           <div className="flex items-center justify-between gap-2">
             {user && user.uid === authorId && (
               <div className="flex items-center gap-2">
