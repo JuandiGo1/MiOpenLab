@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Permitir lectura a cualquier usuario autenticado
+    match /projects/{projectId} {
+      allow read: if true;
+      
+      // Solo el autor puede editar o eliminar su proyecto
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.authorId;
+      
+      // Solo usuarios logueados pueden crear
+      allow create: if request.auth != null;
+    }
+
+    // Reglas para usuarios
+    match /users/{userId} {
+      allow read: if true; // público
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Reglas para notificaciones (privadas)
+    match /notifications/{notifId} {
+      allow read, write: if true
+    }
+
+    // Reglas para comentarios
+    match /comments/{commentId} {
+      // Cualquiera puede leer los comentarios
+      allow read: if true;
+      
+      // Solo usuarios autenticados pueden crear comentarios y deben ser el autor
+      allow create: if request.auth != null &&
+          request.resource.data.userRef == /databases/$(database)/documents/users/$(request.auth.uid);
+      
+      // Solo el autor del comentario puede eliminarlo
+      allow delete: if request.auth != null && 
+          get(resource.data.userRef).id == request.auth.uid;
+    }
+  }
+}
