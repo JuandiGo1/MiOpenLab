@@ -18,32 +18,38 @@ import { db } from "../../firebase/Config";
 import { createNotification } from "../../notifications/services/notiservice";
 import { getProjectById } from "../../profile/services/projectService";
 
-export const createComment = async (projectId, userId, content, userDisplayName, userPhotoURL) => {  try {
+export const createComment = async (projectId, userId, content) => {
+  try {
     const projectRef = doc(db, "projects", projectId);
     const userRef = doc(db, "users", userId);
-      const commentRef = await addDoc(collection(db, "comments"), {
-      projectRef, // Reference to the project document
-      userRef,    // Reference to the user document
-      userId,     // Also store userId for easier querying
+    
+    const commentRef = await addDoc(collection(db, "comments"), {
+      projectRef,
+      userRef,
+      userId,
       content,
-      userDisplayName, // We keep these for quick access without additional queries
-      userPhotoURL,   // We keep these for quick access without additional queries
       createdAt: serverTimestamp(),
-      likes: [], // Array para almacenar los IDs de usuarios que dieron like
+      likes: [],
     });
 
-    // Get project author info to send notification
-    const project = await getProjectById(projectId);
-    if (project && project.authorId !== userId) {      await createNotification({
+    // Get user and project info for notification
+    const [userDoc, project] = await Promise.all([
+      getDoc(userRef),
+      getProjectById(projectId)
+    ]);
+    const userData = userDoc.data();
+
+    if (project && project.authorId !== userId) {
+      await createNotification({
         to: project.authorId,
         from: userId,
         type: "comment",
         postId: projectId,
         postTitle: project.title,
-        fromUsername: userDisplayName,
-        fromPhoto: userPhotoURL,
+        fromUsername: userData.displayName,
+        fromPhoto: userData.photoURL,
         extraInfo: {
-          commentContent: content.substring(0, 50) + (content.length > 50 ? "..." : ""), // First 50 chars of comment
+          commentContent: content.substring(0, 50) + (content.length > 50 ? "..." : ""),
           commentId: commentRef.id
         }
       });
@@ -56,18 +62,33 @@ export const createComment = async (projectId, userId, content, userDisplayName,
   }
 };
 
-export const getProjectComments = async (projectId) => {  try {
+export const getProjectComments = async (projectId) => {
+  try {
     const projectRef = doc(db, "projects", projectId);
-    const commentsRef = collection(db, "comments");    const q = query(
+    const commentsRef = collection(db, "comments");
+    const q = query(
       commentsRef,
       where("projectRef", "==", projectRef),
       orderBy("createdAt", "desc")
-    );    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
+    );
+
+    const querySnapshot = await getDocs(q);
+    const comments = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
-      likes: doc.data().likes || [] // Asegurarnos de que siempre haya un array de likes
+      likes: doc.data().likes || []
     }));
+
+    // Obtener la información de usuario para cada comentario
+    const userPromises = comments.map(comment => 
+      getDoc(comment.userRef).then(userDoc => ({
+        ...comment,
+        userDisplayName: userDoc.data().displayName,
+        userPhotoURL: userDoc.data().photoURL
+      }))
+    );
+
+    return Promise.all(userPromises);
   } catch (error) {
     console.error("Error getting comments:", error);
     return [];

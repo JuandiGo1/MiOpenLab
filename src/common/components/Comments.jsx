@@ -42,13 +42,7 @@ const Comments = ({ projectId }) => {
 
     setSubmitting(true);
     try {
-      await createComment(
-        projectId,
-        user.uid,
-        newComment,
-        user.displayName,
-        user.photoURL
-      );
+      await createComment(projectId, user.uid, newComment);
       setNewComment('');
       await loadComments();
     } catch (error) {
