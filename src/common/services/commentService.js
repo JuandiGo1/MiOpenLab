@@ -129,3 +129,19 @@ export const updateUserCommentsProfile = async (userId, newPhotoURL, newDisplayN
     throw error;
   }
 };
+
+export const getProjectCommentsCount = async (projectId) => {
+  try {
+    const projectRef = doc(db, "projects", projectId);
+    const commentsRef = collection(db, "comments");
+    const q = query(
+      commentsRef,
+      where("projectRef", "==", projectRef)
+    );
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.size;
+  } catch (error) {
+    console.error("Error getting comments count:", error);
+    return 0;
+  }
+};
