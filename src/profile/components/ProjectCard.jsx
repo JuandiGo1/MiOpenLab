@@ -18,8 +18,10 @@ import formatDate from "../../utils/dateFormatter";
 import {
   likePost,
   unlikePost,
-  getUserProfile
+  getUserProfile,
 } from "../../auth/services/userService";
+import { PhotoProvider, PhotoView } from "react-photo-view";
+import "react-photo-view/dist/react-photo-view.css";
 
 const ProjectCard = ({
   id,
@@ -30,6 +32,7 @@ const ProjectCard = ({
   createdAt,
   linkRepo,
   linkDemo,
+  images,
 }) => {
   const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(
@@ -39,8 +42,9 @@ const ProjectCard = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [authorProfileLink, setAuthorProfileLink]= useState('');
+  const [authorProfileLink, setAuthorProfileLink] = useState("");
   const [authorProfile, setAuthorProfile] = useState(null);
+  const mainImage = images && images.length > 0 ? images[0] : null;
   //const authorAvatar = authorPhoto ? authorPhoto : defaultAvatar;
   const navigate = useNavigate();
   // const authorProfileLink = authorUsername
@@ -52,7 +56,7 @@ const ProjectCard = ({
       try {
         const profile = await getUserProfile(authorId);
         setAuthorProfile(profile);
-        const username = profile?.username || '';
+        const username = profile?.username || "";
 
         setAuthorProfileLink(`/profile/${username}`);
       } catch (error) {
@@ -127,7 +131,7 @@ const ProjectCard = ({
           description,
           linkRepo,
           linkDemo,
-          authorName: authorProfile?.displayName || 'Unknown Author',
+          authorName: authorProfile?.displayName || "Unknown Author",
           authorPhoto: authorProfile?.photoURL || defaultAvatar,
           createdAt,
         },
@@ -156,7 +160,10 @@ const ProjectCard = ({
                   className="size-6 rounded-full object-cover"
                   loading="lazy"
                 />
-                <h3 onClick={()=> navigate(authorProfileLink)} className="text-md font-mono text-gray-500 hover:underline cursor-pointer dark:text-gray-300 ">
+                <h3
+                  onClick={() => navigate(authorProfileLink)}
+                  className="text-md font-mono text-gray-500 hover:underline cursor-pointer dark:text-gray-300 "
+                >
                   {authorProfile?.displayName}
                 </h3>
               </div>
@@ -203,6 +210,19 @@ const ProjectCard = ({
         </div>
       </div>
 
+      {mainImage && (
+        <PhotoProvider>
+          <PhotoView src={mainImage}>
+            <img
+              src={mainImage}
+              alt={title}
+              className="w-full h-50 object-cover rounded-t-lg cursor-pointer"
+              loading="lazy"
+            />
+          </PhotoView>
+        </PhotoProvider>
+      )}
+
       {/* Footer */}
       <div className="flex flex-col justify-between items-start text-sm text-gray-500 dark:text-gray-300">
         <hr className="border-t w-full border-gray-200 dark:border-[#404040]" />
@@ -232,7 +252,9 @@ const ProjectCard = ({
                 />
               </div>
             )}
-            <span className="text-gray-500 dark:text-gray-300">{formattedDate}</span>
+            <span className="text-gray-500 dark:text-gray-300">
+              {formattedDate}
+            </span>
           </div>
         </div>
       </div>
