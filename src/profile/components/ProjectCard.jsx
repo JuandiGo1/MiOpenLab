@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { AiOutlineLike, AiFillLike } from "react-icons/ai";
+import { AiOutlineLike, AiFillLike, AiOutlineStar, AiFillStar } from "react-icons/ai";
 import { FaComment } from "react-icons/fa";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
 import { useAuth } from "../../auth/hooks/useAuth";
@@ -21,6 +21,8 @@ import {
   likePost,
   unlikePost,
   getUserProfile,
+  addToFavorites,
+  removeFromFavorites,
 } from "../../auth/services/userService";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
@@ -37,9 +39,8 @@ const ProjectCard = ({
   images,
 }) => {
   const { user } = useAuth();
-  const [isLiked, setIsLiked] = useState(
-    user?.likedProjects?.includes(id) || false
-  ); // Estado para rastrear si se ha dado "like"
+  const [isLiked, setIsLiked] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const [likeCount, setLikeCount] = useState(likes);
   const [commentCount, setCommentCount] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -72,9 +73,18 @@ const ProjectCard = ({
       }
     };
 
+    const fetchInitialStates = async () => {
+      if (user) {
+        const userProfile = await getUserProfile(user.uid);
+        setIsLiked(userProfile?.likedProjects?.includes(id) || false);
+        setIsFavorite(userProfile?.favorites?.includes(id) || false);
+      }
+    };
+
     fetchAuthorProfileLink();
     fetchCommentCount();
-  }, [authorId, id]);
+    fetchInitialStates();
+  }, [authorId, id, user]);
 
   // Formatear fecha
   const formattedDate = formatDate(createdAt);
@@ -105,6 +115,26 @@ const ProjectCard = ({
       setIsLiked((prev) => !prev);
     } finally {
       setIsLoading(false); // Marcar como completado
+    }
+  };
+
+  const handleFavorite = async () => {
+    if (!user || isLoading) return;
+
+    setIsLoading(true);
+    try {
+      if (isFavorite) {
+        await removeFromFavorites(user.uid, id);
+        setIsFavorite(false);
+      } else {
+        await addToFavorites(user.uid, id);
+        setIsFavorite(true);
+      }
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+      setIsFavorite(!isFavorite); // Revertir en caso de error
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -234,7 +264,8 @@ const ProjectCard = ({
 
       {/* Footer */}
       <div className="flex flex-col justify-between items-start text-sm text-gray-500 dark:text-gray-300">
-        <hr className="border-t w-full border-gray-200 dark:border-[#404040]" />        <div className="flex items-center justify-between w-full p-4">
+        <hr className="border-t w-full border-gray-200 dark:border-[#404040]" />
+        <div className="flex items-center justify-between w-full p-4">
           <div className="flex items-center gap-4">
             <button
               onClick={handleLike}
@@ -255,6 +286,19 @@ const ProjectCard = ({
               <FaComment className="text-xl" />
               {commentCount}
             </button>
+            {user && (
+              <button
+                onClick={handleFavorite}
+                disabled={isLoading}
+                className="flex items-center gap-1 text-gray-500 hover:text-yellow-500 transition duration-300 cursor-pointer dark:text-gray-300 dark:hover:text-yellow-400"
+              >
+                {isFavorite ? (
+                  <AiFillStar className="text-xl text-yellow-500" />
+                ) : (
+                  <AiOutlineStar className="text-xl" />
+                )}
+              </button>
+            )}
           </div>
 
           <div className="flex items-center justify-between gap-2">

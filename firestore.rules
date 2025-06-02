@@ -17,7 +17,13 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if true; // público
       allow create: if request.auth != null && request.auth.uid == userId;
-      allow update, delete: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId && 
+          (
+            !request.resource.data.diff(resource.data).affectedKeys().hasAny(['favorites']) || 
+            (request.resource.data.favorites is list && 
+             (resource.data.favorites == null || request.resource.data.favorites.size() <= resource.data.favorites.size() + 1))
+          );
+      allow delete: if request.auth != null && request.auth.uid == userId;
     }
 
     // Reglas para notificaciones (privadas)
