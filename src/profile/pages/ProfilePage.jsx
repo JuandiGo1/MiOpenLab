@@ -78,11 +78,16 @@ const ProfilePage = () => {
               <ProjectCard key={project.id} {...project} />
             ))}
           </div>
-        );
-      case "likes":
+        );      case "likes":
         return <LikesList userId={profileUser?.uid} />;
       case "favorites":
-        return <FavoritesList userId={profileUser?.uid} />;
+        return user && user.username === username ? (
+          <FavoritesList userId={profileUser?.uid} />
+        ) : (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-gray-500">No tienes permiso para ver esta sección</p>
+          </div>
+        );
       case "followers":
         return <FollowersList userId={profileUser?.uid} />;
       case "following":
@@ -123,8 +128,7 @@ const ProfilePage = () => {
             }`}
           >
             Posts
-          </button>
-          <button
+          </button>          <button
             onClick={() => setActiveTab("likes")}
             className={`pb-2 cursor-pointer ${
               activeTab === "likes"
@@ -134,16 +138,18 @@ const ProfilePage = () => {
           >
             Likes
           </button>
-          <button
-            onClick={() => setActiveTab("favorites")}
-            className={`pb-2 cursor-pointer ${
-              activeTab === "favorites"
-                ? "border-b-2 border-[#bd9260]  dark:border-blue-600 dark:text-gray-50"
-                : "text-gray-600 dark:text-gray-300"
-            }`}
-          >
-            Favorites
-          </button>
+          {user && user.username === username && (
+            <button
+              onClick={() => setActiveTab("favorites")}
+              className={`pb-2 cursor-pointer ${
+                activeTab === "favorites"
+                  ? "border-b-2 border-[#bd9260]  dark:border-blue-600 dark:text-gray-50"
+                  : "text-gray-600 dark:text-gray-300"
+              }`}
+            >
+              Favorites
+            </button>
+          )}
           <button
             onClick={() => setActiveTab("followers")}
             className={`pb-2 cursor-pointer ${
