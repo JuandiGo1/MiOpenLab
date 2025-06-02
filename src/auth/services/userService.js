@@ -60,6 +60,7 @@ export async function createUserProfile({ uid, displayName, photoURL }) {
     likes: [],
     followers: [],
     following: [],
+    favorites: [],          // Lista de proyectos favoritos
     createdAt: new Date(),
   });
 }
@@ -90,6 +91,7 @@ export async function createUserProfileIfNotExists({
       followers: [],
       following: [],
       likedProjects: [],
+      favorites: [],      // Lista de proyectos favoritos
     });
 
     console.log("Usuario creao");
@@ -276,5 +278,74 @@ export async function ensureUserFields(uid) {
 
   if (Object.keys(missingFields).length > 0) {
     await updateDoc(userRef, missingFields);
+  }
+}
+
+// Añadir proyecto a favoritos
+export async function addToFavorites(userId, projectId) {
+  try {
+    const userRef = doc(db, "users", userId);
+    const projectRef = doc(db, "projects", projectId);
+    
+    // Añadir a favoritos
+    await updateDoc(userRef, {
+      favorites: arrayUnion(projectId)
+    });
+
+    // Obtener info del proyecto para la notificación
+    const project = await getProjectById(projectId);
+    if (project && project.authorId !== userId) {
+      await createNotification({
+        to: project.authorId,
+        from: userId,
+        type: "favorite",
+        postId: projectId,
+        postTitle: project.title
+      });
+    }
+  } catch (error) {
+    console.error("Error adding to favorites:", error);
+    throw error;
+  }
+}
+
+// Eliminar proyecto de favoritos
+export async function removeFromFavorites(userId, projectId) {
+  try {
+    const userRef = doc(db, "users", userId);
+    await updateDoc(userRef, {
+      favorites: arrayRemove(projectId)
+    });
+  } catch (error) {
+    console.error("Error removing from favorites:", error);
+    throw error;
+  }
+}
+
+// Obtener proyectos favoritos de un usuario
+export async function getUserFavorites(userId) {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userDoc = await getDoc(userRef);
+    
+    if (!userDoc.exists()) {
+      return [];
+    }
+
+    const favorites = userDoc.data().favorites || [];
+    const projects = [];
+
+    // Obtener los detalles de cada proyecto favorito
+    for (const projectId of favorites) {
+      const project = await getProjectById(projectId);
+      if (project) {
+        projects.push(project);
+      }
+    }
+
+    return projects;
+  } catch (error) {
+    console.error("Error getting user favorites:", error);
+    return [];
   }
 }

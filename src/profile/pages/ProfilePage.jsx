@@ -10,6 +10,7 @@ import ProjectSkeleton from "../../common/components/ProjectSkeleton";
 import FollowersList from "../components/FollowersList";
 import FollowingList from "../components/FollowingList";
 import LikesList from "../components/LikesList";
+import FavoritesList from "../components/FavoritesList";
 import Loader from "../../common/components/Loader";
 
 const ProfilePage = () => {
@@ -77,13 +78,20 @@ const ProfilePage = () => {
               <ProjectCard key={project.id} {...project} />
             ))}
           </div>
+        );      case "likes":
+        return <LikesList userId={profileUser?.uid} />;
+      case "favorites":
+        return user && user.username === username ? (
+          <FavoritesList userId={profileUser?.uid} />
+        ) : (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-gray-500">No tienes permiso para ver esta sección</p>
+          </div>
         );
       case "followers":
         return <FollowersList userId={profileUser?.uid} />;
       case "following":
         return <FollowingList userId={profileUser?.uid} />;
-      case "likes":
-        return <LikesList userId={profileUser?.uid} />;
       default:
         return null;
     }
@@ -120,7 +128,28 @@ const ProfilePage = () => {
             }`}
           >
             Posts
+          </button>          <button
+            onClick={() => setActiveTab("likes")}
+            className={`pb-2 cursor-pointer ${
+              activeTab === "likes"
+                ? "border-b-2 border-[#bd9260]  dark:border-blue-600 dark:text-gray-50"
+                : "text-gray-600 dark:text-gray-300"
+            }`}
+          >
+            Likes
           </button>
+          {user && user.username === username && (
+            <button
+              onClick={() => setActiveTab("favorites")}
+              className={`pb-2 cursor-pointer ${
+                activeTab === "favorites"
+                  ? "border-b-2 border-[#bd9260]  dark:border-blue-600 dark:text-gray-50"
+                  : "text-gray-600 dark:text-gray-300"
+              }`}
+            >
+              Favorites
+            </button>
+          )}
           <button
             onClick={() => setActiveTab("followers")}
             className={`pb-2 cursor-pointer ${
@@ -140,16 +169,6 @@ const ProfilePage = () => {
             }`}
           >
             Following
-          </button>
-          <button
-            onClick={() => setActiveTab("likes")}
-            className={`pb-2 cursor-pointer ${
-              activeTab === "likes"
-                ? "border-b-2 border-[#bd9260]  dark:border-blue-600 dark:text-gray-50"
-                : "text-gray-600 dark:text-gray-300"
-            }`}
-          >
-            Likes
           </button>
         </div>
 
