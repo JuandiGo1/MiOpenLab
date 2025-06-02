@@ -1,21 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { getAllGroups, searchGroups } from '../services/groupService';
+import { getAllGroups } from '../services/groupService';
 import GroupCard from '../components/GroupCard';
 import { NewLoader } from '../../common/components/Loader';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../auth/hooks/useAuth';
 
 const GroupsPage = () => {
   const [groups, setGroups] = useState([]);
+  const [filteredGroups, setFilteredGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const { user } = useAuth();
 
   useEffect(() => {
     loadGroups();
   }, []);
 
+  useEffect(() => {
+    // Filtrar grupos cuando cambie el término de búsqueda
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase();
+      const filtered = groups.filter(group =>
+        group.name.toLowerCase().includes(searchLower) ||
+        group.description.toLowerCase().includes(searchLower)
+      );
+      setFilteredGroups(filtered);
+    } else {
+      setFilteredGroups(groups);
+    }
+  }, [searchTerm, groups]);
+
   const loadGroups = async () => {
+    setLoading(true);
     try {
       const allGroups = await getAllGroups();
       setGroups(allGroups);
+      setFilteredGroups(allGroups);
     } catch (error) {
       console.error('Error loading groups:', error);
     } finally {
@@ -23,20 +43,8 @@ const GroupsPage = () => {
     }
   };
 
-  const handleSearch = async (e) => {
-    const term = e.target.value;
-    setSearchTerm(term);
-
-    if (term.length >= 2) {
-      try {
-        const results = await searchGroups(term);
-        setGroups(results);
-      } catch (error) {
-        console.error('Error searching groups:', error);
-      }
-    } else if (term.length === 0) {
-      loadGroups();
-    }
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
   };
 
   if (loading) {
@@ -49,38 +57,41 @@ const GroupsPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4 dark:text-white">
-          Grupos de Interés
-        </h1>
-        <div className="relative">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={handleSearch}
-            placeholder="Buscar grupos por nombre o tecnología..."
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#bd9260] focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          />
-        </div>
-      </div>
-
-      {/* Groups Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {groups.length > 0 ? (
-          groups.map(group => (
-            <GroupCard 
-              key={group.id} 
-              {...group} 
-              onMembershipChange={loadGroups}
-            />
-          ))
-        ) : (
-          <div className="col-span-full text-center text-gray-500 dark:text-gray-400">
-            {searchTerm ? 'No se encontraron grupos' : 'No hay grupos disponibles'}
-          </div>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Grupos de Interés</h1>
+        {user && (
+          <Link 
+            to="/create-group"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300"
+          >
+            Crear Grupo
+          </Link>
         )}
       </div>
+
+      <div className="mb-6">
+        <input
+          type="text"
+          placeholder="Buscar grupos..."
+          value={searchTerm}
+          onChange={handleSearch}
+          className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+        />
+      </div>
+
+      {filteredGroups.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredGroups.map(group => (
+            <GroupCard key={group.id} {...group} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-8">
+          <p className="text-gray-600 dark:text-gray-300 text-lg">
+            {searchTerm ? 'No se encontraron grupos que coincidan con tu búsqueda.' : 'No hay grupos creados aún.'}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

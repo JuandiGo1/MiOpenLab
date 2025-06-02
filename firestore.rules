@@ -49,24 +49,18 @@ service cloud.firestore {
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']) &&
           (request.resource.data.likes.toSet().difference(resource.data.likes.toSet()).size() <= 1) &&
           (resource.data.likes.toSet().difference(request.resource.data.likes.toSet()).size() <= 1);
-    }
-
-    // Reglas para grupos de interés
+    }    // Reglas para grupos
     match /groups/{groupId} {
-      // Cualquiera puede leer los grupos
       allow read: if true;
-      
-      // Solo administradores pueden crear/editar grupos
-      allow create, update: if request.auth != null && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
-      
-      // Los miembros son públicos
-      match /members/{memberId} {
-        allow read: if true;
-        // Solo usuarios autenticados pueden unirse/dejar grupos
-        allow write: if request.auth != null && request.auth.uid == memberId;
-      }
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && 
+        (
+          request.auth.uid == resource.data.creatorId ||
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'memberCount', 'updatedAt']) &&
+           resource.data.members.hasAny([request.auth.uid]))
+        );
+      allow delete: if request.auth != null && 
+        request.auth.uid == resource.data.creatorId;
     }
   }
 }

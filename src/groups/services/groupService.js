@@ -1,29 +1,31 @@
 import {
   collection,
-  doc,
-  getDoc,
+  addDoc,
   getDocs,
   query,
-  where,
   orderBy,
-  limit,
-  addDoc,
+  serverTimestamp,
+  deleteDoc,
+  doc,
+  getDoc,
   updateDoc,
   arrayUnion,
   arrayRemove,
-  increment,
-  serverTimestamp,
+  increment
 } from 'firebase/firestore';
 import { db } from '../../firebase/Config';
-import { createNotification } from '../../notifications/services/notiservice';
 
-// Crear un nuevo grupo (solo admin)
-export const createGroup = async (groupData) => {
+// Crear un nuevo grupo
+export const createGroup = async (userId, { name, description }) => {
   try {
     const groupRef = await addDoc(collection(db, 'groups'), {
-      ...groupData,
-      memberCount: 0,
+      name,
+      description,
+      creatorId: userId,
+      members: [userId],
+      memberCount: 1,
       createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
     });
     return groupRef.id;
   } catch (error) {
@@ -45,10 +47,21 @@ export const getGroupById = async (groupId) => {
   }
 };
 
+// Verificar si un usuario es miembro de un grupo
+export const isGroupMember = async (groupId, userId) => {
+  try {
+    const group = await getGroupById(groupId);
+    return group?.members?.includes(userId) || false;
+  } catch (error) {
+    console.error('Error checking group membership:', error);
+    return false;
+  }
+};
+
 // Obtener todos los grupos
 export const getAllGroups = async () => {
   try {
-    const q = query(collection(db, 'groups'), orderBy('memberCount', 'desc'));
+    const q = query(collection(db, 'groups'), orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
@@ -64,35 +77,22 @@ export const getAllGroups = async () => {
 export const joinGroup = async (groupId, userId) => {
   try {
     const groupRef = doc(db, 'groups', groupId);
-    const userRef = doc(db, 'users', userId);
+    const groupDoc = await getDoc(groupRef);
+    
+    if (!groupDoc.exists()) {
+      throw new Error('Group not found');
+    }
 
-    // Actualizar el grupo
+    const groupData = groupDoc.data();
+    if (groupData.members.includes(userId)) {
+      throw new Error('Already a member');
+    }
+
     await updateDoc(groupRef, {
       members: arrayUnion(userId),
-      memberCount: increment(1)
+      memberCount: increment(1),
+      updatedAt: serverTimestamp()
     });
-
-    // Actualizar el usuario
-    await updateDoc(userRef, {
-      groups: arrayUnion(groupId)
-    });
-
-    // Obtener información del grupo para la notificación
-    const groupDoc = await getDoc(groupRef);
-    const groupData = groupDoc.data();
-
-    // Notificar a los administradores del grupo
-    if (groupData.adminIds?.length > 0) {
-      await Promise.all(groupData.adminIds.map(adminId =>
-        createNotification({
-          to: adminId,
-          from: userId,
-          type: 'group_join',
-          groupId,
-          groupName: groupData.name
-        })
-      ));
-    }
   } catch (error) {
     console.error('Error joining group:', error);
     throw error;
@@ -103,15 +103,25 @@ export const joinGroup = async (groupId, userId) => {
 export const leaveGroup = async (groupId, userId) => {
   try {
     const groupRef = doc(db, 'groups', groupId);
-    const userRef = doc(db, 'users', userId);
+    const groupDoc = await getDoc(groupRef);
+    
+    if (!groupDoc.exists()) {
+      throw new Error('Group not found');
+    }
+
+    const groupData = groupDoc.data();
+    if (!groupData.members.includes(userId)) {
+      throw new Error('Not a member');
+    }
+
+    if (groupData.creatorId === userId) {
+      throw new Error('Creator cannot leave group');
+    }
 
     await updateDoc(groupRef, {
       members: arrayRemove(userId),
-      memberCount: increment(-1)
-    });
-
-    await updateDoc(userRef, {
-      groups: arrayRemove(groupId)
+      memberCount: increment(-1),
+      updatedAt: serverTimestamp()
     });
   } catch (error) {
     console.error('Error leaving group:', error);
@@ -119,58 +129,24 @@ export const leaveGroup = async (groupId, userId) => {
   }
 };
 
-// Verificar si un usuario es miembro de un grupo
-export const isGroupMember = async (groupId, userId) => {
+// Eliminar un grupo
+export const deleteGroup = async (groupId, userId) => {
   try {
     const groupRef = doc(db, 'groups', groupId);
     const groupDoc = await getDoc(groupRef);
-    if (!groupDoc.exists()) return false;
     
+    if (!groupDoc.exists()) {
+      throw new Error('Group not found');
+    }
+
     const groupData = groupDoc.data();
-    return groupData.members?.includes(userId) || false;
-  } catch (error) {
-    console.error('Error checking group membership:', error);
-    throw error;
-  }
-};
+    if (groupData.creatorId !== userId) {
+      throw new Error('Only creator can delete group');
+    }
 
-// Buscar grupos por nombre o tecnología
-export const searchGroups = async (searchTerm) => {
-  try {
-    const q = query(
-      collection(db, 'groups'),
-      where('searchTerms', 'array-contains', searchTerm.toLowerCase()),
-      orderBy('memberCount', 'desc'),
-      limit(20)
-    );
-    
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    await deleteDoc(groupRef);
   } catch (error) {
-    console.error('Error searching groups:', error);
-    throw error;
-  }
-};
-
-// Obtener grupos populares
-export const getPopularGroups = async (limit = 5) => {
-  try {
-    const q = query(
-      collection(db, 'groups'),
-      orderBy('memberCount', 'desc'),
-      limit
-    );
-    
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-  } catch (error) {
-    console.error('Error getting popular groups:', error);
+    console.error('Error deleting group:', error);
     throw error;
   }
 };
