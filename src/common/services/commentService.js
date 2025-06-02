@@ -10,6 +10,9 @@ import {
   doc,
   getDoc,
   writeBatch,
+  arrayUnion,
+  arrayRemove,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase/Config";
 import { createNotification } from "../../notifications/services/notiservice";
@@ -18,8 +21,7 @@ import { getProjectById } from "../../profile/services/projectService";
 export const createComment = async (projectId, userId, content, userDisplayName, userPhotoURL) => {  try {
     const projectRef = doc(db, "projects", projectId);
     const userRef = doc(db, "users", userId);
-    
-    const commentRef = await addDoc(collection(db, "comments"), {
+      const commentRef = await addDoc(collection(db, "comments"), {
       projectRef, // Reference to the project document
       userRef,    // Reference to the user document
       userId,     // Also store userId for easier querying
@@ -27,6 +29,7 @@ export const createComment = async (projectId, userId, content, userDisplayName,
       userDisplayName, // We keep these for quick access without additional queries
       userPhotoURL,   // We keep these for quick access without additional queries
       createdAt: serverTimestamp(),
+      likes: [], // Array para almacenar los IDs de usuarios que dieron like
     });
 
     // Get project author info to send notification
@@ -59,11 +62,11 @@ export const getProjectComments = async (projectId) => {  try {
       commentsRef,
       where("projectRef", "==", projectRef),
       orderBy("createdAt", "desc")
-    );
-    const querySnapshot = await getDocs(q);
+    );    const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
+      likes: doc.data().likes || [] // Asegurarnos de que siempre haya un array de likes
     }));
   } catch (error) {
     console.error("Error getting comments:", error);
@@ -143,5 +146,53 @@ export const getProjectCommentsCount = async (projectId) => {
   } catch (error) {
     console.error("Error getting comments count:", error);
     return 0;
+  }
+};
+
+export const likeComment = async (commentId, userId, commentAuthorId) => {
+  try {
+    const commentRef = doc(db, "comments", commentId);
+    const userRef = doc(db, "users", userId);
+    
+    // Añadir el like al comentario
+    await updateDoc(commentRef, {
+      likes: arrayUnion(userId)
+    });
+
+    // Si no es el autor del comentario, enviar notificación
+    if (userId !== commentAuthorId) {
+      const commentDoc = await getDoc(commentRef);
+      const userDoc = await getDoc(userRef);
+      
+      await createNotification({
+        to: commentAuthorId,
+        from: userId,
+        type: "comment_like",
+        postId: commentDoc.data().projectRef.id,
+        fromUsername: userDoc.data().displayName,
+        fromPhoto: userDoc.data().photoURL,
+        extraInfo: {
+          commentId: commentId,
+          commentContent: commentDoc.data().content.substring(0, 50) + 
+                        (commentDoc.data().content.length > 50 ? "..." : "")
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Error liking comment:", error);
+    throw error;
+  }
+};
+
+export const unlikeComment = async (commentId, userId) => {
+  try {
+    const commentRef = doc(db, "comments", commentId);
+    
+    await updateDoc(commentRef, {
+      likes: arrayRemove(userId)
+    });
+  } catch (error) {
+    console.error("Error unliking comment:", error);
+    throw error;
   }
 };
