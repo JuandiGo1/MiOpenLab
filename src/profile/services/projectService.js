@@ -56,10 +56,8 @@ export const uploadProjectImage = async (projectId, file) => {
   }
 
   // Subir la imagen a Storage y obtener su URL
-  const storageRef = ref(
-    storage,
-    `projectImages/${projectId}/${Date.now()}_${file.name}`
-  );
+  const storageRef = ref(storage, `projectImages/${projectId}`);
+
   await uploadBytes(storageRef, file);
   const imageUrl = await getDownloadURL(storageRef);
 
@@ -164,9 +162,15 @@ export const searchProjects = async (searchTerm) => {
 };
 
 export const editProject = async (projectId, newData) => {
+  const { image, ...newDataWithoutImage } = newData; // Excluir la imagen del objeto newData
   const projectRef = doc(db, "projects", projectId);
   // Asegurar que newData puede incluir isPublic al hacer spread.
-  await updateDoc(projectRef, newData);
+  await updateDoc(projectRef, newDataWithoutImage);
+
+  // falta eliminar la imagen anterior si se pasa ''
+  if (image) {
+    await uploadProjectImage(projectRef.id, image);
+  }
 };
 
 export const deleteProject = async (projectId) => {
