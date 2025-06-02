@@ -1,4 +1,4 @@
-import { db } from "../../firebase/Config";
+import { db, storage } from "../../firebase/Config";
 import {
   collection,
   addDoc,
@@ -14,6 +14,7 @@ import {
   where,
   increment,
 } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export async function createProject(projectData, currentUser) {
   try {
@@ -24,20 +25,48 @@ export async function createProject(projectData, currentUser) {
       linkRepo: projectData.linkRepo,
       linkDemo: projectData.linkDemo,
       authorId: currentUser.uid,
-      authorUsername: currentUser.username,
-      authorName: currentUser.displayName,
-      authorPhoto: currentUser.photoURL,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       likes: 0,
       likedBy: [],
+      isPublic: projectData.isPublic, // Add this line
     });
 
-    console.log("Proyecto creado con ID:", docRef.id);
+    if (projectData.image) {
+      await uploadProjectImage(docRef.id, projectData.image);
+    }
+
+    console.log("Project created with ID:", docRef.id);
   } catch (e) {
-    console.error("Error al crear el proyecto:", e);
+    console.error("Error creating project:", e);
   }
 }
+
+export const uploadProjectImage = async (projectId, file) => {
+  if (!projectId || !file) return;
+
+  const projectRef = doc(db, "projects", projectId);
+  const projectSnap = await getDoc(projectRef);
+  if (!projectSnap.exists()) throw new Error("Project not found");
+
+  // Validar tipo de archivo
+  const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+  if (!validTypes.includes(file.type)) {
+    throw new Error("Only PNG, JPG, JPEG and WEBP images are allowed.");
+  }
+
+  // Subir la imagen a Storage y obtener su URL
+  const storageRef = ref(storage, `projectImages/${projectId}`);
+
+  await uploadBytes(storageRef, file);
+  const imageUrl = await getDownloadURL(storageRef);
+
+  await updateDoc(projectRef, {
+    images: [imageUrl],
+  });
+
+  return [imageUrl];
+};
 
 export const getProjectById = async (projectId) => {
   try {
@@ -133,8 +162,15 @@ export const searchProjects = async (searchTerm) => {
 };
 
 export const editProject = async (projectId, newData) => {
+  const { image, ...newDataWithoutImage } = newData; // Excluir la imagen del objeto newData
   const projectRef = doc(db, "projects", projectId);
-  await updateDoc(projectRef, newData); // newData: { title, description, ... }
+  // Asegurar que newData puede incluir isPublic al hacer spread.
+  await updateDoc(projectRef, newDataWithoutImage);
+
+  // falta eliminar la imagen anterior si se pasa ''
+  if (image) {
+    await uploadProjectImage(projectRef.id, image);
+  }
 };
 
 export const deleteProject = async (projectId) => {
@@ -152,12 +188,17 @@ export const deleteProject = async (projectId) => {
         const userRef = doc(db, "users", userId);
         try {
           await updateDoc(userRef, {
-            likedProjects: arrayRemove(projectId)
+            likedProjects: arrayRemove(projectId),
           });
-          console.log(`Proyecto ${projectId} eliminado de los likes del usuario ${userId}`);
+          console.log(
+            `Proyecto ${projectId} eliminado de los likes del usuario ${userId}`
+          );
         } catch (userUpdateError) {
           // Considera cómo manejar errores aquí. Por ahora, solo log.
-          console.error(`Error al actualizar los likes del usuario ${userId} para el proyecto ${projectId}:`, userUpdateError);
+          console.error(
+            `Error al actualizar los likes del usuario ${userId} para el proyecto ${projectId}:`,
+            userUpdateError
+          );
         }
       });
 
@@ -166,10 +207,13 @@ export const deleteProject = async (projectId) => {
 
       // Finalmente, eliminar el documento del proyecto
       await deleteDoc(projectRef);
-      console.log(`Proyecto ${projectId} y sus referencias de likes eliminados exitosamente.`);
-
+      console.log(
+        `Proyecto ${projectId} y sus referencias de likes eliminados exitosamente.`
+      );
     } else {
-      console.error(`El proyecto ${projectId} no fue encontrado para eliminar.`);
+      console.error(
+        `El proyecto ${projectId} no fue encontrado para eliminar.`
+      );
       // Puedes lanzar un error aquí si es necesario
     }
   } catch (error) {

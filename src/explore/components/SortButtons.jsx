@@ -29,8 +29,8 @@ const SortButtons = ({ currentSortOrder, onSortChange }) => {
 
   // Determinar el texto del botón móvil
   const buttonText = filterApplied
-    ? `${currentSortOrder === "newest" ? "Más nuevos" : "Más antiguos"}`
-    : "Filtros";
+    ? `${currentSortOrder === "newest" ? "Newest" : "Oldest"}`
+    : "Filters";
 
   return (
     <div className="relative w-full md:w-auto" ref={menuRef}>
@@ -61,11 +61,11 @@ const SortButtons = ({ currentSortOrder, onSortChange }) => {
             role="menu"
           >
             <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100">Seleccionar orden</h3>
+              <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100">Select order</h3>
             </div>
             {[
-              { label: "Más nuevos", value: "newest" },
-              { label: "Más antiguos", value: "oldest" },
+              { label: "Newest", value: "newest" },
+              { label: "Oldest", value: "oldest" },
             ].map((option) => (
               <button
                 key={option.value}
@@ -97,7 +97,7 @@ const SortButtons = ({ currentSortOrder, onSortChange }) => {
               : "text-gray-500 hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-300" // Texto inactivo gris
           }`}
         >
-          Más nuevos
+          Newest
           <span
             className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[4px] w-16 bg-[#bd9260] rounded-full transform transition-transform duration-300 ease-out dark:bg-[#5858FA] ${ // Barra activa color dorado
               currentSortOrder === "newest" ? "scale-x-100" : "scale-x-0"
@@ -112,7 +112,7 @@ const SortButtons = ({ currentSortOrder, onSortChange }) => {
               : "text-gray-500 hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-300" // Texto inactivo gris
           }`}
         >
-          Más antiguos
+          Oldest
           <span
             className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[4px] w-16 bg-[#bd9260] rounded-full transform transition-transform duration-300 ease-out dark:bg-[#5858FA] ${ // Barra activa color dorado
               currentSortOrder === "oldest" ? "scale-x-100" : "scale-x-0"

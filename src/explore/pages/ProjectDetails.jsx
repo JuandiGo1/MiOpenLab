@@ -65,7 +65,7 @@ const ProjectDetails = () => {
         <img
           src={authorPhoto || DefaultAvatar}
           alt={`${authorName}'s avatar`}
-          className="w-12 h-12 rounded-full mr-4"
+          className="w-12 h-12 rounded-full mr-4 object-cover"
         />
         <div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">{title}</h1>

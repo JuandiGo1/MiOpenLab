@@ -8,16 +8,18 @@ import {
   signInWithGoogle,
   uploadProfilePicture,
   updateDisplayName,
+  resetPassword,
+  updateDataProfile,
+  uploadBannerPicture
 } from "../services/authService";
 import { AuthContext } from "./AuthContext";
 import { getUserProfile } from "../services/userService";
 import LoadingScreen from "../../common/components/LoadingScreen";
 
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   // Escuchar cambios de sesión
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -50,6 +52,9 @@ export function AuthProvider({ children }) {
   const logout = () => logoutUser();
   const updateName = (newName) => updateDisplayName(newName);
   const updateProfilePic = (img) => uploadProfilePicture(img);
+  const updateBannerPic = (img) => uploadBannerPicture(img);
+  const resetPass = (email) => resetPassword(email);
+  const updateUserProfile = (profileData) => updateDataProfile(profileData);
 
   const value = {
     user,
@@ -60,11 +65,14 @@ export function AuthProvider({ children }) {
     loading,
     updateName,
     updateProfilePic,
+    updateBannerPic,
+    resetPass,
+    updateUserProfile
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {loading ? <LoadingScreen/> : children}
+      {loading ? <LoadingScreen /> : children}
     </AuthContext.Provider>
   );
 }
