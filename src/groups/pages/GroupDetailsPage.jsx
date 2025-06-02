@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
-import { getGroupById, joinGroup, leaveGroup, isGroupMember } from '../services/groupService';
+import { getGroupById, joinGroup, leaveGroup } from '../services/groupService';
 import { NewLoader } from '../../common/components/Loader';
 import ProjectCard from '../../profile/components/ProjectCard';
 import { getUserProfile } from '../../auth/services/userService';
@@ -9,6 +9,7 @@ import defaultBanner from '../../assets/defaultBanner.jpg';
 
 const GroupDetailsPage = () => {
   const { groupId } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [group, setGroup] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,15 +21,20 @@ const GroupDetailsPage = () => {
     loadGroup();
   }, [groupId]);
 
+  useEffect(() => {
+    if (user && group) {
+      setIsMember(group.members.includes(user.uid));
+    }
+  }, [user, group]);
+
   const loadGroup = async () => {
     try {
       const groupData = await getGroupById(groupId);
-      setGroup(groupData);
-
-      if (user) {
-        const memberStatus = await isGroupMember(groupId, user.uid);
-        setIsMember(memberStatus);
+      if (!groupData) {
+        navigate('/groups');
+        return;
       }
+      setGroup(groupData);
 
       // Cargar información de los miembros
       if (groupData?.members) {
@@ -100,7 +106,7 @@ const GroupDetailsPage = () => {
                 </p>
               </div>
 
-              {user && (
+              {user && user.uid !== group.creatorId && (
                 <button
                   onClick={handleJoinLeave}
                   disabled={isJoining}
@@ -118,20 +124,6 @@ const GroupDetailsPage = () => {
             {/* Stats */}
             <div className="flex gap-4 mt-4 text-sm text-gray-600 dark:text-gray-400">
               <span>{group.memberCount || 0} miembros</span>
-              <span>•</span>
-              <span>{group.projectCount || 0} proyectos</span>
-            </div>
-
-            {/* Technologies */}
-            <div className="flex flex-wrap gap-2 mt-4">
-              {group.technologies?.map((tech, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm dark:bg-gray-700 dark:text-gray-300"
-                >
-                  {tech}
-                </span>
-              ))}
             </div>
 
             {/* Members Preview */}
@@ -159,18 +151,6 @@ const GroupDetailsPage = () => {
             )}
           </div>
         </div>
-
-        {/* Projects Section - To be implemented in the next phase */}
-        {/* <div className="mt-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4 dark:text-white">
-            Proyectos del grupo
-          </h2>
-          <div className="grid gap-6">
-            {group.projects?.map(project => (
-              <ProjectCard key={project.id} {...project} />
-            ))}
-          </div>
-        </div> */}
       </div>
     </div>
   );

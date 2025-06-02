@@ -10,6 +10,7 @@ import CreateProject from "../profile/pages/CreateProject.jsx";
 import ProjectDetails from "../explore/pages/ProjectDetails.jsx";
 import GroupsPage from "../groups/pages/GroupsPage.jsx";
 import GroupDetailsPage from "../groups/pages/GroupDetailsPage.jsx";
+import CreateGroupPage from "../groups/pages/CreateGroupPage.jsx";
 import "../App.css";
 import NotificationsPage from "../notifications/pages/NotificationsPage.jsx";
 import NotFound from "../common/components/NotFound.jsx";
@@ -99,11 +100,21 @@ function App() {
             }
           />
           <Route
-            path="/groups/:groupId"
+            path="/group/:groupId"
             element={
               <Navbar>
                 <GroupDetailsPage />
               </Navbar>
+            }
+          />
+          <Route
+            path="/create-group"
+            element={
+              <ProtectedRoute>
+                <Navbar>
+                  <CreateGroupPage />
+                </Navbar>
+              </ProtectedRoute>
             }
           />
         </Routes>
