@@ -48,6 +48,7 @@ const ProjectCard = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [authorProfileLink, setAuthorProfileLink] = useState("");
   const [authorProfile, setAuthorProfile] = useState(null);
+  const [isFavoriteAnimating, setIsFavoriteAnimating] = useState(false);
   const mainImage = images && images.length > 0 ? images[0] : null;
   const navigate = useNavigate();
 
@@ -121,20 +122,26 @@ const ProjectCard = ({
   const handleFavorite = async () => {
     if (!user || isLoading) return;
 
-    setIsLoading(true);
+    // Optimistic update
+    setIsFavorite((prev) => !prev);
+    setIsFavoriteAnimating(true);
+
     try {
       if (isFavorite) {
         await removeFromFavorites(user.uid, id);
-        setIsFavorite(false);
       } else {
         await addToFavorites(user.uid, id);
-        setIsFavorite(true);
       }
     } catch (error) {
       console.error("Error updating favorite status:", error);
-      setIsFavorite(!isFavorite); // Revertir en caso de error
+      // Revert on error
+      setIsFavorite((prev) => !prev);
     } finally {
       setIsLoading(false);
+      // Reset animation after a short delay
+      setTimeout(() => {
+        setIsFavoriteAnimating(false);
+      }, 300);
     }
   };
 
@@ -177,6 +184,11 @@ const ProjectCard = ({
       },
     });
   };
+
+  // CSS para la animación de destello
+  const starAnimation = isFavoriteAnimating
+    ? "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+    : "";
 
   return (
     <article className="flex flex-col justify-between bg-white rounded-lg shadow-md mb-4 dark:bg-[#333333]">
@@ -290,12 +302,17 @@ const ProjectCard = ({
               <button
                 onClick={handleFavorite}
                 disabled={isLoading}
-                className="flex items-center gap-1 text-gray-500 hover:text-yellow-500 transition duration-300 cursor-pointer dark:text-gray-300 dark:hover:text-yellow-400"
+                className="relative flex items-center gap-1 text-gray-500 hover:text-yellow-500 transition duration-300 cursor-pointer dark:text-gray-300 dark:hover:text-yellow-400"
               >
                 {isFavorite ? (
-                  <AiFillStar className="text-xl text-yellow-500" />
+                  <>
+                    {isFavoriteAnimating && (
+                      <span className={`${starAnimation} bg-yellow-500`} />
+                    )}
+                    <AiFillStar className="text-xl text-yellow-500 transform transition-transform duration-300 hover:scale-110" />
+                  </>
                 ) : (
-                  <AiOutlineStar className="text-xl" />
+                  <AiOutlineStar className="text-xl transform transition-transform duration-300 hover:scale-110" />
                 )}
               </button>
             )}
