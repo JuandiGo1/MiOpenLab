@@ -234,9 +234,8 @@ const ProjectCard = ({
 
       {/* Footer */}
       <div className="flex flex-col justify-between items-start text-sm text-gray-500 dark:text-gray-300">
-        <hr className="border-t w-full border-gray-200 dark:border-[#404040]" />
-        <div className="flex items-center justify-between w-full p-4">
-          <div className="flex items-center gap-2">          <div className="flex items-center gap-4">
+        <hr className="border-t w-full border-gray-200 dark:border-[#404040]" />        <div className="flex items-center justify-between w-full p-4">
+          <div className="flex items-center gap-4">
             <button
               onClick={handleLike}
               disabled={isLoading}
@@ -256,14 +255,6 @@ const ProjectCard = ({
               <FaComment className="text-xl" />
               {commentCount}
             </button>
-          </div>
-
-            <div className="flex items-center gap-1">
-              <FaComment className="text-gray-500 dark:text-gray-300" />
-              <span className="text-gray-500 dark:text-gray-300">
-                {commentCount}
-              </span>
-            </div>
           </div>
 
           <div className="flex items-center justify-between gap-2">
