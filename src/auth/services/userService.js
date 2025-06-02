@@ -45,8 +45,7 @@ export async function createUserProfile({ uid, displayName, photoURL }) {
   const userDoc = doc(db, "users", uid);
   const username = await generateUniqueUsername(displayName);
 
-  await setDoc(userDoc, {
-    username,
+  await setDoc(userDoc, {    username,
     displayName,
     photoURL,
     bannerURL: "",         // URL de la imagen de banner
@@ -61,6 +60,7 @@ export async function createUserProfile({ uid, displayName, photoURL }) {
     followers: [],
     following: [],
     favorites: [],          // Lista de proyectos favoritos
+    groups: [],             // Lista de grupos a los que pertenece
     createdAt: new Date(),
   });
 }
@@ -87,11 +87,11 @@ export async function createUserProfileIfNotExists({
       location: "",
       linkedin: "",
       github: "",
-      createdAt: Date.now(),
-      followers: [],
+      createdAt: Date.now(),      followers: [],
       following: [],
       likedProjects: [],
       favorites: [],      // Lista de proyectos favoritos
+      groups: [],        // Lista de grupos a los que pertenece
     });
 
     console.log("Usuario creao");

@@ -26,10 +26,10 @@ export async function createProject(projectData, currentUser) {
       linkDemo: projectData.linkDemo,
       authorId: currentUser.uid,
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-      likes: 0,
+      updatedAt: serverTimestamp(),      likes: 0,
       likedBy: [],
-      isPublic: projectData.isPublic, // Add this line
+      isPublic: projectData.isPublic,
+      groups: [],           // Referencias a los grupos donde está el proyecto
     });
 
     if (projectData.image) {
