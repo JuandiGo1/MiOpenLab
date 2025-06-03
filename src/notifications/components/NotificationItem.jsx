@@ -3,7 +3,7 @@ import { AiFillLike } from "react-icons/ai";
 import { FaComment, FaCommentSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
-import formatDate from "../../utils/dateFormatter";
+import { formatDate } from "../../utils/dateFormatter";
 
 const NotificationItem = ({
   type,

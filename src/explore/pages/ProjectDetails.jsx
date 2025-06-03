@@ -6,7 +6,7 @@ import { FaGithub } from "react-icons/fa";
 import { MdDatasetLinked } from "react-icons/md";
 import DefaultAvatar from "../../assets/defaultAvatar.jpg";
 import DetailsSkeleton from "../components/ProjectDetailsSkeleton";
-import formatDate from "../../utils/dateFormatter";
+import { formatDate } from "../../utils/dateFormatter";
 import { Timestamp } from "firebase/firestore";
 import Comments from "../../common/components/Comments";
 

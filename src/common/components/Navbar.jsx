@@ -6,7 +6,7 @@ import { BiHomeAlt2 } from "react-icons/bi";
 import { RiUser5Line, RiLogoutCircleLine } from "react-icons/ri";
 import { MdOutlineNotifications } from "react-icons/md";
 import { HiMenu, HiX } from "react-icons/hi";
-import { IoMdPeople } from "react-icons/io"; // Añadir ícono para grupos
+import { IoMdPeople } from "react-icons/io";
 import { getUnreadNotificationsCount } from "../../notifications/services/notiservice";
 import ThemeSwitch from "./ThemeSwitch";
 
@@ -186,7 +186,8 @@ const Navbar = ({ children }) => {
                                 )}
                             </NavLink>
                         </li>
-                        <li>                            <NavLink
+                        <li>
+                            <NavLink
                                 to="/groups"
                                 onClick={closeMenu}
                                 className={({ isActive }) =>
@@ -198,8 +199,7 @@ const Navbar = ({ children }) => {
                                 <IoMdPeople className="text-lg lg:text-xl flex-shrink-0" />
                                 <span className="truncate">Groups</span>
                             </NavLink>
-                        </li>
-                        {user && (
+                        </li>                        {user && (
                             <li>
                                 <NavLink
                                     to="/newproject"

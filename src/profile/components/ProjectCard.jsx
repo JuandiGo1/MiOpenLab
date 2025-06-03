@@ -14,7 +14,7 @@ import {
   deleteProject,
 } from "../../profile/services/projectService";
 import { getProjectCommentsCount } from "../../common/services/commentService";
-import formatDate from "../../utils/dateFormatter";
+import { formatDate } from "../../utils/dateFormatter";
 import {
   likePost,
   unlikePost,

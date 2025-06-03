@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { getGroupById, joinGroup, leaveGroup } from '../services/groupService';
+import { getGroupDiscussions } from '../../forums/services/forumService';
 import { NewLoader } from '../../common/components/Loader';
 import ProjectCard from '../../profile/components/ProjectCard';
 import { getUserProfile } from '../../auth/services/userService';
 import defaultBanner from '../../assets/defaultBanner.jpg';
+import { formatDate } from '../../utils/dateFormatter';
 
 const GroupDetailsPage = () => {
   const { groupId } = useParams();
@@ -16,6 +18,8 @@ const GroupDetailsPage = () => {
   const [members, setMembers] = useState([]);
   const [isMember, setIsMember] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
+  const [activeTab, setActiveTab] = useState('projects');
+  const [discussions, setDiscussions] = useState([]);
 
   useEffect(() => {
     loadGroup();
@@ -27,6 +31,12 @@ const GroupDetailsPage = () => {
       setIsMember(Array.isArray(group.members) && group.members.includes(user.uid));
     }
   }, [user, group]);
+
+  useEffect(() => {
+    if (groupId && activeTab === 'discussions') {
+      loadDiscussions();
+    }
+  }, [groupId, activeTab]);
 
   const loadGroup = async () => {
     try {
@@ -42,6 +52,16 @@ const GroupDetailsPage = () => {
       console.error('Error loading group:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadDiscussions = async () => {
+    try {
+      const groupDiscussions = await getGroupDiscussions(groupId);
+      setDiscussions(groupDiscussions || []);
+    } catch (error) {
+      console.error('Error loading discussions:', error);
+      setDiscussions([]);
     }
   };
 
@@ -150,6 +170,100 @@ const GroupDetailsPage = () => {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Tabs */}
+          <div className="border-t border-gray-200 dark:border-gray-600 mt-6">
+            <div className="flex gap-8 p-4">
+              <button
+                onClick={() => setActiveTab('projects')}
+                className={`pb-2 ${
+                  activeTab === 'projects'
+                    ? 'border-b-2 border-[#bd9260] text-[#bd9260] dark:border-blue-600 dark:text-blue-500'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+              >
+                Projects
+              </button>
+              <button
+                onClick={() => setActiveTab('discussions')}
+                className={`pb-2 ${
+                  activeTab === 'discussions'
+                    ? 'border-b-2 border-[#bd9260] text-[#bd9260] dark:border-blue-600 dark:text-blue-500'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+              >
+                Discussions
+              </button>
+            </div>
+
+            {/* Tab Content */}
+            <div className="p-4">
+              {activeTab === 'projects' ? (
+                <div>
+                  {/* Projects content will go here */}
+                  <p>Projects section coming soon...</p>
+                </div>
+              ) : (
+                <div>
+                  {user && isMember && (
+                    <button
+                      onClick={() => navigate(`/groups/${groupId}/discussions/new`)}
+                      className="mb-6 bg-[#bd9260] text-white px-4 py-2 rounded-lg hover:bg-[#ce9456]/80 transition duration-300 dark:bg-blue-600 dark:hover:bg-blue-700"
+                    >
+                      Start Discussion
+                    </button>
+                  )}
+                  
+                  <div className="space-y-4">
+                    {discussions.map(discussion => (
+                      <div
+                        key={discussion.id}
+                        onClick={() => navigate(`/groups/${groupId}/discussions/${discussion.id}`)}
+                        className="p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-[#bd9260] dark:border-gray-600 dark:hover:border-blue-500"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+                              {discussion.title}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-300 line-clamp-2">
+                              {discussion.content}
+                            </p>
+                            <div className="flex items-center gap-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{discussion.authorName}</span>
+                                <span>&bull;</span>
+                                <span>{discussion.createdAt ? formatDate(discussion.createdAt) : 'Recently'}</span>
+                              </div>
+                              <span>&bull;</span>
+                              <span>{discussion.replies?.length || 0} replies</span>
+                              <span>&bull;</span>
+                              <span>{discussion.views || 0} views</span>
+                            </div>
+                          </div>
+
+                          {discussion.lastReply && (
+                            <div className="text-right text-sm text-gray-500 dark:text-gray-400 ml-4">
+                              <p>Last reply by</p>
+                              <p className="font-medium">{discussion.lastReply.authorName}</p>
+                              <p>{discussion.lastReply.createdAt ? formatDate(discussion.lastReply.createdAt) : 'Recently'}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {discussions.length === 0 && (
+                      <div className="text-center py-8">
+                        <p className="text-gray-600 dark:text-gray-300">
+                          No discussions yet. {isMember ? 'Start one!' : 'Join the group to start discussions!'}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

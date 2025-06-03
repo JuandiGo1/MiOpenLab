@@ -26,6 +26,32 @@ service cloud.firestore {
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'updatedAt']))
       );
       allow delete: if isAuthenticated() && resource.data.creatorId == request.auth.uid;
+
+      // Reglas para las discusiones dentro de grupos
+      match /discussions/{discussionId} {
+        allow read: if true;
+        allow create: if isAuthenticated() && exists(/databases/$(database)/documents/groups/$(groupId)) && 
+          get(/databases/$(database)/documents/groups/$(groupId)).data.members.hasAny([request.auth.uid]);
+        allow update: if isAuthenticated() && (
+          resource.data.authorId == request.auth.uid || 
+          get(/databases/$(database)/documents/groups/$(groupId)).data.creatorId == request.auth.uid
+        );
+        allow delete: if isAuthenticated() && (
+          resource.data.authorId == request.auth.uid || 
+          get(/databases/$(database)/documents/groups/$(groupId)).data.creatorId == request.auth.uid
+        );
+
+        // Reglas para las respuestas en las discusiones
+        match /replies/{replyId} {
+          allow read: if true;
+          allow create: if isAuthenticated() && exists(/databases/$(database)/documents/groups/$(groupId)) && 
+            get(/databases/$(database)/documents/groups/$(groupId)).data.members.hasAny([request.auth.uid]);
+          allow update, delete: if isAuthenticated() && (
+            resource.data.authorId == request.auth.uid || 
+            get(/databases/$(database)/documents/groups/$(groupId)).data.creatorId == request.auth.uid
+          );
+        }
+      }
     }
 
     // Reglas para notificaciones
