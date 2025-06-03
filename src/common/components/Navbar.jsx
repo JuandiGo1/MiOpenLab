@@ -256,7 +256,6 @@ const Navbar = ({ children }) => {
                             </NavLink>
                         </div>
                     )}
-                    ;
                 </div>
             </nav>
 
