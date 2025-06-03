@@ -10,19 +10,49 @@ import {
   serverTimestamp,
   limit,
   updateDoc,
-  increment
+  increment,
+  startAfter
 } from 'firebase/firestore';
+
+const REPLIES_PER_PAGE = 10;
+const MIN_DISCUSSION_LENGTH = 10;
+const MAX_DISCUSSION_LENGTH = 2000;
+const MIN_REPLY_LENGTH = 5;
+const MAX_REPLY_LENGTH = 1000;
+
+// Validación del contenido
+const validateContent = (content, minLength, maxLength, type = 'content') => {
+  if (!content || typeof content !== 'string') {
+    throw new Error(`${type} is required and must be a string`);
+  }
+  if (content.trim().length < minLength) {
+    throw new Error(`${type} must be at least ${minLength} characters long`);
+  }
+  if (content.trim().length > maxLength) {
+    throw new Error(`${type} cannot exceed ${maxLength} characters`);
+  }
+  return content.trim();
+};
 
 // Crear un nuevo tema de discusión en un grupo
 export const createDiscussion = async (discussionData) => {
-  const { groupId, ...rest } = discussionData;
+  const { groupId, title, content, ...rest } = discussionData;
   try {
+    if (!groupId) throw new Error('Group ID is required');
+    
+    // Validar título y contenido
+    const validatedTitle = validateContent(title, 5, 100, 'Title');
+    const validatedContent = validateContent(content, MIN_DISCUSSION_LENGTH, MAX_DISCUSSION_LENGTH, 'Content');
+
     const collectionRef = collection(db, `groups/${groupId}/discussions`);
     const docRef = await addDoc(collectionRef, {
       ...rest,
+      title: validatedTitle,
+      content: validatedContent,
       createdAt: serverTimestamp(),
       views: 0,
-      replies: []
+      replies: 0,
+      lastActivity: serverTimestamp()
     });
     return docRef.id;
   } catch (error) {
@@ -80,9 +110,6 @@ export const getGroupDiscussions = async (groupId) => {
   }
 };
 
-// Obtener las respuestas de una discusión
-// (Duplicated function removed to avoid redeclaration error)
-
 // Obtener un tema específico por ID dentro de un grupo
 export const getDiscussionById = async (discussionId, groupId) => {
   try {
@@ -106,51 +133,90 @@ export const getDiscussionById = async (discussionId, groupId) => {
 };
 
 // Obtener respuestas de un tema dentro de un grupo
-export const getDiscussionReplies = async (discussionId, groupId) => {
+export const getDiscussionReplies = async (discussionId, groupId, lastDoc = null) => {
   try {
-    if (!discussionId || !groupId) return [];
+    if (!discussionId || !groupId) return { replies: [], hasMore: false };
 
     const collectionRef = collection(db, `groups/${groupId}/discussions/${discussionId}/replies`);
-    const q = query(collectionRef, orderBy('createdAt', 'asc'));
-    const snapshot = await getDocs(q);
+    let q = query(collectionRef, orderBy('createdAt', 'asc'));
 
-    return snapshot.docs.map(doc => ({
+    if (lastDoc) {
+      // Si existe un último documento, usar su snapshot para la paginación
+      const lastDocRef = doc(db, `groups/${groupId}/discussions/${discussionId}/replies/${lastDoc.id}`);
+      const lastDocSnap = await getDoc(lastDocRef);
+      if (lastDocSnap.exists()) {
+        q = query(q, startAfter(lastDocSnap));
+      }
+    }
+
+    q = query(q, limit(10)); // Aplicar el límite después de otras condiciones
+
+    const snapshot = await getDocs(q);
+    const replies = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       createdAt: doc.data().createdAt?.toDate?.() || new Date()
     }));
+
+    // Verificar si hay más resultados
+    const hasMore = replies.length === 10;
+
+    return {
+      replies,
+      hasMore,
+      lastReply: replies[replies.length - 1]
+    };
   } catch (error) {
     console.error('Error getting replies:', error);
-    return [];
+    return { replies: [], hasMore: false };
   }
 };
 
 // Añadir una respuesta a un tema dentro de un grupo
 export const addReply = async (discussionId, replyData) => {
-  const { groupId, ...rest } = replyData;
+  const { groupId, content, ...rest } = replyData;
   try {
+    if (!discussionId || !groupId) {
+      throw new Error('Discussion ID and Group ID are required');
+    }
+
+    // Validar contenido de la respuesta
+    const validatedContent = validateContent(content, MIN_REPLY_LENGTH, MAX_REPLY_LENGTH, 'Reply');
+
+    // Verificar que la discusión existe
+    const discussionRef = doc(db, `groups/${groupId}/discussions`, discussionId);
+    const discussionDoc = await getDoc(discussionRef);
+    
+    if (!discussionDoc.exists()) {
+      throw new Error('Discussion not found');
+    }
+
     // Añadir la respuesta
     const collectionRef = collection(db, `groups/${groupId}/discussions/${discussionId}/replies`);
     const docRef = await addDoc(collectionRef, {
       ...rest,
+      content: validatedContent,
       createdAt: serverTimestamp()
     });
 
-    // Actualizar la última respuesta del tema de discusión
-    const discussionRef = doc(db, `groups/${groupId}/discussions`, discussionId);
-    const discussionDoc = await getDoc(discussionRef);
-    if (discussionDoc.exists()) {
-      const replies = (discussionDoc.data().replies || 0) + 1;
-      await updateDoc(discussionRef, {
-        replies,
-        lastReply: {
-          ...rest,
-          createdAt: serverTimestamp()
-        }
-      });
-    }
+    // Actualizar la última respuesta y contador de respuestas
+    await updateDoc(discussionRef, {
+      replies: increment(1),
+      lastReply: {
+        ...rest,
+        content: validatedContent,
+        createdAt: serverTimestamp()
+      },
+      lastActivity: serverTimestamp()
+    });
 
-    return docRef.id;
+    // Retornar la respuesta con optimistic data
+    return {
+      id: docRef.id,
+      ...rest,
+      content: validatedContent,
+      createdAt: new Date()
+    };
   } catch (error) {
     console.error('Error adding reply:', error);
     throw error;
