@@ -226,7 +226,7 @@ const ProjectCard = ({
                 rel="noopener noreferrer"
               >
                 <FaGithub className="text-lg" />
-                Repositorie
+                <p className="hidden sm:flex ">Repositorie</p>
               </a>
 
               {linkDemo && (
@@ -237,7 +237,7 @@ const ProjectCard = ({
                   rel="noopener noreferrer"
                 >
                   <MdDatasetLinked className="text-lg" />
-                  Link Demo
+                  <p className="hidden sm:flex ">Link Demo</p>
                 </a>
               )}
             </div>
