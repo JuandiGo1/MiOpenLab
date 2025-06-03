@@ -1,35 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { getDiscussionById, getDiscussionReplies, addReply } from '../services/forumService';
+import { getGroupById } from '../../groups/services/groupService';
 import { NewLoader } from '../../common/components/Loader';
 import { formatDate } from '../../utils/dateFormatter';
 
 const DiscussionDetailsPage = () => {
-  const { discussionId } = useParams();
+  const { groupId, discussionId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [discussion, setDiscussion] = useState(null);
+  const [group, setGroup] = useState(null);
   const [replies, setReplies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [replyContent, setReplyContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    loadDiscussion();
-  }, [discussionId]);
+    loadDiscussionData();
+  }, [discussionId, groupId]);
 
-  const loadDiscussion = async () => {
+  const loadDiscussionData = async () => {
     try {
-      const [discussionData, repliesData] = await Promise.all([
-        getDiscussionById(discussionId),
-        getDiscussionReplies(discussionId)
+      const [discussionData, groupData] = await Promise.all([
+        getDiscussionById(discussionId, groupId),
+        getGroupById(groupId),
+        getDiscussionReplies(discussionId, groupId)
       ]);
+
+      if (!discussionData || !groupData) {
+        navigate(`/groups/${groupId}`);
+        return;
+      }
+
       setDiscussion(discussionData);
-      setReplies(repliesData);
+      setGroup(groupData);
+      setReplies(discussionData.replies || []);
     } catch (error) {
       console.error('Error loading discussion:', error);
-      navigate('/forums');
+      navigate(`/groups/${groupId}`);
     } finally {
       setLoading(false);
     }
@@ -44,11 +54,16 @@ const DiscussionDetailsPage = () => {
 
     setSubmitting(true);
     try {
-      await addReply(discussionId, user.uid, replyContent);
+      await addReply(discussionId, {
+        content: replyContent,
+        authorId: user.uid,
+        authorName: user.displayName || user.username,
+        groupId,
+      });
       setReplyContent('');
-      loadDiscussion(); // Recargar la discusión para mostrar la nueva respuesta
+      await loadDiscussionData();
     } catch (error) {
-      console.error('Error submitting reply:', error);
+      console.error('Error adding reply:', error);
     } finally {
       setSubmitting(false);
     }
@@ -62,79 +77,109 @@ const DiscussionDetailsPage = () => {
     );
   }
 
-  if (!discussion) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-gray-600 dark:text-gray-300">Discussion not found</p>
-      </div>
-    );
-  }
+  const canReply = user && group?.members?.includes(user.uid);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
-        {/* Discussion Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6 dark:bg-[#333333]">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4 dark:text-white">
-            {discussion.title}
-          </h1>
-          <div className="text-gray-600 dark:text-gray-300 mb-6 whitespace-pre-wrap">
-            {discussion.content}
-          </div>
-          <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-            <div>
+        {/* Breadcrumb */}
+        <nav className="mb-6">
+          <ol className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+            <li><Link to="/groups" className="hover:text-[#bd9260] dark:hover:text-blue-500">Groups</Link></li>
+            <li>&gt;</li>
+            <li><Link to={`/groups/${groupId}`} className="hover:text-[#bd9260] dark:hover:text-blue-500">{group?.name}</Link></li>
+            <li>&gt;</li>
+            <li className="text-gray-700 dark:text-gray-300">Discussion</li>
+          </ol>
+        </nav>
+
+        {/* Discussion */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden dark:bg-[#333333]">
+          <div className="p-6">
+            <h1 className="text-2xl font-bold text-gray-800 mb-4 dark:text-white">{discussion.title}</h1>
+            <div className="text-gray-600 mb-6 dark:text-gray-300">
+              <p>{discussion.content}</p>
+            </div>
+            <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+              <span className="font-medium">{discussion.authorName}</span>
+              <span className="mx-2">&bull;</span>
               <span>{formatDate(discussion.createdAt)}</span>
-              <span className="mx-2">•</span>
-              <span>{discussion.views} views</span>
             </div>
-            <div>
-              <span>{replies.length} replies</span>
+          </div>
+
+          {/* Replies */}
+          <div className="border-t border-gray-200 dark:border-gray-600">
+            <div className="p-6">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4 dark:text-white">
+                {replies.length} {replies.length === 1 ? 'Reply' : 'Replies'}
+              </h2>
+
+              <div className="space-y-6">
+                {replies.map((reply, index) => (
+                  <div 
+                    key={reply.id || index}
+                    className="border-b border-gray-200 last:border-0 pb-6 last:pb-0 dark:border-gray-600"
+                  >
+                    <p className="text-gray-600 mb-2 dark:text-gray-300">{reply.content}</p>
+                    <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                      <span className="font-medium">{reply.authorName}</span>
+                      <span className="mx-2">&bull;</span>
+                      <span>{formatDate(reply.createdAt)}</span>
+                    </div>
+                  </div>
+                ))}
+
+                {canReply && (
+                  <form onSubmit={handleSubmitReply} className="mt-8">
+                    <div>
+                      <label htmlFor="reply" className="sr-only">
+                        Your reply
+                      </label>
+                      <textarea
+                        id="reply"
+                        rows={4}
+                        value={replyContent}
+                        onChange={(e) => setReplyContent(e.target.value)}
+                        required
+                        className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        placeholder="Write your reply..."
+                      />
+                    </div>
+                    <div className="mt-4">
+                      <button
+                        type="submit"
+                        disabled={submitting}
+                        className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#bd9260] hover:bg-[#ce9456]/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-blue-600 dark:hover:bg-blue-700"
+                      >
+                        {submitting ? <NewLoader /> : 'Post Reply'}
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {!canReply && user && (
+                  <div className="mt-8 p-4 bg-gray-100 rounded-lg text-center dark:bg-gray-700">
+                    <p className="text-gray-600 dark:text-gray-300">
+                      You need to be a member of this group to participate in discussions.
+                    </p>
+                  </div>
+                )}
+
+                {!user && (
+                  <div className="mt-8 p-4 bg-gray-100 rounded-lg text-center dark:bg-gray-700">
+                    <p className="text-gray-600 dark:text-gray-300">
+                      Please {' '}
+                      <Link to="/login" className="text-[#bd9260] hover:underline dark:text-blue-500">
+                        log in
+                      </Link>
+                      {' '} to participate in discussions.
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Replies */}
-        <div className="space-y-4 mb-6">
-          {replies.map((reply) => (
-            <div key={reply.id} className="bg-white rounded-lg shadow-md p-6 dark:bg-[#333333]">
-              <div className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
-                {reply.content}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-                {formatDate(reply.createdAt)}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Reply Form */}
-        {user ? (
-          <form onSubmit={handleSubmitReply} className="bg-white rounded-lg shadow-md p-6 dark:bg-[#333333]">
-            <textarea
-              value={replyContent}
-              onChange={(e) => setReplyContent(e.target.value)}
-              placeholder="Write your reply..."
-              required
-              rows="4"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-            <div className="mt-4 flex justify-end">
-              <button
-                type="submit"
-                disabled={submitting}
-                className="px-4 py-2 bg-[#bd9260] text-white rounded-lg hover:bg-[#ce9456]/80 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-blue-600 dark:hover:bg-blue-700"
-              >
-                {submitting ? <NewLoader /> : 'Reply'}
-              </button>
-            </div>
-          </form>
-        ) : (
-          <div className="text-center py-4">
-            <p className="text-gray-600 dark:text-gray-300">
-              Please <a href="/login" className="text-blue-600 hover:underline dark:text-blue-400">log in</a> to reply
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

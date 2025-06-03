@@ -1,3 +1,4 @@
+import { db } from '../../firebase/Config';
 import { 
   collection, 
   addDoc, 
@@ -8,116 +9,133 @@ import {
   orderBy,
   serverTimestamp,
   where,
-  updateDoc
+  updateDoc,
+  limit
 } from 'firebase/firestore';
-import { db } from '../../firebase/Config';
 
-// Crear un nuevo tema de discusión
-export const createDiscussion = async (userId, { title, content, category }) => {
+// Crear un nuevo tema de discusión en un grupo
+export const createDiscussion = async (discussionData) => {
+  const { groupId, ...rest } = discussionData;
   try {
-    const discussionRef = await addDoc(collection(db, 'discussions'), {
-      title,
-      content,
-      category,
-      authorId: userId,
+    const collectionRef = collection(db, `groups/${groupId}/discussions`);
+    const docRef = await addDoc(collectionRef, {
+      ...rest,
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-      replies: 0,
       views: 0,
-      lastReplyAt: null,
-      lastReplyBy: null
+      replies: []
     });
-    return discussionRef.id;
+    return docRef.id;
   } catch (error) {
     console.error('Error creating discussion:', error);
     throw error;
   }
 };
 
-// Obtener todos los temas de discusión
-export const getAllDiscussions = async () => {
+// Obtener todos los temas de discusión de un grupo
+export const getGroupDiscussions = async (groupId) => {
   try {
-    const q = query(
-      collection(db, 'discussions'),
-      orderBy('lastReplyAt', 'desc'),
-      orderBy('createdAt', 'desc')
-    );
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    const collectionRef = collection(db, `groups/${groupId}/discussions`);
+    const q = query(collectionRef, orderBy('createdAt', 'desc'));
+    const snapshot = await getDocs(q);
+    
+    // Obtener los temas de discusión y sus últimas respuestas en paralelo
+    const discussionsPromises = snapshot.docs.map(async doc => {
+      const discussion = {
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate()
+      };
+
+      // Obtener la última respuesta para este tema de discusión
+      const repliesRef = collection(db, `groups/${groupId}/discussions/${doc.id}/replies`);
+      const repliesQuery = query(repliesRef, orderBy('createdAt', 'desc'), limit(1));
+      const repliesSnapshot = await getDocs(repliesQuery);
+      
+      if (!repliesSnapshot.empty) {
+        const lastReply = repliesSnapshot.docs[0].data();
+        discussion.lastReply = {
+          ...lastReply,
+          createdAt: lastReply.createdAt?.toDate()
+        };
+      }
+
+      return discussion;
+    });
+
+    return await Promise.all(discussionsPromises);
   } catch (error) {
     console.error('Error getting discussions:', error);
     throw error;
   }
 };
 
-// Obtener un tema específico por ID
-export const getDiscussionById = async (discussionId) => {
+// Obtener un tema específico por ID dentro de un grupo
+export const getDiscussionById = async (discussionId, groupId) => {
   try {
-    const discussionRef = doc(db, 'discussions', discussionId);
-    const discussionDoc = await getDoc(discussionRef);
+    const docRef = doc(db, `groups/${groupId}/discussions`, discussionId);
+    const docSnap = await getDoc(docRef);
     
-    if (!discussionDoc.exists()) {
-      throw new Error('Discussion not found');
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      return {
+        id: docSnap.id,
+        ...data,
+        createdAt: data.createdAt?.toDate()
+      };
     }
-    
-    // Incrementar vistas
-    await updateDoc(discussionRef, {
-      views: (discussionDoc.data().views || 0) + 1
-    });
-
-    return {
-      id: discussionDoc.id,
-      ...discussionDoc.data()
-    };
+    return null;
   } catch (error) {
     console.error('Error getting discussion:', error);
     throw error;
   }
 };
 
-// Añadir una respuesta a un tema
-export const addReply = async (discussionId, userId, content) => {
+// Obtener respuestas de un tema dentro de un grupo
+export const getDiscussionReplies = async (discussionId, groupId) => {
   try {
-    const replyRef = await addDoc(collection(db, 'replies'), {
-      discussionId,
-      content,
-      authorId: userId,
-      createdAt: serverTimestamp()
-    });
+    const collectionRef = collection(db, `groups/${groupId}/discussions/${discussionId}/replies`);
+    const q = query(collectionRef, orderBy('createdAt', 'asc'));
+    const snapshot = await getDocs(q);
 
-    // Actualizar el tema principal
-    const discussionRef = doc(db, 'discussions', discussionId);
-    await updateDoc(discussionRef, {
-      replies: increment(1),
-      lastReplyAt: serverTimestamp(),
-      lastReplyBy: userId
-    });
-
-    return replyRef.id;
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt?.toDate()
+    }));
   } catch (error) {
-    console.error('Error adding reply:', error);
+    console.error('Error getting replies:', error);
     throw error;
   }
 };
 
-// Obtener respuestas de un tema
-export const getDiscussionReplies = async (discussionId) => {
+// Añadir una respuesta a un tema dentro de un grupo
+export const addReply = async (discussionId, replyData) => {
+  const { groupId, ...rest } = replyData;
   try {
-    const q = query(
-      collection(db, 'replies'),
-      where('discussionId', '==', discussionId),
-      orderBy('createdAt', 'asc')
-    );
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    // Añadir la respuesta
+    const collectionRef = collection(db, `groups/${groupId}/discussions/${discussionId}/replies`);
+    const docRef = await addDoc(collectionRef, {
+      ...rest,
+      createdAt: serverTimestamp()
+    });
+
+    // Actualizar la última respuesta del tema de discusión
+    const discussionRef = doc(db, `groups/${groupId}/discussions`, discussionId);
+    const discussionDoc = await getDoc(discussionRef);
+    if (discussionDoc.exists()) {
+      const replies = (discussionDoc.data().replies || 0) + 1;
+      await discussionDoc.ref.update({
+        replies,
+        lastReply: {
+          ...rest,
+          createdAt: serverTimestamp()
+        }
+      });
+    }
+
+    return docRef.id;
   } catch (error) {
-    console.error('Error getting replies:', error);
+    console.error('Error adding reply:', error);
     throw error;
   }
 };

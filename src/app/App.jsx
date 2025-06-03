@@ -11,6 +11,9 @@ import ProjectDetails from "../explore/pages/ProjectDetails.jsx";
 import GroupsPage from "../groups/pages/GroupsPage.jsx";
 import GroupDetailsPage from "../groups/pages/GroupDetailsPage.jsx";
 import CreateGroupPage from "../groups/pages/CreateGroupPage.jsx";
+import ForumsPage from "../forums/pages/ForumsPage.jsx";
+import CreateDiscussionPage from "../forums/pages/CreateDiscussionPage.jsx";
+import DiscussionDetailsPage from "../forums/pages/DiscussionDetailsPage.jsx";
 import "../App.css";
 import NotificationsPage from "../notifications/pages/NotificationsPage.jsx";
 import NotFound from "../common/components/NotFound.jsx";
@@ -115,6 +118,52 @@ function App() {
                   <CreateGroupPage />
                 </Navbar>
               </ProtectedRoute>
+            }
+          />
+          {/* Group Discussion Routes */}
+          <Route
+            path="/groups/:groupId/discussions/new"
+            element={
+              <ProtectedRoute>
+                <Navbar>
+                  <CreateDiscussionPage />
+                </Navbar>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/groups/:groupId/discussions/:discussionId"
+            element={
+              <Navbar>
+                <DiscussionDetailsPage />
+              </Navbar>
+            }
+          />
+          {/* Forums Routes */}
+          <Route
+            path="/forums"
+            element={
+              <Navbar>
+                <ForumsPage />
+              </Navbar>
+            }
+          />
+          <Route
+            path="/forums/new"
+            element={
+              <ProtectedRoute>
+                <Navbar>
+                  <CreateDiscussionPage />
+                </Navbar>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/forums/:discussionId"
+            element={
+              <Navbar>
+                <DiscussionDetailsPage />
+              </Navbar>
             }
           />
         </Routes>
