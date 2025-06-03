@@ -31,7 +31,7 @@ const CreateGroupPage = () => {
     setLoading(true);
     try {
       const groupId = await createGroup(user.uid, formData);
-      navigate(`/group/${groupId}`);
+      navigate(`/groups/${groupId}`);
     } catch (error) {
       console.error('Error creating group:', error);
       // Aquí podrías mostrar un mensaje de error al usuario
