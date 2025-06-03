@@ -19,16 +19,15 @@ service cloud.firestore {
       allow create: if request.auth != null;
     }
 
-    // Reglas para usuarios
-    match /users/{userId} {
+    // Reglas para usuarios    match /users/{userId} {
       allow read: if true; // público
       allow create: if request.auth != null && request.auth.uid == userId;
-      allow update: if request.auth != null && request.auth.uid == userId && 
-          (
-            !request.resource.data.diff(resource.data).affectedKeys().hasAny(['favorites']) || 
-            (request.resource.data.favorites is list && 
-             (resource.data.favorites == null || request.resource.data.favorites.size() <= resource.data.favorites.size() + 1))
-          );
+      allow update: if request.auth != null && (
+        // Usuario puede actualizar su propio documento
+        request.auth.uid == userId ||
+        // O cuando se actualiza la lista de grupos
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['groups'])
+      );
       allow delete: if request.auth != null && request.auth.uid == userId;
     }
 
@@ -55,23 +54,22 @@ service cloud.firestore {
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']) &&
           (request.resource.data.likes.toSet().difference(resource.data.likes.toSet()).size() <= 1) &&
           (resource.data.likes.toSet().difference(request.resource.data.likes.toSet()).size() <= 1);
-    }    // Reglas para grupos
-    match /groups/{groupId} {
+    }    // Reglas para grupos    match /groups/{groupId} {
       allow read: if true;
-      allow create: if request.auth != null;      allow update: if request.auth != null && 
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (
+        resource.data.creatorId == request.auth.uid ||
         (
-          get(resource.data.creator).id == request.auth.uid ||
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'memberCount', 'updatedAt']) &&
           (
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'memberCount', 'updatedAt']) &&
-            resource.data.members.hasAny(['/databases/' + database + '/documents/users/' + request.auth.uid])
-          ) ||
-          (
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['projects', 'projectCount', 'updatedAt']) &&
-            request.auth.uid in get(request.resource.data.projects[request.resource.data.projects.size()-1]).data.authorId
+            // Joining: user is being added
+            (!resource.data.members.hasAny([request.auth.uid]) && request.resource.data.members.hasAny([request.auth.uid])) ||
+            // Leaving: user is being removed
+            (resource.data.members.hasAny([request.auth.uid]) && !request.resource.data.members.hasAny([request.auth.uid]))
           )
-        );
-      allow delete: if request.auth != null && 
-        get(resource.data.creator).id == request.auth.uid;
+        )
+      );
+      allow delete: if request.auth != null && resource.data.creatorId == request.auth.uid;
     }
   }
 }

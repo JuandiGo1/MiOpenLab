@@ -18,21 +18,16 @@ import { db } from '../../firebase/Config';
 
 // Crear un nuevo grupo
 export const createGroup = async (userId, { name, description }) => {
-  try {    // Crear referencia al usuario    const userRef = doc(db, 'users', userId);
+  try {
     const groupRef = await addDoc(collection(db, 'groups'), {
       name,
       description,
-      creator: userRef,        // Referencia al documento del creador
-      members: [userRef],      // Array de referencias a documentos de usuarios
-      memberCount: 1,
-      projects: [],              // Array de referencias a documentos de proyectos
-      projectCount: 0,
+      creatorId: userId,
+      members: [userId],
+      projects: [],
       banner: "",
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });    // Actualizar el usuario con el grupo creado
-    await updateDoc(userRef, {
-      groups: arrayUnion(groupRef)
+      updatedAt: serverTimestamp()
     });
 
     return groupRef.id;
@@ -47,34 +42,48 @@ export const getGroupById = async (groupId) => {
   try {
     const groupRef = doc(db, 'groups', groupId);
     const groupDoc = await getDoc(groupRef);
+    
     if (!groupDoc.exists()) return null;
-
+    
     const groupData = groupDoc.data();
-    const creatorDoc = await getDoc(groupData.creator);
-    const creatorData = creatorDoc.data();
 
-    // Resolver datos del creador y miembros
-    const members = await Promise.all(
-      groupData.members.map(async (memberRef) => {
-        const memberDoc = await getDoc(memberRef);
-        const memberData = memberDoc.data();
-        return {
-          id: memberDoc.id,
-          displayName: memberData.displayName,
-          photoURL: memberData.photoURL
-        };
+    // Obtener datos del creador
+    const creatorDoc = await getDoc(doc(db, 'users', groupData.creatorId));
+    const creatorData = creatorDoc.exists() ? creatorDoc.data() : null;
+
+    // Obtener detalles de los miembros en paralelo
+    const memberDetails = await Promise.all(
+      (groupData.members || []).map(async (memberId) => {
+        try {
+          const memberDoc = await getDoc(doc(db, 'users', memberId));
+          if (!memberDoc.exists()) return null;
+          const memberData = memberDoc.data();
+          return {
+            id: memberId,
+            displayName: memberData.displayName || 'Usuario',
+            photoURL: memberData.photoURL || '/default-avatar.png',
+            username: memberData.username
+          };
+        } catch (error) {
+          console.error(`Error fetching member ${memberId}:`, error);
+          return null;
+        }
       })
     );
+
+    const validMemberDetails = memberDetails.filter(Boolean);
 
     return {
       id: groupDoc.id,
       ...groupData,
-      creator: {
-        id: creatorDoc.id,
-        displayName: creatorData.displayName,
-        photoURL: creatorData.photoURL
-      },
-      members
+      creator: creatorData ? {
+        id: groupData.creatorId,
+        displayName: creatorData.displayName || 'Usuario',
+        photoURL: creatorData.photoURL || '/default-avatar.png',
+        username: creatorData.username
+      } : null,
+      memberDetails: validMemberDetails,
+      memberCount: groupData.members.length // Calculado desde el array de members
     };
   } catch (error) {
     console.error('Error getting group:', error);
@@ -86,8 +95,8 @@ export const getGroupById = async (groupId) => {
 export const isGroupMember = async (groupId, userId) => {
   try {
     const group = await getGroupById(groupId);
-    const userRef = doc(db, 'users', userId);
-    return group?.members?.some(memberRef => memberRef.path === userRef.path) || false;
+    // group.members is an array of objects {id, displayName, photoURL}
+    return group?.members?.some(member => member.id === userId) || false;
   } catch (error) {
     console.error('Error checking group membership:', error);
     return false;
@@ -100,25 +109,62 @@ export const getAllGroups = async () => {
     const q = query(collection(db, 'groups'), orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);
     
-    // Obtener los grupos con los datos del creador resueltos
-    const groupsWithData = await Promise.all(querySnapshot.docs.map(async (doc) => {
-      const groupData = doc.data();
-      const creatorDoc = await getDoc(groupData.creator);
-      const creatorData = creatorDoc.data();
+    // Obtener los grupos con los datos del creador y miembros resueltos
+    const groupsWithData = await Promise.all(querySnapshot.docs.map(async (groupDoc) => {
+      const groupData = groupDoc.data();
+      
+      // Validar que el grupo tenga un creatorId
+      if (!groupData?.creatorId) {
+        console.error('Group missing creatorId:', groupDoc.id);
+        return null;
+      }
+
+      // Obtener datos del creador
+      const creatorDoc = await getDoc(doc(db, 'users', groupData.creatorId));
+      if (!creatorDoc.exists()) {
+        console.error('Creator not found:', groupData.creatorId);
+        return null;
+      }
+      const creatorData = creatorDoc.data();      // Resolver datos de los miembros
+      const members = await Promise.all(
+        (groupData.members || []).map(async (memberId) => {
+          try {
+            if (!memberId) {
+              console.error('Invalid member ID in group:', groupDoc.id);
+              return null;
+            }
+            const memberDoc = await getDoc(doc(db, 'users', memberId));
+            if (!memberDoc.exists()) {
+              console.error('Member not found:', memberId);
+              return null;
+            }
+            const memberData = memberDoc.data();
+            return {
+              id: memberId,
+              displayName: memberData.displayName,
+              photoURL: memberData.photoURL
+            };
+          } catch (error) {
+            console.error('Error fetching member:', memberId, error);
+            return null;
+          }
+        })
+      );      // Filter out null members (failed to load)
+      const validMembers = members.filter(Boolean);
 
       return {
-        id: doc.id,
+        id: groupDoc.id,
         ...groupData,
         creator: {
           id: creatorDoc.id,
-          displayName: creatorData.displayName,
-          photoURL: creatorData.photoURL,
+          displayName: creatorData?.displayName || 'Unknown',
+          photoURL: creatorData?.photoURL || '',
         },
-        members: groupData.members ? groupData.members.map(memberRef => memberRef) : []
+        members: validMembers
       };
-    }));
-
-    return groupsWithData;
+    }));    // Filter out any null groups (failed to load)
+    const validGroups = groupsWithData.filter(Boolean);
+    return validGroups;
   } catch (error) {
     console.error('Error getting groups:', error);
     throw error;
@@ -129,22 +175,20 @@ export const getAllGroups = async () => {
 export const joinGroup = async (groupId, userId) => {
   try {
     const groupRef = doc(db, 'groups', groupId);
-    const userRef = doc(db, 'users', userId);
     const groupDoc = await getDoc(groupRef);
     
     if (!groupDoc.exists()) {
       throw new Error('Group not found');
     }
-
+    
     const groupData = groupDoc.data();
-    const memberRefs = groupData.members.map(memberRef => memberRef.path);
-    if (memberRefs.includes(userRef.path)) {
+    
+    if (groupData.members.includes(userId)) {
       throw new Error('Already a member');
     }
 
     await updateDoc(groupRef, {
-      members: arrayUnion(userRef),
-      memberCount: increment(1),
+      members: arrayUnion(userId),
       updatedAt: serverTimestamp()
     });
   } catch (error) {
@@ -157,26 +201,23 @@ export const joinGroup = async (groupId, userId) => {
 export const leaveGroup = async (groupId, userId) => {
   try {
     const groupRef = doc(db, 'groups', groupId);
-    const userRef = doc(db, 'users', userId);
     const groupDoc = await getDoc(groupRef);
     
     if (!groupDoc.exists()) {
       throw new Error('Group not found');
     }
-
+    
     const groupData = groupDoc.data();
-    const memberRefs = groupData.members.map(memberRef => memberRef.path);
-    if (!memberRefs.includes(userRef.path)) {
+    if (!groupData.members.includes(userId)) {
       throw new Error('Not a member');
     }
 
-    if (groupData.creator.path === userRef.path) {
+    if (groupData.creatorId === userId) {
       throw new Error('Creator cannot leave group');
     }
 
     await updateDoc(groupRef, {
-      members: arrayRemove(userRef),
-      memberCount: increment(-1),
+      members: arrayRemove(userId),
       updatedAt: serverTimestamp()
     });
   } catch (error) {
@@ -194,24 +235,14 @@ export const deleteGroup = async (groupId, userId) => {
     
     if (!groupDoc.exists()) {
       throw new Error('Group not found');
-    }
-
-    const groupData = groupDoc.data();
-    if (groupData.creator.path !== userRef.path) {
+    }    const groupData = groupDoc.data();
+    if (groupData.creatorId !== userId) {
       throw new Error('Only creator can delete group');
     }
 
-    // Eliminar el grupo y actualizar referencias en los usuarios
+    // Delete the group
     const batch = writeBatch(db);
-    
-    // Eliminar el grupo
     batch.delete(groupRef);
-      // Actualizar los usuarios que son miembros
-    const memberUpdates = groupData.members.map(async (memberRef) => {
-      batch.update(memberRef, {
-        groups: arrayRemove(groupRef)
-      });
-    });
 
     await Promise.all(memberUpdates);
     await batch.commit();
@@ -226,7 +257,6 @@ export const addProjectToGroup = async (groupId, projectId, userId) => {
   try {
     const groupRef = doc(db, 'groups', groupId);
     const projectRef = doc(db, 'projects', projectId);
-    const userRef = doc(db, 'users', userId);
 
     const [groupDoc, projectDoc] = await Promise.all([
       getDoc(groupRef),
@@ -236,41 +266,34 @@ export const addProjectToGroup = async (groupId, projectId, userId) => {
     if (!groupDoc.exists()) {
       throw new Error('Group not found');
     }
-
     if (!projectDoc.exists()) {
       throw new Error('Project not found');
     }
 
     const groupData = groupDoc.data();
-    const memberRefs = groupData.members.map(memberRef => memberRef.path);
-    
     // Verificar que el usuario es miembro del grupo
-    if (!memberRefs.includes(userRef.path)) {
+    if (!groupData.members.includes(userId)) {
       throw new Error('Must be a member to add projects');
     }
-
     // Verificar que el proyecto pertenece al usuario
     if (projectDoc.data().authorId !== userId) {
       throw new Error('Can only add your own projects');
-    }    // Verificar que el proyecto no está ya en el grupo
-    if (groupData.projects.some(ref => ref.path === projectRef.path)) {
+    }
+    // Verificar que el proyecto no está ya en el grupo
+    if (groupData.projects.includes(projectId)) {
       throw new Error('Project already in group');
     }
 
     const batch = writeBatch(db);
-
-    // Añadir proyecto al grupo
+    // Añadir proyecto al grupo (por ID)
     batch.update(groupRef, {
-      projects: arrayUnion(projectRef),
-      projectCount: increment(1),
+      projects: arrayUnion(projectId),
       updatedAt: serverTimestamp()
     });
-
-    // Añadir referencia del grupo al proyecto
+    // Añadir grupo al proyecto (por ID)
     batch.update(projectRef, {
-      groups: arrayUnion(groupRef)
+      groups: arrayUnion(groupId)
     });
-
     await batch.commit();
   } catch (error) {
     console.error('Error adding project to group:', error);
@@ -283,7 +306,6 @@ export const removeProjectFromGroup = async (groupId, projectId, userId) => {
   try {
     const groupRef = doc(db, 'groups', groupId);
     const projectRef = doc(db, 'projects', projectId);
-    const userRef = doc(db, 'users', userId);
 
     const [groupDoc, projectDoc] = await Promise.all([
       getDoc(groupRef),
@@ -293,32 +315,27 @@ export const removeProjectFromGroup = async (groupId, projectId, userId) => {
     if (!groupDoc.exists()) {
       throw new Error('Group not found');
     }
-
     if (!projectDoc.exists()) {
       throw new Error('Project not found');
     }
 
     const groupData = groupDoc.data();
-    
     // Verificar que el usuario es el creador del grupo o el dueño del proyecto
-    if (groupData.creator.path !== userRef.path && projectDoc.data().authorId !== userId) {
+    if (groupData.creatorId !== userId && projectDoc.data().authorId !== userId) {
       throw new Error('Only group creator or project owner can remove projects');
     }
 
     const batch = writeBatch(db);
-
-    // Quitar proyecto del grupo
+    // Quitar proyecto del grupo (por ID)
     batch.update(groupRef, {
-      projects: arrayRemove(projectRef),
+      projects: arrayRemove(projectId),
       projectCount: increment(-1),
       updatedAt: serverTimestamp()
     });
-
-    // Quitar referencia del grupo en el proyecto
+    // Quitar grupo del proyecto (por ID)
     batch.update(projectRef, {
-      groups: arrayRemove(groupRef)
+      groups: arrayRemove(groupId)
     });
-
     await batch.commit();
   } catch (error) {
     console.error('Error removing project from group:', error);
@@ -331,27 +348,21 @@ export const getGroupProjects = async (groupId) => {
   try {
     const groupRef = doc(db, 'groups', groupId);
     const groupDoc = await getDoc(groupRef);
-
     if (!groupDoc.exists()) {
       throw new Error('Group not found');
     }
-
     const groupData = groupDoc.data();
-    
     if (!groupData.projects.length) {
       return [];
     }
-
-    // Obtener los datos completos de cada proyecto
+    // Obtener los datos completos de cada proyecto (por ID)
     const projects = await Promise.all(
-      groupData.projects.map(async (projectRef) => {
-        const projectDoc = await getDoc(projectRef);
+      groupData.projects.map(async (projectId) => {
+        const projectDoc = await getDoc(doc(db, 'projects', projectId));
         if (!projectDoc.exists()) return null;
-
         const projectData = projectDoc.data();
         const authorDoc = await getDoc(doc(db, 'users', projectData.authorId));
         const authorData = authorDoc.data();
-
         return {
           id: projectDoc.id,
           ...projectData,
@@ -363,7 +374,6 @@ export const getGroupProjects = async (groupId) => {
         };
       })
     );
-
     // Filtrar cualquier proyecto que haya sido eliminado
     return projects.filter(Boolean);
   } catch (error) {

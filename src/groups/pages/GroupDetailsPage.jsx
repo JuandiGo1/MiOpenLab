@@ -20,9 +20,11 @@ const GroupDetailsPage = () => {
   useEffect(() => {
     loadGroup();
   }, [groupId]);
+
   useEffect(() => {
     if (user && group) {
-      setIsMember(group.members.some(memberRef => memberRef.id === user.uid));
+      // Ahora verificamos directamente en el array de IDs
+      setIsMember(group.members?.includes(user.uid) || false);
     }
   }, [user, group]);
 
@@ -33,13 +35,9 @@ const GroupDetailsPage = () => {
         navigate('/groups');
         return;
       }
-      setGroup(groupData);      // Cargar información de los miembros
-      if (groupData?.members) {
-        const memberProfiles = await Promise.all(
-          groupData.members.slice(0, 5).map(memberRef => getUserProfile(memberRef.id))
-        );
-        setMembers(memberProfiles.filter(Boolean));
-      }
+      setGroup(groupData);
+      // Usar memberDetails para la UI
+      setMembers(groupData.memberDetails?.slice(0, 5) || []);
     } catch (error) {
       console.error('Error loading group:', error);
     } finally {
@@ -57,6 +55,7 @@ const GroupDetailsPage = () => {
       } else {
         await joinGroup(groupId, user.uid);
       }
+      // Recargar los datos del grupo después de la operación
       await loadGroup();
     } catch (error) {
       console.error('Error updating membership:', error);
