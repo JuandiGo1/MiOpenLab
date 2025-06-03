@@ -3,6 +3,15 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+:root {
+  --font-size-base: 16px;
+}
+
+.scalable-text {
+  font-size: var(--font-size-base) !important;
+  line-height: 1.5;
+}
+
 .custom-toast {
     background-color: #f1f1f1d5 !important; /* Cambia el color de fondo */
     color: rgb(19, 19, 19) !important; /* Cambia el color del texto */

@@ -11,6 +11,8 @@ import { db } from "../../firebase/Config";
 import { FaLinkedin, FaGithubSquare, FaGem } from "react-icons/fa";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
+import SettingsModal from "../../common/components/SettingsModal";
+import { FiSettings } from "react-icons/fi";
 
 const ProfileHeader = ({
   countPosts,
@@ -27,13 +29,17 @@ const ProfileHeader = ({
   location,
   linkedin,
   github,
+  reputation,
+  badges = [],
 }) => {
   const navigate = useNavigate();
   const [isFollowing, setFollow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFollowStatusLoading, setIsFollowStatusLoading] = useState(true);
-  const profileImage = photoURL || defaultAvatar;
-  const bannerImage = bannerURL || defaultBanner;
+  const [showSettings, setShowSettings] = useState(false);
+  const [liveUser, setLiveUser] = useState({ reputation, badges, photoURL, bannerURL, displayName, bio, headline, skills, location, linkedin, github, username });
+  const profileImage = liveUser.photoURL || photoURL || defaultAvatar;
+  const bannerImage = liveUser.bannerURL || bannerURL || defaultBanner;
   const [hovering, setHovering] = useState(false);
 
   // Sincronizar isFollowing con currentUserFollows y uid
@@ -69,6 +75,22 @@ const ProfileHeader = ({
       setIsFollowStatusLoading(false);
     }
   }, [currentUserUserUid, uid]);
+
+  // Listen for real-time updates to the profile user's document
+  useEffect(() => {
+    if (!uid) return;
+    const userDocRef = doc(db, "users", uid);
+    const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setLiveUser((prev) => ({
+          ...prev,
+          ...data,
+        }));
+      }
+    });
+    return () => unsubscribe();
+  }, [uid]);
 
   const handleFollow = async () => {
     if (isLoading || isFollowStatusLoading) return; // Prevent action if status is loading or another action is in progress
@@ -172,11 +194,10 @@ const ProfileHeader = ({
                 onMouseEnter={() => setHovering(true)}
                 onMouseLeave={() => setHovering(false)}
                 disabled={isLoading}
-                className={`${
-                  isFollowing
-                    ? "bg-gray-300 border-[#bd9260] text-gray-600 hover:bg-red-400 dark:text-gray-200 dark:bg-[#1c2930] dark:hover:bg-red-400"
-                    : "bg-[#bd9260] text-white hover:bg-[#ce9456]/80 dark:bg-[#5858FA] dark:hover:bg-[#4343e8]"
-                } transition duration-300 ease-in-out px-4 py-2 rounded-lg cursor-pointer`}
+                className={`${isFollowing
+                  ? "bg-gray-300 border-[#bd9260] text-gray-600 hover:bg-red-400 dark:text-gray-200 dark:bg-[#1c2930] dark:hover:bg-red-400"
+                  : "bg-[#bd9260] text-white hover:bg-[#ce9456]/80 dark:bg-[#5858FA] dark:hover:bg-[#4343e8]"
+                  } transition duration-300 ease-in-out px-4 py-2 rounded-lg cursor-pointer`}
               >
                 {isLoading ? (
                   <NewLoader
@@ -210,65 +231,114 @@ const ProfileHeader = ({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full">
           <div className="w-full">
             <div className="flex items-center justify-between w-full">
-              <h1 className="text-2xl font-bold dark:text-white">
-                {displayName}
-              </h1>
-
-              {linkedin || github ? (
-                <div className="flex space-x-4">
-                  {linkedin && (
+              <h1 className="text-2xl font-bold dark:text-white scalable-text flex items-center gap-2 w-full">
+                {liveUser.displayName || displayName}
+                {/* Reputación */}
+                <span
+                  className="flex items-center ml-2 text-yellow-500 text-lg font-semibold"
+                  title="Reputación"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="inline-block mr-1"
+                    width="20"
+                    height="20"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M10 15.27L16.18 19l-1.64-7.03L20 7.24l-7.19-.61L10 0 7.19 6.63 0 7.24l5.46 4.73L3.82 19z" />
+                  </svg>
+                  {typeof liveUser.reputation === "number" ? liveUser.reputation : reputation}
+                </span>
+                <div className="flex items-center gap-2 ml-auto">
+                  {/* Badges */}
+                  {Array.isArray(liveUser.badges) && liveUser.badges.length > 0 &&
+                    liveUser.badges.map((badge) => (
+                      <span
+                        key={badge}
+                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-300 to-yellow-500 text-gray-900 shadow-md border border-yellow-600 dark:from-yellow-700 dark:to-yellow-400 dark:text-gray-100 dark:border-yellow-300 animate-pulse"
+                        title={
+                          badge === "legend"
+                            ? "Legend: +1000 reputación"
+                            : badge === "master"
+                              ? "Master: +500 reputación"
+                              : badge === "pro"
+                                ? "Pro: +250 reputación"
+                                : badge === "advanced"
+                                  ? "Advanced: +100 reputación"
+                                  : badge === "intermediate"
+                                    ? "Intermediate: +50 reputación"
+                                    : badge === "beginner"
+                                      ? "Beginner: +10 reputación"
+                                      : badge
+                        }
+                      >
+                        {badge.charAt(0).toUpperCase() + badge.slice(1)}
+                      </span>
+                    ))
+                  }
+                  {/* Redes sociales SIEMPRE visibles si existen */}
+                  {liveUser.linkedin && (
                     <a
-                      href={linkedin}
+                      href={liveUser.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                      className="ml-2 text-blue-700 hover:text-blue-900"
+                      title="LinkedIn"
                     >
                       <FaLinkedin className="text-3xl" />
                     </a>
                   )}
-                  {github && (
+                  {liveUser.github && (
                     <a
-                      href={github}
+                      href={liveUser.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-800 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-200"
+                      className="ml-2 text-gray-800 hover:text-black dark:text-gray-200"
+                      title="GitHub"
                     >
                       <FaGithubSquare className="text-3xl" />
                     </a>
                   )}
                 </div>
-              ) : null}
+              </h1>
             </div>
 
-            <p className="text-gray-600 dark:text-gray-200">@{username}</p>
-            {headline && (
-              <p className="text-gray-800 dark:text-gray-300 mt-1">
-                {headline}
+            <p className="text-gray-600 dark:text-gray-200 scalable-text">
+              @{liveUser.username || username}
+            </p>
+            {liveUser.headline && (
+              <p className="text-gray-800 dark:text-gray-300 mt-1 scalable-text">
+                {liveUser.headline}
               </p>
             )}
-            {location && (
-              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                {location}
+            {liveUser.location && (
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 scalable-text">
+                {liveUser.location}
               </p>
             )}
           </div>
         </div>
         {/* Descripción */}
-        {bio && <p className="mt-4 text-gray-700 dark:text-gray-200">{bio}</p>}
+        {liveUser.bio && (
+          <p className="mt-4 text-gray-700 dark:text-gray-200 scalable-text">
+            {liveUser.bio}
+          </p>
+        )}
         {/* Aptitudes */}
-        {skills && skills.length > 0 && (
+        {liveUser.skills && liveUser.skills.length > 0 && (
           <div className="mt-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#222] px-4 py-3 flex items-center justify-between">
             <div className="flex items-center">
               <FaGem className="text-xl text-gray-700 dark:text-gray-200 mr-2" />
               <div>
-                <span className="font-semibold text-gray-900 dark:text-white">
+                <span className="font-semibold text-gray-900 dark:text-white scalable-text">
                   Main skills
                 </span>
                 <div className="text-gray-700 dark:text-gray-200 text-sm mt-1">
-                  {skills.map((skill, idx) => (
+                  {liveUser.skills.map((skill, idx) => (
                     <span key={idx}>
                       {skill}
-                      {idx < skills.length - 1 && (
+                      {idx < liveUser.skills.length - 1 && (
                         <span className="mx-1">•</span>
                       )}
                     </span>
@@ -279,10 +349,21 @@ const ProfileHeader = ({
           </div>
         )}
         {/* Posts count */}
-        <p className="mt-4 text-gray-500 dark:text-gray-400 text-sm">
+        <p className="mt-4 text-gray-500 dark:text-gray-400 text-sm scalable-text">
           {countPosts} posts
         </p>
       </div>
+      {/* Ajustes botón y modal */}
+      {currentUserUserUid === uid && (
+        <button
+          onClick={() => setShowSettings(true)}
+          className="flex items-center gap-2 px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-semibold mt-2"
+        >
+          <FiSettings className="text-lg" />
+          Ajustes
+        </button>
+      )}
+      <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
     </div>
   );
 };
