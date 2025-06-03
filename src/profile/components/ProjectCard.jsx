@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { AiOutlineLike, AiFillLike } from "react-icons/ai";
+import { AiOutlineLike, AiFillLike, AiOutlineStar, AiFillStar } from "react-icons/ai";
+import { FaComment } from "react-icons/fa";
 import defaultAvatar from "../../assets/defaultAvatar.jpg";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { FaGithub } from "react-icons/fa";
@@ -14,11 +15,14 @@ import {
   addLike,
   removeLike,
 } from "../../profile/services/projectService";
+import { getProjectCommentsCount } from "../../common/services/commentService";
 import formatDate from "../../utils/dateFormatter";
 import {
   likePost,
   unlikePost,
   getUserProfile,
+  addToFavorites,
+  removeFromFavorites,
 } from "../../auth/services/userService";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
@@ -35,21 +39,18 @@ const ProjectCard = ({
   images,
 }) => {
   const { user } = useAuth();
-  const [isLiked, setIsLiked] = useState(
-    user?.likedProjects?.includes(id) || false
-  ); // Estado para rastrear si se ha dado "like"
+  const [isLiked, setIsLiked] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const [likeCount, setLikeCount] = useState(likes);
+  const [commentCount, setCommentCount] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [authorProfileLink, setAuthorProfileLink] = useState("");
   const [authorProfile, setAuthorProfile] = useState(null);
+  const [isFavoriteAnimating, setIsFavoriteAnimating] = useState(false);
   const mainImage = images && images.length > 0 ? images[0] : null;
-  //const authorAvatar = authorPhoto ? authorPhoto : defaultAvatar;
   const navigate = useNavigate();
-  // const authorProfileLink = authorUsername
-  //   ? `/profile/${authorUsername}`
-  //   : `/profile/${getUsernameById(authorId)}`;
 
   useEffect(() => {
     const fetchAuthorProfileLink = async () => {
@@ -64,8 +65,27 @@ const ProjectCard = ({
       }
     };
 
+    const fetchCommentCount = async () => {
+      try {
+        const count = await getProjectCommentsCount(id);
+        setCommentCount(count);
+      } catch (error) {
+        console.error("Error fetching comment count:", error);
+      }
+    };
+
+    const fetchInitialStates = async () => {
+      if (user) {
+        const userProfile = await getUserProfile(user.uid);
+        setIsLiked(userProfile?.likedProjects?.includes(id) || false);
+        setIsFavorite(userProfile?.favorites?.includes(id) || false);
+      }
+    };
+
     fetchAuthorProfileLink();
-  }, [authorId]);
+    fetchCommentCount();
+    fetchInitialStates();
+  }, [authorId, id, user]);
 
   // Formatear fecha
   const formattedDate = formatDate(createdAt);
@@ -96,6 +116,32 @@ const ProjectCard = ({
       setIsLiked((prev) => !prev);
     } finally {
       setIsLoading(false); // Marcar como completado
+    }
+  };
+
+  const handleFavorite = async () => {
+    if (!user || isLoading) return;
+
+    // Optimistic update
+    setIsFavorite((prev) => !prev);
+    setIsFavoriteAnimating(true);
+
+    try {
+      if (isFavorite) {
+        await removeFromFavorites(user.uid, id);
+      } else {
+        await addToFavorites(user.uid, id);
+      }
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+      // Revert on error
+      setIsFavorite((prev) => !prev);
+    } finally {
+      setIsLoading(false);
+      // Reset animation after a short delay
+      setTimeout(() => {
+        setIsFavoriteAnimating(false);
+      }, 300);
     }
   };
 
@@ -138,6 +184,11 @@ const ProjectCard = ({
       },
     });
   };
+
+  // CSS para la animación de destello
+  const starAnimation = isFavoriteAnimating
+    ? "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+    : "";
 
   return (
     <article className="flex flex-col justify-between bg-white rounded-lg shadow-md mb-4 dark:bg-[#333333]">
@@ -227,18 +278,46 @@ const ProjectCard = ({
       <div className="flex flex-col justify-between items-start text-sm text-gray-500 dark:text-gray-300">
         <hr className="border-t w-full border-gray-200 dark:border-[#404040]" />
         <div className="flex items-center justify-between w-full p-4">
-          <button
-            onClick={handleLike}
-            disabled={isLoading}
-            className="flex text-gray-500 hover:text-blue-700 transition duration-300 cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
-          >
-            {isLiked ? (
-              <AiFillLike className="text-xl text-blue-700" />
-            ) : (
-              <AiOutlineLike className="text-xl" />
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleLike}
+              disabled={isLoading}
+              className="flex items-center gap-1 text-gray-500 hover:text-blue-700 transition duration-300 cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
+            >
+              {isLiked ? (
+                <AiFillLike className="text-xl text-blue-700" />
+              ) : (
+                <AiOutlineLike className="text-xl" />
+              )}
+              {likeCount}
+            </button>
+            <button
+              onClick={handleViewDetails}
+              className="flex items-center gap-1 text-gray-500 hover:text-blue-700 transition duration-300 cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
+            >
+              <FaComment className="text-xl" />
+              {commentCount}
+            </button>
+            {user && (
+              <button
+                onClick={handleFavorite}
+                disabled={isLoading}
+                className="relative flex items-center gap-1 text-gray-500 hover:text-yellow-500 transition duration-300 cursor-pointer dark:text-gray-300 dark:hover:text-yellow-400"
+              >
+                {isFavorite ? (
+                  <>
+                    {isFavoriteAnimating && (
+                      <span className={`${starAnimation} bg-yellow-500`} />
+                    )}
+                    <AiFillStar className="text-xl text-yellow-500 transform transition-transform duration-300 hover:scale-110" />
+                  </>
+                ) : (
+                  <AiOutlineStar className="text-xl transform transition-transform duration-300 hover:scale-110" />
+                )}
+              </button>
             )}
-            {likeCount}
-          </button>
+          </div>
+
           <div className="flex items-center justify-between gap-2">
             {user && user.uid === authorId && (
               <div className="flex items-center gap-2">

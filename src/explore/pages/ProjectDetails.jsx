@@ -8,6 +8,7 @@ import DefaultAvatar from "../../assets/defaultAvatar.jpg";
 import DetailsSkeleton from "../components/ProjectDetailsSkeleton";
 import formatDate from "../../utils/dateFormatter";
 import { Timestamp } from "firebase/firestore";
+import Comments from "../../common/components/Comments";
 
 const ProjectDetails = () => {
   const { id } = useParams(); // Obtener el ID del proyecto desde la URL
@@ -101,6 +102,9 @@ const ProjectDetails = () => {
           </a>
         )}
       </div>
+
+      {/* Add Comments section */}
+      <Comments projectId={id} />
     </div>
   );
 };
