@@ -187,6 +187,7 @@ export const joinGroup = async (groupId, userId) => {
       throw new Error('Already a member');
     }
 
+    // Solo actualizar members y updatedAt, nada más
     await updateDoc(groupRef, {
       members: arrayUnion(userId),
       updatedAt: serverTimestamp()
@@ -216,6 +217,7 @@ export const leaveGroup = async (groupId, userId) => {
       throw new Error('Creator cannot leave group');
     }
 
+    // Solo actualizar members y updatedAt, nada más
     await updateDoc(groupRef, {
       members: arrayRemove(userId),
       updatedAt: serverTimestamp()
@@ -329,7 +331,6 @@ export const removeProjectFromGroup = async (groupId, projectId, userId) => {
     // Quitar proyecto del grupo (por ID)
     batch.update(groupRef, {
       projects: arrayRemove(projectId),
-      projectCount: increment(-1),
       updatedAt: serverTimestamp()
     });
     // Quitar grupo del proyecto (por ID)
