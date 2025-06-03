@@ -8,7 +8,9 @@ import {
   query,
   orderBy,
   serverTimestamp,
-  limit
+  limit,
+  updateDoc,
+  increment
 } from 'firebase/firestore';
 
 // Crear un nuevo tema de discusión en un grupo
@@ -139,7 +141,7 @@ export const addReply = async (discussionId, replyData) => {
     const discussionDoc = await getDoc(discussionRef);
     if (discussionDoc.exists()) {
       const replies = (discussionDoc.data().replies || 0) + 1;
-      await discussionDoc.ref.update({
+      await updateDoc(discussionRef, {
         replies,
         lastReply: {
           ...rest,
