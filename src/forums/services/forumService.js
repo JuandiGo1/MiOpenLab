@@ -80,28 +80,28 @@ export const getGroupDiscussions = async (groupId) => {
   }
 };
 
+// Obtener las respuestas de una discusión
+// (Duplicated function removed to avoid redeclaration error)
+
 // Obtener un tema específico por ID dentro de un grupo
 export const getDiscussionById = async (discussionId, groupId) => {
   try {
     if (!discussionId || !groupId) return null;
 
-    const docRef = doc(db, `groups/${groupId}/discussions`, discussionId);
-    const docSnap = await getDoc(docRef);
+    const discussionRef = doc(db, `groups/${groupId}/discussions/${discussionId}`);
+    const discussionDoc = await getDoc(discussionRef);
     
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      return {
-        id: docSnap.id,
-        ...data,
-        createdAt: data.createdAt?.toDate?.() || new Date(),
-        replies: data.replies || [],
-        views: data.views || 0
-      };
-    }
-    return null;
+    if (!discussionDoc.exists()) return null;
+    
+    const data = discussionDoc.data();
+    return {
+      id: discussionDoc.id,
+      ...data,
+      createdAt: data.createdAt?.toDate?.() || new Date()
+    };
   } catch (error) {
     console.error('Error getting discussion:', error);
-    throw error;
+    return null;
   }
 };
 

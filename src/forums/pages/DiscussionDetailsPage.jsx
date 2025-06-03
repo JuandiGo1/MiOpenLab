@@ -20,10 +20,9 @@ const DiscussionDetailsPage = () => {
   useEffect(() => {
     loadDiscussionData();
   }, [discussionId, groupId]);
-
   const loadDiscussionData = async () => {
     try {
-      const [discussionData, groupData] = await Promise.all([
+      const [discussionData, groupData, repliesData] = await Promise.all([
         getDiscussionById(discussionId, groupId),
         getGroupById(groupId),
         getDiscussionReplies(discussionId, groupId)
@@ -36,7 +35,7 @@ const DiscussionDetailsPage = () => {
 
       setDiscussion(discussionData);
       setGroup(groupData);
-      setReplies(discussionData.replies || []);
+      setReplies(repliesData || []);
     } catch (error) {
       console.error('Error loading discussion:', error);
       navigate(`/groups/${groupId}`);
