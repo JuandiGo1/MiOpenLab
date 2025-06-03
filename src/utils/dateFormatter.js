@@ -1,4 +1,4 @@
-const formatDate = (dateToFormat) => {
+export const formatDate = (dateToFormat) => {
   return dateToFormat?.toDate
     ? dateToFormat.toDate().toLocaleDateString("en-US", {
         year: "numeric",
@@ -7,5 +7,3 @@ const formatDate = (dateToFormat) => {
       })
     : "Unknown date";
 };
-
-export default formatDate;

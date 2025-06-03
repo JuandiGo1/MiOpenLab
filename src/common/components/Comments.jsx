@@ -9,7 +9,7 @@ import {
 } from '../services/commentService';
 import DefaultAvatar from '../../assets/defaultAvatar.jpg';
 import { NewLoader } from '../components/Loader';
-import formatDate from '../../utils/dateFormatter';
+import { formatDate } from '../../utils/dateFormatter';
 import { Timestamp } from 'firebase/firestore';
 import { AiOutlineLike, AiFillLike } from "react-icons/ai";
 

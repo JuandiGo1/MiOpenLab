@@ -7,6 +7,7 @@ import { NewLoader } from '../../common/components/Loader';
 import ProjectCard from '../../profile/components/ProjectCard';
 import { getUserProfile } from '../../auth/services/userService';
 import defaultBanner from '../../assets/defaultBanner.jpg';
+import { formatDate } from '../../utils/dateFormatter';
 
 const GroupDetailsPage = () => {
   const { groupId } = useParams();
@@ -57,9 +58,10 @@ const GroupDetailsPage = () => {
   const loadDiscussions = async () => {
     try {
       const groupDiscussions = await getGroupDiscussions(groupId);
-      setDiscussions(groupDiscussions);
+      setDiscussions(groupDiscussions || []);
     } catch (error) {
       console.error('Error loading discussions:', error);
+      setDiscussions([]);
     }
   };
 
@@ -232,7 +234,7 @@ const GroupDetailsPage = () => {
                               <div className="flex items-center gap-2">
                                 <span className="font-medium">{discussion.authorName}</span>
                                 <span>&bull;</span>
-                                <span>{formatDate(discussion.createdAt)}</span>
+                                <span>{discussion.createdAt ? formatDate(discussion.createdAt) : 'Recently'}</span>
                               </div>
                               <span>&bull;</span>
                               <span>{discussion.replies?.length || 0} replies</span>
@@ -245,7 +247,7 @@ const GroupDetailsPage = () => {
                             <div className="text-right text-sm text-gray-500 dark:text-gray-400 ml-4">
                               <p>Last reply by</p>
                               <p className="font-medium">{discussion.lastReply.authorName}</p>
-                              <p>{formatDate(discussion.lastReply.createdAt)}</p>
+                              <p>{discussion.lastReply.createdAt ? formatDate(discussion.lastReply.createdAt) : 'Recently'}</p>
                             </div>
                           )}
                         </div>
