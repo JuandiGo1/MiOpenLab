@@ -194,11 +194,10 @@ const ProfileHeader = ({
                 onMouseEnter={() => setHovering(true)}
                 onMouseLeave={() => setHovering(false)}
                 disabled={isLoading}
-                className={`${
-                  isFollowing
-                    ? "bg-gray-300 border-[#bd9260] text-gray-600 hover:bg-red-400 dark:text-gray-200 dark:bg-[#1c2930] dark:hover:bg-red-400"
-                    : "bg-[#bd9260] text-white hover:bg-[#ce9456]/80 dark:bg-[#5858FA] dark:hover:bg-[#4343e8]"
-                } transition duration-300 ease-in-out px-4 py-2 rounded-lg cursor-pointer`}
+                className={`${isFollowing
+                  ? "bg-gray-300 border-[#bd9260] text-gray-600 hover:bg-red-400 dark:text-gray-200 dark:bg-[#1c2930] dark:hover:bg-red-400"
+                  : "bg-[#bd9260] text-white hover:bg-[#ce9456]/80 dark:bg-[#5858FA] dark:hover:bg-[#4343e8]"
+                  } transition duration-300 ease-in-out px-4 py-2 rounded-lg cursor-pointer`}
               >
                 {isLoading ? (
                   <NewLoader
@@ -232,7 +231,7 @@ const ProfileHeader = ({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full">
           <div className="w-full">
             <div className="flex items-center justify-between w-full">
-              <h1 className="text-2xl font-bold dark:text-white scalable-text flex items-center gap-2">
+              <h1 className="text-2xl font-bold dark:text-white scalable-text flex items-center gap-2 w-full">
                 {liveUser.displayName || displayName}
                 {/* Reputación */}
                 <span
@@ -251,35 +250,58 @@ const ProfileHeader = ({
                   </svg>
                   {typeof liveUser.reputation === "number" ? liveUser.reputation : reputation}
                 </span>
-              </h1>
-              {/* Badges visuales */}
-              {Array.isArray(liveUser.badges) && liveUser.badges.length > 0 && (
-                <div className="flex gap-2 ml-4">
-                  {liveUser.badges.map((badge, idx) => (
-                    <span
-                      key={badge}
-                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-300 to-yellow-500 text-gray-900 shadow-md border border-yellow-600 dark:from-yellow-700 dark:to-yellow-400 dark:text-gray-100 dark:border-yellow-300 animate-pulse`}
-                      title={
-                        badge === "legend"
-                          ? "Legend: +1000 reputación"
-                          : badge === "master"
-                          ? "Master: +500 reputación"
-                          : badge === "pro"
-                          ? "Pro: +250 reputación"
-                          : badge === "advanced"
-                          ? "Advanced: +100 reputación"
-                          : badge === "intermediate"
-                          ? "Intermediate: +50 reputación"
-                          : badge === "beginner"
-                          ? "Beginner: +10 reputación"
-                          : badge
-                      }
+                <div className="flex items-center gap-2 ml-auto">
+                  {/* Badges */}
+                  {Array.isArray(liveUser.badges) && liveUser.badges.length > 0 &&
+                    liveUser.badges.map((badge) => (
+                      <span
+                        key={badge}
+                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-300 to-yellow-500 text-gray-900 shadow-md border border-yellow-600 dark:from-yellow-700 dark:to-yellow-400 dark:text-gray-100 dark:border-yellow-300 animate-pulse"
+                        title={
+                          badge === "legend"
+                            ? "Legend: +1000 reputación"
+                            : badge === "master"
+                              ? "Master: +500 reputación"
+                              : badge === "pro"
+                                ? "Pro: +250 reputación"
+                                : badge === "advanced"
+                                  ? "Advanced: +100 reputación"
+                                  : badge === "intermediate"
+                                    ? "Intermediate: +50 reputación"
+                                    : badge === "beginner"
+                                      ? "Beginner: +10 reputación"
+                                      : badge
+                        }
+                      >
+                        {badge.charAt(0).toUpperCase() + badge.slice(1)}
+                      </span>
+                    ))
+                  }
+                  {/* Redes sociales SIEMPRE visibles si existen */}
+                  {liveUser.linkedin && (
+                    <a
+                      href={liveUser.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 text-blue-700 hover:text-blue-900"
+                      title="LinkedIn"
                     >
-                      {badge.charAt(0).toUpperCase() + badge.slice(1)}
-                    </span>
-                  ))}
+                      <FaLinkedin className="text-3xl" />
+                    </a>
+                  )}
+                  {liveUser.github && (
+                    <a
+                      href={liveUser.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 text-gray-800 hover:text-black dark:text-gray-200"
+                      title="GitHub"
+                    >
+                      <FaGithubSquare className="text-3xl" />
+                    </a>
+                  )}
                 </div>
-              )}
+              </h1>
             </div>
 
             <p className="text-gray-600 dark:text-gray-200 scalable-text">
