@@ -49,18 +49,18 @@ export async function createUserProfile({ uid, displayName, photoURL }) {
     username,
     displayName,
     photoURL,
-    bannerURL: "",         // URL de la imagen de banner
+    bannerURL: "", // URL de la imagen de banner
     bio: "",
-    headline: "",           // Titular
-    skills: [],             // Lista de aptitudes
-    badges: [],             // Lista de insignias
-    location: "",           // Ubicación
-    linkedin: "",           // Perfil LinkedIn
-    github: "",             // Perfil GitHub
+    headline: "", // Titular
+    skills: [], // Lista de aptitudes
+    badges: [], // Lista de insignias
+    location: "", // Ubicación
+    linkedin: "", // Perfil LinkedIn
+    github: "", // Perfil GitHub
     likes: [],
     followers: [],
     following: [],
-    favorites: [],          // Lista de proyectos favoritos
+    favorites: [], // Lista de proyectos favoritos
     createdAt: new Date(),
   });
 }
@@ -79,7 +79,7 @@ export async function createUserProfileIfNotExists({
       displayName,
       username,
       photoURL,
-      bannerURL:"",
+      bannerURL: "",
       bio: "",
       headline: "",
       skills: [],
@@ -91,7 +91,7 @@ export async function createUserProfileIfNotExists({
       followers: [],
       following: [],
       likedProjects: [],
-      favorites: [],      // Lista de proyectos favoritos
+      favorites: [], // Lista de proyectos favoritos
     });
 
     console.log("Usuario creao");
@@ -148,9 +148,9 @@ export async function likePost(uid, postId) {
   });
   const postRef = await getProjectById(postId);
   // Mandar noti
-  if(postRef.authorId == uid) return; // No notificar si se da like a si mismoo
+  if (postRef.authorId == uid) return; // No notificar si se da like a si mismoo
   console.log("Mandando noti desde " + userData.username);
-  
+
   await createNotification({
     to: postRef.authorId,
     from: uid,
@@ -159,6 +159,13 @@ export async function likePost(uid, postId) {
     postTitle: postRef.title,
     fromUsername: userData.username,
     fromPhoto: userData.photoURL,
+  });
+
+  await addUserHistory(uid, {
+    type: "like",
+    postId: postId,
+    postTitle: postRef.title,
+    timestamp: Date.now(),
   });
 }
 
@@ -172,6 +179,9 @@ export async function unlikePost(uid, postId) {
 export async function followUser(currentUid, targetUid) {
   const currentRef = doc(db, "users", currentUid);
   const targetRef = doc(db, "users", targetUid);
+  const targetSnap = await getDoc(targetRef);
+  const targetData = targetSnap.data();
+  const targetUsername = targetData.username;
   const userSnap = await getDoc(currentRef);
 
   if (!userSnap.exists()) {
@@ -180,20 +190,27 @@ export async function followUser(currentUid, targetUid) {
 
   const userData = userSnap.data();
 
-  await updateDoc(currentRef, {
-    following: arrayUnion(targetUid),
-  });
-
-  await updateDoc(targetRef, {
-    followers: arrayUnion(currentUid),
-  });
-
-  await createNotification({
-    to: targetUid,
-    from: currentUid,
+  await Promise.all([
+    updateDoc(currentRef, {
+      following: arrayUnion(targetUid),
+    }),
+    updateDoc(targetRef, {
+      followers: arrayUnion(currentUid),
+    }),
+    createNotification({
+      to: targetUid,
+      from: currentUid,
+      type: "follow",
+      fromUsername: userData.username,
+      fromPhoto: userData.photoURL,
+    }),
+  ]);
+  
+  await addUserHistory(currentUid, {
     type: "follow",
-    fromUsername: userData.username,
-    fromPhoto: userData.photoURL,
+    targetUsername: targetUsername,
+    toUid: targetUid,
+    timestamp: Date.now(),
   });
 }
 
@@ -285,11 +302,10 @@ export async function ensureUserFields(uid) {
 export async function addToFavorites(userId, projectId) {
   try {
     const userRef = doc(db, "users", userId);
-    const projectRef = doc(db, "projects", projectId);
-    
+
     // Añadir a favoritos
     await updateDoc(userRef, {
-      favorites: arrayUnion(projectId)
+      favorites: arrayUnion(projectId),
     });
 
     // Obtener info del proyecto para la notificación
@@ -300,7 +316,7 @@ export async function addToFavorites(userId, projectId) {
         from: userId,
         type: "favorite",
         postId: projectId,
-        postTitle: project.title
+        postTitle: project.title,
       });
     }
   } catch (error) {
@@ -314,7 +330,7 @@ export async function removeFromFavorites(userId, projectId) {
   try {
     const userRef = doc(db, "users", userId);
     await updateDoc(userRef, {
-      favorites: arrayRemove(projectId)
+      favorites: arrayRemove(projectId),
     });
   } catch (error) {
     console.error("Error removing from favorites:", error);
@@ -327,7 +343,7 @@ export async function getUserFavorites(userId) {
   try {
     const userRef = doc(db, "users", userId);
     const userDoc = await getDoc(userRef);
-    
+
     if (!userDoc.exists()) {
       return [];
     }
@@ -348,4 +364,28 @@ export async function getUserFavorites(userId) {
     console.error("Error getting user favorites:", error);
     return [];
   }
+}
+
+export const getUserActivity = async (uid) => {
+  if (!uid) throw new Error("User ID is required");
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) throw new Error("User not found");
+
+  let userData = userSnap.data();
+  if (!Array.isArray(userData.history)) {
+    // Si no existe el campo history, lo crea como array vacío
+    await updateDoc(userRef, { history: [] });
+    return [];
+  }
+  return userData.history;
+};
+
+async function addUserHistory(uid, entry) {
+  if (!uid) throw new Error("User ID is required");
+  const userRef = doc(db, "users", uid);
+  await updateDoc(userRef, {
+    history: arrayUnion(entry),
+  });
 }
