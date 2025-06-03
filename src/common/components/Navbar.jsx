@@ -186,19 +186,17 @@ const Navbar = ({ children }) => {
                                 )}
                             </NavLink>
                         </li>
-                        <li>
-                            <NavLink
+                        <li>                            <NavLink
                                 to="/groups"
+                                onClick={closeMenu}
                                 className={({ isActive }) =>
-                                    `flex items-center gap-4 py-3 px-4 rounded-lg transition-all duration-300 ${
-                                        isActive
-                                            ? "bg-[#bd9260] text-white dark:bg-blue-600"
-                                            : "text-gray-500 hover:bg-[#bd9260] hover:text-white dark:text-gray-300 dark:hover:bg-blue-600"
-                                    }`
+                                    isActive
+                                        ? "bg-[#EAE0D5]/40 pl-2 py-2 rounded-xl w-full flex items-center gap-2"
+                                        : "flex items-center gap-2 pl-2 py-2 hover:bg-[#EAE0D5]/20 rounded-xl transition-colors"
                                 }
                             >
-                                <IoMdPeople className="text-xl" />
-                                <span className="hidden md:block">Groups</span>
+                                <IoMdPeople className="text-lg lg:text-xl flex-shrink-0" />
+                                <span className="truncate">Groups</span>
                             </NavLink>
                         </li>
                         {user && (
