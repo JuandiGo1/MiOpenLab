@@ -58,9 +58,8 @@ const GroupCard = ({ id, name, description, banner, memberCount, technologies, m
               onClick={handleClick}
             >
               {name}
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {memberCount} {memberCount === 1 ? 'miembro' : 'miembros'}
+            </h3>            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {memberCount} {memberCount === 1 ? 'member' : 'members'}
             </p>
           </div>
           
@@ -73,7 +72,7 @@ const GroupCard = ({ id, name, description, banner, memberCount, technologies, m
                 : 'bg-[#bd9260] text-white hover:bg-[#ce9456]/80 dark:bg-blue-600 dark:hover:bg-blue-700'
             }`}
           >
-            {isJoining ? 'Procesando...' : isMember ? 'Abandonar' : 'Unirse'}
+            {isJoining ? 'Processing...' : isMember ? 'Leave' : 'Join'}
           </button>
         </div>
 

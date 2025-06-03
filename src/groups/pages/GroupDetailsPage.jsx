@@ -81,9 +81,8 @@ const GroupDetailsPage = () => {
   }
 
   if (!group) {
-    return (
-      <div className="text-center text-gray-500 dark:text-gray-400 mt-8">
-        Grupo no encontrado
+    return (      <div className="text-center text-gray-500 dark:text-gray-400 mt-8">
+        Group not found
       </div>
     );
   }
@@ -120,21 +119,20 @@ const GroupDetailsPage = () => {
                       : 'bg-[#bd9260] text-white hover:bg-[#ce9456]/80 dark:bg-blue-600 dark:hover:bg-blue-700'
                   }`}
                 >
-                  {isJoining ? 'Procesando...' : isMember ? 'Abandonar' : 'Unirse'}
+                  {isJoining ? 'Processing...' : isMember ? 'Leave' : 'Join'}
                 </button>
               )}
             </div>
 
             {/* Stats */}
-            <div className="flex gap-4 mt-4 text-sm text-gray-600 dark:text-gray-400">
-              <span>{group.memberCount || 0} miembros</span>
+            <div className="flex gap-4 mt-4 text-sm text-gray-600 dark:text-gray-400">              <span>{group.memberCount || 0} members</span>
             </div>
 
             {/* Members Preview */}
             {members.length > 0 && (
               <div className="mt-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-3 dark:text-white">
-                  Miembros
+                  Members
                 </h3>
                 <div className="flex -space-x-2 overflow-hidden">                  {members.map((member) => (
                     <img

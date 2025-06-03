@@ -255,7 +255,7 @@ const ProjectCard = ({
           <ReactMarkdown>{`${description.slice(0, 150)}...`}</ReactMarkdown>
           {description.length > 100 && (
             <button className="text-blue-500 hover:underline mt-2 cursor-pointer dark:text-blue-400 ">
-              Ver más
+              See more
             </button>
           )}
         </div>

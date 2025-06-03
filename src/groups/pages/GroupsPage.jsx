@@ -63,13 +63,13 @@ const GroupsPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Grupos de Interés</h1>
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Interest Groups</h1>
         {user && (
           <Link 
             to="/create-group"
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300"
           >
-            Crear Grupo
+            Create Group
           </Link>
         )}
       </div>
@@ -77,7 +77,7 @@ const GroupsPage = () => {
       <div className="mb-6">
         <input
           type="text"
-          placeholder="Buscar grupos..."
+          placeholder="Search groups..."
           value={searchTerm}
           onChange={handleSearch}
           className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
@@ -97,7 +97,7 @@ const GroupsPage = () => {
       ) : (
         <div className="text-center py-8">
           <p className="text-gray-600 dark:text-gray-300 text-lg">
-            {searchTerm ? 'No se encontraron grupos que coincidan con tu búsqueda.' : 'No hay grupos creados aún.'}
+            {searchTerm ? 'No groups found matching your search.' : 'No groups created yet.'}
           </p>
         </div>
       )}

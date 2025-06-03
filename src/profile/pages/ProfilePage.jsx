@@ -85,7 +85,7 @@ const ProfilePage = () => {
           <FavoritesList userId={profileUser?.uid} />
         ) : (
           <div className="flex justify-center items-center h-64">
-            <p className="text-gray-500">No tienes permiso para ver esta sección</p>
+            <p className="text-gray-500">You don't have permission to view this section</p>
           </div>
         );
       case "followers":

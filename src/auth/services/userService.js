@@ -31,7 +31,7 @@ export async function generateUniqueUsername(displayName) {
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      // No existe, está disponible
+      // Doesn't exist, it's available
       return username;
     }
 
@@ -47,15 +47,14 @@ export async function createUserProfile({ uid, displayName, photoURL }) {
 
   await setDoc(userDoc, {    username,
     displayName,
-    photoURL,
-    bannerURL: "",         // URL de la imagen de banner
+    photoURL,    bannerURL: "",         // Banner image URL
     bio: "",
-    headline: "",           // Titular
-    skills: [],             // Lista de aptitudes
-    badges: [],             // Lista de insignias
-    location: "",           // Ubicación
-    linkedin: "",           // Perfil LinkedIn
-    github: "",             // Perfil GitHub
+    headline: "",           // Headline
+    skills: [],             // Skills list
+    badges: [],             // Badges list
+    location: "",           // Location
+    linkedin: "",           // LinkedIn profile
+    github: "",             // GitHub profile
     likes: [],
     followers: [],
     following: [],
@@ -134,11 +133,10 @@ export async function getUserLikes(uid) {
 }
 
 export async function likePost(uid, postId) {
-  const userRef = doc(db, "users", uid);
-  const userSnap = await getDoc(userRef);
+  const userRef = doc(db, "users", uid);  const userSnap = await getDoc(userRef);
 
   if (!userSnap.exists()) {
-    throw new Error("El usuario no existe.");
+    throw new Error("User does not exist.");
   }
 
   const userData = userSnap.data();

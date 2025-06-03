@@ -126,11 +126,11 @@ const Navbar = ({ children }) => {
                                 e.target.onerror = null;
                                 e.target.src = defaultAvatar;
                             }}
-                            alt="Foto de perfil"
+                            alt="Profile photo"
                             className="w-8 h-8 lg:w-10 lg:h-10 rounded-full object-cover flex-shrink-0"
                         />
                         <h1 className="text-sm lg:text-xl font-bold truncate">
-                            {user ? user.displayName : "¡Join Us today!"}
+                            {user ? user.displayName : "Join Us today!"}
                         </h1>
                     </div>
 
@@ -198,7 +198,7 @@ const Navbar = ({ children }) => {
                                 }
                             >
                                 <IoMdPeople className="text-xl" />
-                                <span className="hidden md:block">Grupos</span>
+                                <span className="hidden md:block">Groups</span>
                             </NavLink>
                         </li>
                         {user && (
