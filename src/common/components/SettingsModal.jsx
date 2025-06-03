@@ -45,10 +45,10 @@ const SettingsModal = ({ isOpen, onClose }) => {
         >
           ×
         </button>
-        <h2 className="text-lg font-bold mb-4 dark:text-white">Accesibilidad</h2>
+        <h2 className="text-lg font-bold mb-4 dark:text-white">Accesibility</h2>
         <div className="flex flex-col gap-4">
           <div>
-            <span className="block mb-2 dark:text-white">Tamaño de fuente</span>
+            <span className="block mb-2 dark:text-white">Font Size</span>
             <div className="flex items-center gap-2">
               <button
                 onClick={decreaseFont}
