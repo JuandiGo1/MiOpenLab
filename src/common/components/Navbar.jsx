@@ -6,6 +6,7 @@ import { BiHomeAlt2 } from "react-icons/bi";
 import { RiUser5Line, RiLogoutCircleLine } from "react-icons/ri";
 import { MdOutlineNotifications } from "react-icons/md";
 import { HiMenu, HiX } from "react-icons/hi";
+import { IoMdPeople } from "react-icons/io"; // Añadir ícono para grupos
 import { getUnreadNotificationsCount } from "../../notifications/services/notiservice";
 import ThemeSwitch from "./ThemeSwitch";
 
@@ -125,11 +126,11 @@ const Navbar = ({ children }) => {
                                 e.target.onerror = null;
                                 e.target.src = defaultAvatar;
                             }}
-                            alt="Foto de perfil"
+                            alt="Profile photo"
                             className="w-8 h-8 lg:w-10 lg:h-10 rounded-full object-cover flex-shrink-0"
                         />
                         <h1 className="text-sm lg:text-xl font-bold truncate">
-                            {user ? user.displayName : "¡Join Us today!"}
+                            {user ? user.displayName : "Join Us today!"}
                         </h1>
                     </div>
 
@@ -183,6 +184,19 @@ const Navbar = ({ children }) => {
                                         {unreadCount}
                                     </span>
                                 )}
+                            </NavLink>
+                        </li>
+                        <li>                            <NavLink
+                                to="/groups"
+                                onClick={closeMenu}
+                                className={({ isActive }) =>
+                                    isActive
+                                        ? "bg-[#EAE0D5]/40 pl-2 py-2 rounded-xl w-full flex items-center gap-2"
+                                        : "flex items-center gap-2 pl-2 py-2 hover:bg-[#EAE0D5]/20 rounded-xl transition-colors"
+                                }
+                            >
+                                <IoMdPeople className="text-lg lg:text-xl flex-shrink-0" />
+                                <span className="truncate">Groups</span>
                             </NavLink>
                         </li>
                         {user && (
@@ -240,7 +254,6 @@ const Navbar = ({ children }) => {
                             </NavLink>
                         </div>
                     )}
-                    ;
                 </div>
             </nav>
 

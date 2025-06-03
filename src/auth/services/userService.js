@@ -32,7 +32,7 @@ export async function generateUniqueUsername(displayName) {
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      // No existe, está disponible
+      // Doesn't exist, it's available
       return username;
     }
 
@@ -46,8 +46,7 @@ export async function createUserProfile({ uid, displayName, photoURL }) {
   const userDoc = doc(db, "users", uid);
   const username = await generateUniqueUsername(displayName);
 
-  await setDoc(userDoc, {
-    username,
+  await setDoc(userDoc, {    username,
     displayName,
     photoURL,
     bannerURL: "", // URL de la imagen de banner
@@ -62,6 +61,7 @@ export async function createUserProfile({ uid, displayName, photoURL }) {
     followers: [],
     following: [],
     favorites: [], // Lista de proyectos favoritos
+    groups: [],             // Lista de grupos a los que pertenece
     createdAt: new Date(),
     reputation: 0,          // Reputación inicial
   });
@@ -89,12 +89,13 @@ export async function createUserProfileIfNotExists({
       location: "",
       linkedin: "",
       github: "",
-      createdAt: Date.now(),
-      followers: [],
+      createdAt: Date.now(),      followers: [],
       following: [],
       likedProjects: [],
       favorites: [],      // Lista de proyectos favoritos
+      groups: [],        // Lista de grupos a los que pertenece
       reputation: 0,     // Reputación inicial
+
     });
 
     console.log("Usuario creao");
@@ -137,9 +138,11 @@ export async function getUserLikes(uid) {
 }
 
 export async function likePost(uid, postId) {
+
   const userRef = doc(db, "users", uid);
   const userSnap = await getDoc(userRef);
-  if (!userSnap.exists()) throw new Error("El usuario no existe.");
+  if (!userSnap.exists()) throw new Error("User does not exist.");
+
   const userData = userSnap.data();
 
   // 1. Actualizar usuario (likedProjects)

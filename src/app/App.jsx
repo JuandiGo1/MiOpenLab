@@ -8,6 +8,9 @@ import ProfilePage from "../profile/pages/ProfilePage.jsx";
 import EditProfile from "../profile/pages/EditProfile.jsx";
 import CreateProject from "../profile/pages/CreateProject.jsx";
 import ProjectDetails from "../explore/pages/ProjectDetails.jsx";
+import GroupsPage from "../groups/pages/GroupsPage.jsx";
+import GroupDetailsPage from "../groups/pages/GroupDetailsPage.jsx";
+import CreateGroupPage from "../groups/pages/CreateGroupPage.jsx";
 import "../App.css";
 import NotificationsPage from "../notifications/pages/NotificationsPage.jsx";
 import NotFound from "../common/components/NotFound.jsx";
@@ -83,6 +86,33 @@ function App() {
               <ProtectedRoute>
                 <Navbar>
                   <NotificationsPage />
+                </Navbar>
+              </ProtectedRoute>
+            }
+          />
+          {/* Groups Routes */}
+          <Route
+            path="/groups"
+            element={
+              <Navbar>
+                <GroupsPage />
+              </Navbar>
+            }
+          />
+          <Route
+            path="/groups/:groupId"
+            element={
+              <Navbar>
+                <GroupDetailsPage />
+              </Navbar>
+            }
+          />
+          <Route
+            path="/groups/new"
+            element={
+              <ProtectedRoute>
+                <Navbar>
+                  <CreateGroupPage />
                 </Navbar>
               </ProtectedRoute>
             }

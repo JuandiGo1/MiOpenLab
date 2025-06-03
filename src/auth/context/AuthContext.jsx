@@ -19,14 +19,13 @@ import LoadingScreen from "../../common/components/LoadingScreen";
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Escuchar cambios de sesión
+  // Listen for session changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         let profile = await getUserProfile(currentUser.uid);
         if (!profile) {
-          console.warn("Perfil no encontrado, reintentando...");
+          console.warn("Profile not found, retrying...");
           await new Promise((resolve) => setTimeout(resolve, 1000)); // Esperar 1 segundo
           profile = await getUserProfile(currentUser.uid);
         }

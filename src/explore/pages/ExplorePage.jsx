@@ -49,7 +49,7 @@ const ExplorePage = () => {
         setProjects(fetchedProjects);
       } catch (error) {
         console.error("Error fetching projects:", error);
-        setMsgInfo("Error al cargar los proyectos.");
+        setMsgInfo("Error loading projects.");
         setProjects([]); // Asegurar que projects sea un array en caso de error
       } finally {
         setLoading(false);
