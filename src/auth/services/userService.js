@@ -9,6 +9,7 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
+  increment,
 } from "firebase/firestore";
 import { auth, db } from "../../firebase/Config";
 import { createNotification } from "../../notifications/services/notiservice";
@@ -62,6 +63,7 @@ export async function createUserProfile({ uid, displayName, photoURL }) {
     following: [],
     favorites: [],          // Lista de proyectos favoritos
     createdAt: new Date(),
+    reputation: 0,          // Reputación inicial
   });
 }
 
@@ -92,6 +94,7 @@ export async function createUserProfileIfNotExists({
       following: [],
       likedProjects: [],
       favorites: [],      // Lista de proyectos favoritos
+      reputation: 0,     // Reputación inicial
     });
 
     console.log("Usuario creao");
@@ -136,21 +139,26 @@ export async function getUserLikes(uid) {
 export async function likePost(uid, postId) {
   const userRef = doc(db, "users", uid);
   const userSnap = await getDoc(userRef);
-
-  if (!userSnap.exists()) {
-    throw new Error("El usuario no existe.");
-  }
-
+  if (!userSnap.exists()) throw new Error("El usuario no existe.");
   const userData = userSnap.data();
 
-  await updateDoc(userRef, {
-    likedProjects: arrayUnion(postId),
+  // 1. Actualizar usuario (likedProjects)
+  await updateDoc(userRef, { likedProjects: arrayUnion(postId) });
+
+  // 2. Actualizar proyecto (likes y likedBy)
+  const projectRef = doc(db, "projects", postId);
+  await updateDoc(projectRef, {
+    likes: increment(1),
+    likedBy: arrayUnion(uid),
   });
+
+  // 3. Reputación y notificación
   const postRef = await getProjectById(postId);
-  // Mandar noti
-  if(postRef.authorId == uid) return; // No notificar si se da like a si mismoo
-  console.log("Mandando noti desde " + userData.username);
-  
+  if (postRef.authorId === uid) return; // No sumar si es el mismo usuario
+  const authorRef = doc(db, "users", postRef.authorId);
+  await updateDoc(authorRef, { reputation: increment(1) });
+  await updateUserBadges(postRef.authorId);
+
   await createNotification({
     to: postRef.authorId,
     from: uid,
@@ -164,9 +172,22 @@ export async function likePost(uid, postId) {
 
 export async function unlikePost(uid, postId) {
   const userRef = doc(db, "users", uid);
-  await updateDoc(userRef, {
-    likedProjects: arrayRemove(postId),
+  await updateDoc(userRef, { likedProjects: arrayRemove(postId) });
+
+  // 2. Actualizar proyecto (likes y likedBy)
+  const projectRef = doc(db, "projects", postId);
+  await updateDoc(projectRef, {
+    likes: increment(-1),
+    likedBy: arrayRemove(uid),
   });
+
+  // 3. Reputación
+  const postRef = await getProjectById(postId);
+  if (postRef && postRef.authorId && postRef.authorId !== uid) {
+    const authorRef = doc(db, "users", postRef.authorId);
+    await updateDoc(authorRef, { reputation: increment(-1) });
+    await updateUserBadges(postRef.authorId);
+  }
 }
 
 export async function followUser(currentUid, targetUid) {
@@ -186,7 +207,9 @@ export async function followUser(currentUid, targetUid) {
 
   await updateDoc(targetRef, {
     followers: arrayUnion(currentUid),
+    reputation: increment(5),
   });
+  await updateUserBadges(targetUid);
 
   await createNotification({
     to: targetUid,
@@ -207,7 +230,9 @@ export async function unfollowUser(currentUid, targetUid) {
 
   await updateDoc(targetRef, {
     followers: arrayRemove(currentUid),
+    reputation: increment(-5),
   });
+  await updateUserBadges(targetUid);
 }
 
 export async function getUserFollowers(uid) {
@@ -275,6 +300,7 @@ export async function ensureUserFields(uid) {
   if (data.location === undefined) missingFields.location = "";
   if (data.linkedin === undefined) missingFields.linkedin = "";
   if (data.github === undefined) missingFields.github = "";
+  if (data.reputation === undefined) missingFields.reputation = 0;
 
   if (Object.keys(missingFields).length > 0) {
     await updateDoc(userRef, missingFields);
@@ -348,4 +374,50 @@ export async function getUserFavorites(userId) {
     console.error("Error getting user favorites:", error);
     return [];
   }
+}
+
+// Sumar reputación extra cuando un proyecto es destacado
+export async function addFeaturedReputation(userId, points = 20) {
+  const userRef = doc(db, "users", userId);
+  await updateDoc(userRef, { reputation: increment(points) });
+  await updateUserBadges(userId);
+}
+
+// Niveles de reputación y badges automáticos
+const BADGE_LEVELS = [
+  { min: 100, badge: "legend" },
+  { min: 50, badge: "master" },
+  { min: 25, badge: "pro" },
+  { min: 10, badge: "advanced" },
+  { min: 5, badge: "intermediate" },
+  { min: 1, badge: "beginner" },
+];
+
+export async function updateUserBadges(uid) {
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+  if (!userSnap.exists()) return;
+  const user = userSnap.data();
+  const rep = user.reputation || 0;
+  let badges = user.badges || [];
+
+  // Determinar el badge más alto alcanzado
+  let newBadge = null;
+  for (const level of BADGE_LEVELS) {
+    if (rep >= level.min) {
+      newBadge = level.badge;
+      break;
+    }
+  }
+
+  // Quitar todas las badges de nivel y dejar solo la nueva (si existe)
+  const otherBadges = badges.filter(
+    b => !BADGE_LEVELS.map(l => l.badge).includes(b)
+  );
+  if (newBadge) {
+    badges = [newBadge, ...otherBadges];
+  } else {
+    badges = [...otherBadges];
+  }
+  await updateDoc(userRef, { badges });
 }

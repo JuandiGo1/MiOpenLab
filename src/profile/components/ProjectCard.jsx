@@ -12,8 +12,6 @@ import { LuEraser } from "react-icons/lu";
 import DeleteModal from "../../common/components/DeleteModal";
 import {
   deleteProject,
-  addLike,
-  removeLike,
 } from "../../profile/services/projectService";
 import { getProjectCommentsCount } from "../../common/services/commentService";
 import formatDate from "../../utils/dateFormatter";
@@ -101,13 +99,13 @@ const ProjectCard = ({
         setLikeCount((prev) => prev - 1);
         setIsLiked(false);
         await unlikePost(user.uid, id);
-        await removeLike(id, user.uid);
+        // await removeLike(id, user.uid); // REMOVIDO: ya no es necesario
       } else {
         // Dar like
         setLikeCount((prev) => prev + 1);
         setIsLiked(true);
         await likePost(user.uid, id);
-        await addLike(id, user.uid);
+        // await addLike(id, user.uid); // REMOVIDO: ya no es necesario
       }
     } catch (error) {
       console.error("Error updating like status:", error);

@@ -29,14 +29,17 @@ const ProfileHeader = ({
   location,
   linkedin,
   github,
+  reputation,
+  badges = [],
 }) => {
   const navigate = useNavigate();
   const [isFollowing, setFollow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFollowStatusLoading, setIsFollowStatusLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
-  const profileImage = photoURL || defaultAvatar;
-  const bannerImage = bannerURL || defaultBanner;
+  const [liveUser, setLiveUser] = useState({ reputation, badges, photoURL, bannerURL, displayName, bio, headline, skills, location, linkedin, github, username });
+  const profileImage = liveUser.photoURL || photoURL || defaultAvatar;
+  const bannerImage = liveUser.bannerURL || bannerURL || defaultBanner;
   const [hovering, setHovering] = useState(false);
 
   // Sincronizar isFollowing con currentUserFollows y uid
@@ -72,6 +75,22 @@ const ProfileHeader = ({
       setIsFollowStatusLoading(false);
     }
   }, [currentUserUserUid, uid]);
+
+  // Listen for real-time updates to the profile user's document
+  useEffect(() => {
+    if (!uid) return;
+    const userDocRef = doc(db, "users", uid);
+    const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setLiveUser((prev) => ({
+          ...prev,
+          ...data,
+        }));
+      }
+    });
+    return () => unsubscribe();
+  }, [uid]);
 
   const handleFollow = async () => {
     if (isLoading || isFollowStatusLoading) return; // Prevent action if status is loading or another action is in progress
@@ -213,53 +232,79 @@ const ProfileHeader = ({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full">
           <div className="w-full">
             <div className="flex items-center justify-between w-full">
-              <h1 className="text-2xl font-bold dark:text-white scalable-text">
-                {displayName}
+              <h1 className="text-2xl font-bold dark:text-white scalable-text flex items-center gap-2">
+                {liveUser.displayName || displayName}
+                {/* Reputación */}
+                <span
+                  className="flex items-center ml-2 text-yellow-500 text-lg font-semibold"
+                  title="Reputación"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="inline-block mr-1"
+                    width="20"
+                    height="20"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M10 15.27L16.18 19l-1.64-7.03L20 7.24l-7.19-.61L10 0 7.19 6.63 0 7.24l5.46 4.73L3.82 19z" />
+                  </svg>
+                  {typeof liveUser.reputation === "number" ? liveUser.reputation : reputation}
+                </span>
               </h1>
-
-              {linkedin || github ? (
-                <div className="flex space-x-4">
-                  {linkedin && (
-                    <a
-                      href={linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              {/* Badges visuales */}
+              {Array.isArray(liveUser.badges) && liveUser.badges.length > 0 && (
+                <div className="flex gap-2 ml-4">
+                  {liveUser.badges.map((badge, idx) => (
+                    <span
+                      key={badge}
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-300 to-yellow-500 text-gray-900 shadow-md border border-yellow-600 dark:from-yellow-700 dark:to-yellow-400 dark:text-gray-100 dark:border-yellow-300 animate-pulse`}
+                      title={
+                        badge === "legend"
+                          ? "Legend: +1000 reputación"
+                          : badge === "master"
+                          ? "Master: +500 reputación"
+                          : badge === "pro"
+                          ? "Pro: +250 reputación"
+                          : badge === "advanced"
+                          ? "Advanced: +100 reputación"
+                          : badge === "intermediate"
+                          ? "Intermediate: +50 reputación"
+                          : badge === "beginner"
+                          ? "Beginner: +10 reputación"
+                          : badge
+                      }
                     >
-                      <FaLinkedin className="text-3xl" />
-                    </a>
-                  )}
-                  {github && (
-                    <a
-                      href={github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-800 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-200"
-                    >
-                      <FaGithubSquare className="text-3xl" />
-                    </a>
-                  )}
+                      {badge.charAt(0).toUpperCase() + badge.slice(1)}
+                    </span>
+                  ))}
                 </div>
-              ) : null}
+              )}
             </div>
 
-            <p className="text-gray-600 dark:text-gray-200 scalable-text">@{username}</p>
-            {headline && (
+            <p className="text-gray-600 dark:text-gray-200 scalable-text">
+              @{liveUser.username || username}
+            </p>
+            {liveUser.headline && (
               <p className="text-gray-800 dark:text-gray-300 mt-1 scalable-text">
-                {headline}
+                {liveUser.headline}
               </p>
             )}
-            {location && (
+            {liveUser.location && (
               <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 scalable-text">
-                {location}
+                {liveUser.location}
               </p>
             )}
           </div>
         </div>
         {/* Descripción */}
-        {bio && <p className="mt-4 text-gray-700 dark:text-gray-200 scalable-text">{bio}</p>}
+        {liveUser.bio && (
+          <p className="mt-4 text-gray-700 dark:text-gray-200 scalable-text">
+            {liveUser.bio}
+          </p>
+        )}
         {/* Aptitudes */}
-        {skills && skills.length > 0 && (
+        {liveUser.skills && liveUser.skills.length > 0 && (
           <div className="mt-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#222] px-4 py-3 flex items-center justify-between">
             <div className="flex items-center">
               <FaGem className="text-xl text-gray-700 dark:text-gray-200 mr-2" />
@@ -268,10 +313,10 @@ const ProfileHeader = ({
                   Main skills
                 </span>
                 <div className="text-gray-700 dark:text-gray-200 text-sm mt-1">
-                  {skills.map((skill, idx) => (
+                  {liveUser.skills.map((skill, idx) => (
                     <span key={idx}>
                       {skill}
-                      {idx < skills.length - 1 && (
+                      {idx < liveUser.skills.length - 1 && (
                         <span className="mx-1">•</span>
                       )}
                     </span>
