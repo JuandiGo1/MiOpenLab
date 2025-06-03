@@ -2,12 +2,18 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Permitir lectura a cualquier usuario autenticado
-    match /projects/{projectId} {
+    // Permitir lectura a cualquier usuario autenticado    match /projects/{projectId} {
       allow read: if true;
       
-      // Solo el autor puede editar o eliminar su proyecto
-      allow update, delete: if request.auth != null && request.auth.uid == resource.data.authorId;
+      // Solo el autor puede editar o eliminar su proyecto, o cuando se actualizan grupos
+      allow update: if request.auth != null && (
+        request.auth.uid == resource.data.authorId ||
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['groups']) && 
+          request.auth.uid in resource.data.authorId
+        )
+      );
+      allow delete: if request.auth != null && request.auth.uid == resource.data.authorId;
       
       // Solo usuarios logueados pueden crear
       allow create: if request.auth != null;
@@ -52,15 +58,20 @@ service cloud.firestore {
     }    // Reglas para grupos
     match /groups/{groupId} {
       allow read: if true;
-      allow create: if request.auth != null;
-      allow update: if request.auth != null && 
+      allow create: if request.auth != null;      allow update: if request.auth != null && 
         (
-          request.auth.uid == resource.data.creatorId ||
-          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'memberCount', 'updatedAt']) &&
-           resource.data.members.hasAny([request.auth.uid]))
+          get(resource.data.creator).id == request.auth.uid ||
+          (
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'memberCount', 'updatedAt']) &&
+            resource.data.members.hasAny(['/databases/' + database + '/documents/users/' + request.auth.uid])
+          ) ||
+          (
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['projects', 'projectCount', 'updatedAt']) &&
+            request.auth.uid in get(request.resource.data.projects[request.resource.data.projects.size()-1]).data.authorId
+          )
         );
       allow delete: if request.auth != null && 
-        request.auth.uid == resource.data.creatorId;
+        get(resource.data.creator).id == request.auth.uid;
     }
   }
 }

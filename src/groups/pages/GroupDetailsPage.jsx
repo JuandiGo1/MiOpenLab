@@ -20,10 +20,9 @@ const GroupDetailsPage = () => {
   useEffect(() => {
     loadGroup();
   }, [groupId]);
-
   useEffect(() => {
     if (user && group) {
-      setIsMember(group.members.includes(user.uid));
+      setIsMember(group.members.some(memberRef => memberRef.id === user.uid));
     }
   }, [user, group]);
 
@@ -34,12 +33,10 @@ const GroupDetailsPage = () => {
         navigate('/groups');
         return;
       }
-      setGroup(groupData);
-
-      // Cargar información de los miembros
+      setGroup(groupData);      // Cargar información de los miembros
       if (groupData?.members) {
         const memberProfiles = await Promise.all(
-          groupData.members.slice(0, 5).map(memberId => getUserProfile(memberId))
+          groupData.members.slice(0, 5).map(memberRef => getUserProfile(memberRef.id))
         );
         setMembers(memberProfiles.filter(Boolean));
       }
@@ -106,7 +103,7 @@ const GroupDetailsPage = () => {
                 </p>
               </div>
 
-              {user && user.uid !== group.creatorId && (
+              {user && user.uid !== group.creator?.id && (
                 <button
                   onClick={handleJoinLeave}
                   disabled={isJoining}

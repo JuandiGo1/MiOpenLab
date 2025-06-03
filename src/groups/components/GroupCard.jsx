@@ -7,7 +7,7 @@ const GroupCard = ({ id, name, description, banner, memberCount, technologies, m
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isJoining, setIsJoining] = React.useState(false);
-  const isMember = user ? members.includes(user.uid) : false;
+  const isMember = user ? members.some(memberRef => memberRef.id === user.uid) : false;
 
   const handleJoinLeave = async () => {
     if (!user) {

@@ -18,27 +18,21 @@ import { db } from '../../firebase/Config';
 
 // Crear un nuevo grupo
 export const createGroup = async (userId, { name, description }) => {
-  try {
-    // Obtener información del creador
-    const userRef = doc(db, 'users', userId);
-    const userSnap = await getDoc(userRef);
-    const userData = userSnap.data();    // Crear referencia al usuario
-    const creatorRef = doc(db, 'users', userId);    const groupRef = await addDoc(collection(db, 'groups'), {
+  try {    // Crear referencia al usuario    const userRef = doc(db, 'users', userId);
+    const groupRef = await addDoc(collection(db, 'groups'), {
       name,
       description,
-      creator: creatorRef,        // Referencia al documento del creador
-      members: [creatorRef],      // Array de referencias a documentos de usuarios
+      creator: userRef,        // Referencia al documento del creador
+      members: [userRef],      // Array de referencias a documentos de usuarios
       memberCount: 1,
       projects: [],              // Array de referencias a documentos de proyectos
       projectCount: 0,
       banner: "",
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-    });
-
-    // Actualizar el usuario con el grupo creado
+    });    // Actualizar el usuario con el grupo creado
     await updateDoc(userRef, {
-      groups: arrayUnion(groupRef.id)
+      groups: arrayUnion(groupRef)
     });
 
     return groupRef.id;
@@ -120,7 +114,7 @@ export const getAllGroups = async () => {
           displayName: creatorData.displayName,
           photoURL: creatorData.photoURL,
         },
-        members: groupData.members.map(memberRef => memberRef.path)
+        members: groupData.members ? groupData.members.map(memberRef => memberRef) : []
       };
     }));
 
@@ -212,11 +206,10 @@ export const deleteGroup = async (groupId, userId) => {
     
     // Eliminar el grupo
     batch.delete(groupRef);
-    
-    // Actualizar los usuarios que son miembros
+      // Actualizar los usuarios que son miembros
     const memberUpdates = groupData.members.map(async (memberRef) => {
       batch.update(memberRef, {
-        groups: arrayRemove(groupRef.id)
+        groups: arrayRemove(groupRef)
       });
     });
 
@@ -259,10 +252,8 @@ export const addProjectToGroup = async (groupId, projectId, userId) => {
     // Verificar que el proyecto pertenece al usuario
     if (projectDoc.data().authorId !== userId) {
       throw new Error('Can only add your own projects');
-    }
-
-    // Verificar que el proyecto no está ya en el grupo
-    if (groupData.projects.includes(projectRef.id)) {
+    }    // Verificar que el proyecto no está ya en el grupo
+    if (groupData.projects.some(ref => ref.path === projectRef.path)) {
       throw new Error('Project already in group');
     }
 
