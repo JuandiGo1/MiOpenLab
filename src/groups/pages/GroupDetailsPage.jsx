@@ -46,17 +46,17 @@ const GroupDetailsPage = () => {
   };
 
   const handleJoinLeave = async () => {
-    if (!user || isJoining) return;
-
     setIsJoining(true);
     try {
       if (isMember) {
         await leaveGroup(groupId, user.uid);
+        setIsMember(false);
       } else {
         await joinGroup(groupId, user.uid);
+        setIsMember(true);
+        // Redireccionar al grupo después de unirse
+        navigate(`/groups/${groupId}`);
       }
-      // Recargar los datos del grupo después de la operación
-      await loadGroup();
     } catch (error) {
       console.error('Error updating membership:', error);
     } finally {

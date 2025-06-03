@@ -20,8 +20,9 @@ const GroupCard = ({ id, name, description, banner, memberCount, technologies, m
     try {
       if (isMember) {
         await leaveGroup(id, user.uid);
-      } else {
-        await joinGroup(id, user.uid);
+      } else {        await joinGroup(id, user.uid);
+        // Redireccionar al grupo después de unirse
+        navigate(`/groups/${id}`);
       }
       if (onMembershipChange) {
         onMembershipChange();
