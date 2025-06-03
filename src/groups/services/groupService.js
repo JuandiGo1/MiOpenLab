@@ -109,11 +109,9 @@ export const getAllGroups = async () => {
     const q = query(collection(db, 'groups'), orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);
     
-    // Obtener los grupos con los datos del creador y miembros resueltos
     const groupsWithData = await Promise.all(querySnapshot.docs.map(async (groupDoc) => {
       const groupData = groupDoc.data();
       
-      // Validar que el grupo tenga un creatorId
       if (!groupData?.creatorId) {
         console.error('Group missing creatorId:', groupDoc.id);
         return null;
@@ -125,32 +123,7 @@ export const getAllGroups = async () => {
         console.error('Creator not found:', groupData.creatorId);
         return null;
       }
-      const creatorData = creatorDoc.data();      // Resolver datos de los miembros
-      const members = await Promise.all(
-        (groupData.members || []).map(async (memberId) => {
-          try {
-            if (!memberId) {
-              console.error('Invalid member ID in group:', groupDoc.id);
-              return null;
-            }
-            const memberDoc = await getDoc(doc(db, 'users', memberId));
-            if (!memberDoc.exists()) {
-              console.error('Member not found:', memberId);
-              return null;
-            }
-            const memberData = memberDoc.data();
-            return {
-              id: memberId,
-              displayName: memberData.displayName,
-              photoURL: memberData.photoURL
-            };
-          } catch (error) {
-            console.error('Error fetching member:', memberId, error);
-            return null;
-          }
-        })
-      );      // Filter out null members (failed to load)
-      const validMembers = members.filter(Boolean);
+      const creatorData = creatorDoc.data();
 
       return {
         id: groupDoc.id,
@@ -160,11 +133,12 @@ export const getAllGroups = async () => {
           displayName: creatorData?.displayName || 'Unknown',
           photoURL: creatorData?.photoURL || '',
         },
-        members: validMembers
+        // members se mantiene como array de IDs
+        memberCount: groupData.members?.length || 0
       };
-    }));    // Filter out any null groups (failed to load)
-    const validGroups = groupsWithData.filter(Boolean);
-    return validGroups;
+    }));
+
+    return groupsWithData.filter(Boolean);
   } catch (error) {
     console.error('Error getting groups:', error);
     throw error;
@@ -183,13 +157,15 @@ export const joinGroup = async (groupId, userId) => {
     
     const groupData = groupDoc.data();
     
+    // Verificar que el usuario no es ya miembro
     if (groupData.members.includes(userId)) {
       throw new Error('Already a member');
     }
 
-    // Solo actualizar members y updatedAt, nada más
+    // Actualizar el documento
+    const members = [...groupData.members, userId];
     await updateDoc(groupRef, {
-      members: arrayUnion(userId),
+      members,  // Nuevo array con el usuario añadido
       updatedAt: serverTimestamp()
     });
   } catch (error) {
@@ -217,9 +193,10 @@ export const leaveGroup = async (groupId, userId) => {
       throw new Error('Creator cannot leave group');
     }
 
-    // Solo actualizar members y updatedAt, nada más
+    // Actualizar el documento
+    const members = groupData.members.filter(id => id !== userId);
     await updateDoc(groupRef, {
-      members: arrayRemove(userId),
+      members,  // Nuevo array sin el usuario
       updatedAt: serverTimestamp()
     });
   } catch (error) {

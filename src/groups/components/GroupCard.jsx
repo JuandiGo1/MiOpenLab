@@ -7,8 +7,8 @@ const GroupCard = ({ id, name, description, banner, memberCount, technologies, m
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isJoining, setIsJoining] = React.useState(false);
-  // Asegurarse de que verificamos el ID del usuario correctamente
-  const isMember = user ? members.some(member => member.id === user.uid) : false;
+  // Verificar membresía usando el array de IDs directamente
+  const isMember = user ? Array.isArray(members) && members.includes(user.uid) : false;
 
   const handleJoinLeave = async () => {
     if (!user) {

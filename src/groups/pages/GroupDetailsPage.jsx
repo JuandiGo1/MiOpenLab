@@ -23,8 +23,8 @@ const GroupDetailsPage = () => {
 
   useEffect(() => {
     if (user && group) {
-      // Ahora verificamos directamente en el array de IDs
-      setIsMember(group.members?.includes(user.uid) || false);
+      // Verificar membresía usando el array de IDs
+      setIsMember(Array.isArray(group.members) && group.members.includes(user.uid));
     }
   }, [user, group]);
 
@@ -128,10 +128,9 @@ const GroupDetailsPage = () => {
                 <h3 className="text-lg font-semibold text-gray-800 mb-3 dark:text-white">
                   Miembros
                 </h3>
-                <div className="flex -space-x-2 overflow-hidden">
-                  {members.map((member) => (
+                <div className="flex -space-x-2 overflow-hidden">                  {members.map((member) => (
                     <img
-                      key={member.uid}
+                      key={member.id || member.uid}
                       className="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-gray-800"
                       src={member.photoURL}
                       alt={member.displayName}

@@ -1,76 +1,42 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Función helper para verificar si el usuario está autenticado
     function isAuthenticated() {
       return request.auth != null;
-    }
-
-    // Función helper para verificar si el usuario es miembro del grupo
-    function isMember(groupData) {
-      return isAuthenticated() && (groupData.members.hasAny([request.auth.uid]));
-    }
-
-    // Función helper para verificar si el usuario es el creador del grupo
-    function isCreator(groupData) {
-      return isAuthenticated() && (groupData.creatorId == request.auth.uid);
     }
 
     // Reglas para proyectos
     match /projects/{projectId} {
       allow read: if true;
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated() && (
-        request.auth.uid == resource.data.authorId ||
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['groups'])
-      );
-      allow delete: if isAuthenticated() && request.auth.uid == resource.data.authorId;
+      allow write: if isAuthenticated();
     }
 
     // Reglas para usuarios
     match /users/{userId} {
       allow read: if true;
-      allow create, update: if isAuthenticated() && request.auth.uid == userId;
-      allow delete: if isAuthenticated() && request.auth.uid == userId;
-    }
-
-    // Reglas para grupos
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }    // Reglas para grupos
     match /groups/{groupId} {
       allow read: if true;
       allow create: if isAuthenticated();
-      
-      // Permitir actualizaciones si:
-      // 1. El usuario es el creador del grupo, o
-      // 2. El usuario está intentando unirse o dejar el grupo
       allow update: if isAuthenticated() && (
-        isCreator(resource.data) ||
-        (
-          // Solo permitir cambios en members y updatedAt
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'updatedAt']) &&
-          (
-            // Usuario se está uniendo
-            (!resource.data.members.hasAny([request.auth.uid]) && request.resource.data.members.hasAny([request.auth.uid])) ||
-            // Usuario está dejando el grupo
-            (resource.data.members.hasAny([request.auth.uid]) && !request.resource.data.members.hasAny([request.auth.uid]))
-          )
-        )
+        // El creador puede actualizar todo
+        resource.data.creatorId == request.auth.uid ||
+        // Los usuarios pueden unirse/dejar el grupo
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'updatedAt']))
       );
-      
-      allow delete: if isAuthenticated() && isCreator(resource.data);
+      allow delete: if isAuthenticated() && resource.data.creatorId == request.auth.uid;
     }
 
     // Reglas para notificaciones
     match /notifications/{notifId} {
-      allow read: if true;
-      allow write: if isAuthenticated();
+      allow read, write: if isAuthenticated();
     }
 
     // Reglas para comentarios
     match /comments/{commentId} {
       allow read: if true;
-      allow create: if isAuthenticated();
-      allow delete: if isAuthenticated() && get(resource.data.userRef).id == request.auth.uid;
-      allow update: if isAuthenticated() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']);
+      allow write: if isAuthenticated();
     }
   }
 }
