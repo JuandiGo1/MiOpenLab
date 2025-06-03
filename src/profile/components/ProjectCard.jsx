@@ -198,7 +198,7 @@ const ProjectCard = ({
           <div className="flex items-center justify-between w-full">
             <div className="flex flex-col justify-start gap-1">
               <h2
-                className="text-3xl font-semibold text-gray-800 px-4 hover:underline cursor-pointer dark:text-white"
+                className="text-3xl font-semibold text-gray-800 px-4 hover:underline cursor-pointer dark:text-white scalable-text"
                 onClick={handleViewDetails}
               >
                 {title}
@@ -213,7 +213,7 @@ const ProjectCard = ({
                 />
                 <h3
                   onClick={() => navigate(authorProfileLink)}
-                  className="text-md font-mono text-gray-500 hover:underline cursor-pointer dark:text-gray-300 "
+                  className="text-md font-mono text-gray-500 hover:underline cursor-pointer dark:text-gray-300 scalable-text"
                 >
                   {authorProfile?.displayName}
                 </h3>
@@ -222,7 +222,7 @@ const ProjectCard = ({
 
             <div className="flex flex-col gap-1 items-start justify-center ">
               <a
-                className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456] dark:text-gray-50 dark:hover:text-[#8293ff]"
+                className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456] dark:text-gray-50 dark:hover:text-[#8293ff] scalable-text"
                 href={linkRepo}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -233,7 +233,7 @@ const ProjectCard = ({
 
               {linkDemo && (
                 <a
-                  className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456] dark:text-gray-50 dark:hover:text-[#8293ff]"
+                  className="flex items-center justify-start text-lg gap-1 font-mono text-gray-800 px-5 hover:text-[#ce9456] dark:text-gray-50 dark:hover:text-[#8293ff] scalable-text"
                   href={linkDemo}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -249,12 +249,12 @@ const ProjectCard = ({
         <hr className="border-t w-full border-gray-200 my-2 dark:border-[#404040]" />
         {/* Renderizar la descripción en formato Markdown */}
         <div
-          className="prose prose-sm w-full max-w-none text-gray-600 p-4 mb-4 cursor-pointer dark:text-gray-300 dark:bg-[#333333] dark:prose-invert"
+          className="prose prose-sm w-full max-w-none text-gray-600 p-4 mb-4 cursor-pointer dark:text-gray-300 dark:bg-[#333333] dark:prose-invert scalable-text"
           onClick={handleViewDetails}
         >
           <ReactMarkdown>{`${description.slice(0, 150)}...`}</ReactMarkdown>
           {description.length > 100 && (
-            <button className="text-blue-500 hover:underline mt-2 cursor-pointer dark:text-blue-400 ">
+            <button className="text-blue-500 hover:underline mt-2 cursor-pointer dark:text-blue-400 scalable-text">
               Ver más
             </button>
           )}
@@ -331,7 +331,7 @@ const ProjectCard = ({
                 />
               </div>
             )}
-            <span className="text-gray-500 dark:text-gray-300">
+            <span className="text-gray-500 dark:text-gray-300 scalable-text">
               {formattedDate}
             </span>
           </div>

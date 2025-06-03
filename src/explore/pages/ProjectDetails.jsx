@@ -68,13 +68,13 @@ const ProjectDetails = () => {
           className="w-12 h-12 rounded-full mr-4 object-cover"
         />
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">{title}</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-300">By {authorName}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-300">{formattedDate}</p>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white scalable-text">{title}</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-300 scalable-text">By {authorName}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-300 scalable-text">{formattedDate}</p>
         </div>
       </div>
 
-      <div className="w-full prose prose-lg max-w-none text-gray-600 mb-6 dark:text-gray-200 dark:prose-invert">
+      <div className="w-full prose prose-lg max-w-none text-gray-600 mb-6 dark:text-gray-200 dark:prose-invert scalable-text">
         <ReactMarkdown>{description}</ReactMarkdown>
       </div>
 

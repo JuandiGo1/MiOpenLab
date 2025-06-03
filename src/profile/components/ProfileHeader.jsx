@@ -11,6 +11,8 @@ import { db } from "../../firebase/Config";
 import { FaLinkedin, FaGithubSquare, FaGem } from "react-icons/fa";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
+import SettingsModal from "../../common/components/SettingsModal";
+import { FiSettings } from "react-icons/fi";
 
 const ProfileHeader = ({
   countPosts,
@@ -32,6 +34,7 @@ const ProfileHeader = ({
   const [isFollowing, setFollow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFollowStatusLoading, setIsFollowStatusLoading] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
   const profileImage = photoURL || defaultAvatar;
   const bannerImage = bannerURL || defaultBanner;
   const [hovering, setHovering] = useState(false);
@@ -210,7 +213,7 @@ const ProfileHeader = ({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full">
           <div className="w-full">
             <div className="flex items-center justify-between w-full">
-              <h1 className="text-2xl font-bold dark:text-white">
+              <h1 className="text-2xl font-bold dark:text-white scalable-text">
                 {displayName}
               </h1>
 
@@ -240,28 +243,28 @@ const ProfileHeader = ({
               ) : null}
             </div>
 
-            <p className="text-gray-600 dark:text-gray-200">@{username}</p>
+            <p className="text-gray-600 dark:text-gray-200 scalable-text">@{username}</p>
             {headline && (
-              <p className="text-gray-800 dark:text-gray-300 mt-1">
+              <p className="text-gray-800 dark:text-gray-300 mt-1 scalable-text">
                 {headline}
               </p>
             )}
             {location && (
-              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 scalable-text">
                 {location}
               </p>
             )}
           </div>
         </div>
         {/* Descripción */}
-        {bio && <p className="mt-4 text-gray-700 dark:text-gray-200">{bio}</p>}
+        {bio && <p className="mt-4 text-gray-700 dark:text-gray-200 scalable-text">{bio}</p>}
         {/* Aptitudes */}
         {skills && skills.length > 0 && (
           <div className="mt-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#222] px-4 py-3 flex items-center justify-between">
             <div className="flex items-center">
               <FaGem className="text-xl text-gray-700 dark:text-gray-200 mr-2" />
               <div>
-                <span className="font-semibold text-gray-900 dark:text-white">
+                <span className="font-semibold text-gray-900 dark:text-white scalable-text">
                   Main skills
                 </span>
                 <div className="text-gray-700 dark:text-gray-200 text-sm mt-1">
@@ -279,10 +282,21 @@ const ProfileHeader = ({
           </div>
         )}
         {/* Posts count */}
-        <p className="mt-4 text-gray-500 dark:text-gray-400 text-sm">
+        <p className="mt-4 text-gray-500 dark:text-gray-400 text-sm scalable-text">
           {countPosts} posts
         </p>
       </div>
+      {/* Ajustes botón y modal */}
+      {currentUserUserUid === uid && (
+        <button
+          onClick={() => setShowSettings(true)}
+          className="flex items-center gap-2 px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-semibold mt-2"
+        >
+          <FiSettings className="text-lg" />
+          Ajustes
+        </button>
+      )}
+      <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
     </div>
   );
 };
