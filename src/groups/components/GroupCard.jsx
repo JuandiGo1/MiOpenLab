@@ -8,9 +8,10 @@ const GroupCard = ({ id, name, description, banner, memberCount, technologies, m
   const navigate = useNavigate();
   const [isJoining, setIsJoining] = React.useState(false);
   // Verificar membresía usando el array de IDs directamente
-  const isMember = user ? Array.isArray(members) && members.includes(user.uid) : false;
+  const [isMember, setIsMember] = React.useState(user ? Array.isArray(members) && members.includes(user.uid) : false);
 
-  const handleJoinLeave = async () => {
+  const handleJoinLeave = async (e) => {
+    e.stopPropagation();
     if (!user) {
       navigate('/login');
       return;
@@ -20,8 +21,10 @@ const GroupCard = ({ id, name, description, banner, memberCount, technologies, m
     try {
       if (isMember) {
         await leaveGroup(id, user.uid);
-      } else {        await joinGroup(id, user.uid);
-        // Redireccionar al grupo después de unirse
+        setIsMember(false);
+      } else {
+        await joinGroup(id, user.uid);
+        setIsMember(true);
         navigate(`/groups/${id}`);
       }
       if (onMembershipChange) {

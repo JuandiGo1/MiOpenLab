@@ -50,12 +50,20 @@ const GroupDetailsPage = () => {
     try {
       if (isMember) {
         await leaveGroup(groupId, user.uid);
+        // Actualizar estado inmediatamente para la UI
         setIsMember(false);
+        // Actualizar datos del grupo
+        const updatedGroup = await getGroupById(groupId);
+        setGroup(updatedGroup);
+        setMembers(updatedGroup.memberDetails?.slice(0, 5) || []);
       } else {
         await joinGroup(groupId, user.uid);
+        // Actualizar estado inmediatamente para la UI
         setIsMember(true);
-        // Redireccionar al grupo después de unirse
-        navigate(`/groups/${groupId}`);
+        // Actualizar datos del grupo
+        const updatedGroup = await getGroupById(groupId);
+        setGroup(updatedGroup);
+        setMembers(updatedGroup.memberDetails?.slice(0, 5) || []);
       }
     } catch (error) {
       console.error('Error updating membership:', error);
