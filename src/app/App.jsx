@@ -100,7 +100,7 @@ function App() {
             }
           />
           <Route
-            path="/group/:groupId"
+            path="/groups/:groupId"
             element={
               <Navbar>
                 <GroupDetailsPage />
@@ -108,7 +108,7 @@ function App() {
             }
           />
           <Route
-            path="/create-group"
+            path="/groups/new"
             element={
               <ProtectedRoute>
                 <Navbar>
